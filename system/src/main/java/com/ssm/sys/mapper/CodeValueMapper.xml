@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ #{copyright}#
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.sys.mapper.CodeValueMapper">
+    <resultMap id="BaseResultMap" type="com.ssm.sys.dto.CodeValue" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
+        <id column="CODE_VALUE_ID" property="codeValueId" jdbcType="DECIMAL"/>
+        <result column="CODE_ID" property="codeId" jdbcType="DECIMAL"/>
+        <result column="VALUE" property="value" jdbcType="VARCHAR"/>
+        <result column="MEANING" property="meaning" jdbcType="VARCHAR"/>
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR"/>
+        <result column="TAG" property="tag" jdbcType="VARCHAR" />
+        <result column="ENABLED_FLAG" property="enabledFlag" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    
+    <select id="selectCodeValuesByCodeName" resultMap="BaseResultMap" parameterType="string">
+        SELECT scvb.code_id, scvb.value, sct.meaning
+          FROM tb_code_value_b scvb
+          LEFT OUTER JOIN tb_code_value_tl sct
+            ON (scvb.code_value_id = sct.code_value_id AND sct.lang = #{request.locale,jdbcType=VARCHAR})
+         INNER JOIN tb_code_b scb
+            ON (scb.code_id = scvb.code_id)
+         WHERE scb.code = #{codeName}
+    </select>
+
+    <select id="selectCodeValuesByCodeId" resultMap="BaseResultMap">
+        SELECT scvb.code_value_id,scvb.code_id, scvb.value, sct.meaning,sct.description,scvb.tag,scvb.order_seq,scvb.enabled_flag
+        FROM tb_code_value_b scvb
+        LEFT OUTER JOIN tb_code_value_tl sct
+        ON (scvb.code_value_id = sct.code_value_id AND sct.lang = #{request.locale,jdbcType=VARCHAR})
+        WHERE scvb.code_id = #{codeId}
+        ORDER BY scvb.code_value_Id ASC
+    </select>
+
+    <delete id="deleteByCodeId" parameterType="com.ssm.sys.dto.CodeValue">
+        delete from
+        tb_code_value_b
+        where CODE_ID = #{codeId,jdbcType=DECIMAL}
+    </delete>
+    <delete id="deleteTlByCodeId" parameterType="com.ssm.sys.dto.CodeValue">
+        delete from
+        tb_code_value_tl
+        where CODE_VALUE_ID in (
+                  select code_value_id
+                  from tb_code_value_b cvb
+                  where cvb.code_id = #{codeId,jdbcType=DECIMAL})
+    </delete>
+
+    <!-- Mclin添加， 查询消息模版编码LOV -->
+    <select id="queryMsgTemCodeLov" resultMap="BaseResultMap">
+    select scvb.value, coalesce(scvt.meaning, scvb.meaning) meaning
+      from tb_code_b scb, tb_code_value_b scvb
+      left outer join tb_code_value_tl scvt
+        ON (scvb.code_value_id = scvt.code_value_id AND scvt.lang = #{request.locale,jdbcType=VARCHAR,javaType=java.lang.String})
+     <where>
+     	scb.code = 'SYS.MES_TEM_TYPE'
+        and scb.code_id = scvb.code_id
+        <if	test="value != null">
+        	and 
+        	(
+        		lower(scvb.value) like concat('%', #{value, jdbcType=VARCHAR}, '%')
+        		or
+        		upper(scvb.value) like concat('%', #{value, jdbcType=VARCHAR}, '%')
+        	)
+        </if>
+        <if	test="meaning != null">
+        	and 
+        	(
+        		scvt.meaning like concat('%', #{meaning, jdbcType=VARCHAR}, '%')
+        		or
+        		scvb.meaning like concat('%', #{meaning, jdbcType=VARCHAR}, '%')
+        	)
+        </if>
+     </where> 
+    </select>
+    
+    <!-- Mclin添加， 查询邮箱帐号编码LOV -->
+    <select id="queryEmlAccountCodeLov" resultMap="BaseResultMap">
+    select scvb.value, coalesce(scvt.meaning, scvb.meaning) meaning
+      from tb_code_b scb, tb_code_value_b scvb
+      left outer join tb_code_value_tl scvt
+        ON (scvb.code_value_id = scvt.code_value_id AND scvt.lang = #{request.locale,jdbcType=VARCHAR,javaType=java.lang.String})
+     <where>
+     	scb.code = 'SYS.EMAIL_ACCOUNT_CODE'
+        and scb.code_id = scvb.code_id
+        <if	test="value != null">
+        	and 
+        	(
+        		lower(scvb.value) like concat('%', #{value, jdbcType=VARCHAR}, '%')
+        		or
+        		upper(scvb.value) like concat('%', #{value, jdbcType=VARCHAR}, '%')
+        	)
+        </if>
+        <if	test="meaning != null">
+        	and 
+        	(
+        		scvt.meaning like concat('%', #{meaning, jdbcType=VARCHAR}, '%')
+        		or
+        		scvb.meaning like concat('%', #{meaning, jdbcType=VARCHAR}, '%')
+        	)
+        </if>
+     </where> 
+    </select>
+</mapper>

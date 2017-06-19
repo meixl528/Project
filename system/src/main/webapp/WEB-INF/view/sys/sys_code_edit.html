@@ -1,0 +1,260 @@
+<#--
+* description: 快速编码界面
+* version: 1.0
+*
+-->
+<#include "../include/header.html">
+<div>
+    <script type="text/javascript">
+
+        var isedit = '${RequestParameters.isedit!0}' == '1';
+        var isSystemType =  '${RequestParameters.type!0}'=='SYSTEM';
+        viewModel = kendo.observable({
+            model: {
+                enabledFlag:'Y'
+            },
+            createFunction:function(){
+                $('#codeValueGrid').data('kendoGrid').addRow();
+            }
+        });
+        if (isedit) {
+            $.ajax({
+                url: '${base.contextPath}/sys/code/query?codeId=${RequestParameters.codeId!0}',
+                success: function (args) {
+                    var a0 = args.rows[0] || {};
+                    for (var k in a0) {
+                        viewModel.model.set(k, a0[k]);
+                    }
+                }
+            });
+        }
+    </script>
+    <div id="page-content" style="width:580px">
+        <form class="form-horizontal" style="width:550px">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="col-xs-1 col-xs-offset-1 control-label" style="text-align: right"><@spring.message "code.code"/></label>
+                    <div class="col-xs-6">
+                        <input id="code" type="text" data-bind="value:model.code" class="k-textbox" style="width: 100%;">
+                        <script>kendo.bind($('#code'), viewModel);</script>
+                    </div>
+                    <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: left"><@spring.message "hap.enableflag"/></label>
+                    <div class="col-xs-1" style="padding-top: 7px">
+                        <input id="codeCheckbox" checked="checked" name="checkbox" type="checkbox" data-bind="value:model.enabledFlag"/>
+                        <script>
+                            $("#codeCheckbox").kendoCheckbox({
+                               type: 'boolean',checkedValue:'Y',uncheckedValue:'N'
+                            });
+                        </script>
+                        <script>kendo.bind($('#codeCheckbox'), viewModel);</script>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="col-xs-1 col-xs-offset-1 control-label" style="text-align: right"><@spring.message "code.description"/></label>
+                    <div class="col-xs-6">
+                        <input id="description" type="text" data-bind="value:model.description" style="width: 100%;">
+                        <script>
+                            $("#description").kendoTLEdit({
+                                idField: 'codeId',
+                                field: 'description',
+                                dto: "com.ssm.syst.dto.CodeValue",
+                                model: viewModel.model
+                            })
+                            kendo.bind($('#description'), viewModel);
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;padding-left: 10px;">
+    <span id="addGrid"data-bind="click:createFunction" type="button" class="btn btn-primary k-grid-add" style="float:left;margin-right:5px"><i class="fa fa-plus-square" style="margin-right:3px;"></i><@spring.message "hap.new"/></span>
+    <span id= "saveGrid" class="btn btn-success k-grid-save-changes"  style="float:left;margin-right:5px;" ><i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+    <span id="deleteGrid" onclick="deleteData()" class="btn btn-danger" style="float:left;"><i class="fa fa-trash-o" style="margin-right:3px;"></i><@spring.message "hap.delete"/></span>
+</div>
+<script>kendo.bind($('#toolbar-btn'), viewModel);</script>
+<div id='grid-container' style="clear: both;width: 590px;">
+    <div id="codeValueGrid" style="margin-left:10px"></div>
+</div>
+
+</div>
+<script>
+
+    //系统类型代码 将删除和添加按钮隐藏
+    if(isSystemType){
+        document.getElementById("deleteGrid").style.display="none";
+        document.getElementById("addGrid").style.display="none";
+    }
+    ( function(){
+        var code = document.getElementById('code');
+        if (isedit){
+            if(!code.getAttribute('disabled')){
+                code.setAttribute("disabled","true");
+                code.style.backgroundColor="#dddddd";
+            }
+        } else{
+            if(code.getAttribute('disabled')){
+                code.removeAttribute('disabled');
+                code.style.backgroundColor = "#ffffff";
+            }
+        }
+    })()
+
+    var crudServiceBaseUrl = "${base.contextPath}/sys/codevalue";
+    dataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: crudServiceBaseUrl + "/query?codeId=${RequestParameters.codeId!0}",
+                type: "POST",
+                dataType: "json"
+            },
+            create: {
+                url: "${base.contextPath}/sys/code/submit",
+                contentType: "application/json",
+                type: "POST"
+            },
+            update: {
+                url: "${base.contextPath}/sys/code/submit",
+                contentType: "application/json",
+                type: "POST"
+            },
+            destroy: {
+                url: crudServiceBaseUrl + "/remove",
+                contentType: "application/json",
+                type: "POST"
+            },
+            parameterMap: function (options, type) {
+                if (type !== "read" && options.models) {
+                    var datas = Hap.prepareSubmitParameter(options, type);
+                    return kendo.stringify(datas);
+                } else if (type === "read") {
+                    return Hap.prepareQueryParameter(viewModel.model.toJSON(), options);
+                }
+            }
+        },
+        batch: true,
+        serverPaging: true,
+        pageSize: 10,
+        schema: {
+            data: 'rows',
+            total: 'total',
+            model: {
+                id: "codeValueId",
+                fields: {
+                    value: {validation: {required: true}},
+                    orderSeq: {type: "number"},
+                    enabledFlag:{defaultValue: 'Y',type: 'boolean',checkedValue:'Y',uncheckedValue:'N',
+                        template: '<input id="codeValueCheckbox" checked="checked" name="codeValueCheckbox" type="checkbox" data-bind="value:model.enabledFlag" />'}
+                }
+            }
+        }
+    });
+
+    var grid = $("#codeValueGrid").kendoGrid({
+        dataSource: dataSource,
+        navigatable: false,
+        height: '300px',
+        resizable: true,
+        scrollable: true,
+        selectable: 'multiple,rowbox',
+        columns: [
+            {
+                field: "value",
+                title: '<@spring.message "codevalue.value"/>',
+                width: 80,
+                editor:function (container, options){
+                    if(options.model.codeValueId==null || options.model.codeValueId==""){
+                        $('<input name="' + options.field + '" type="text" class="form-control" style="width:65%;"/>')
+                                .appendTo(container)
+                    }else{
+                        container.html(options.model.value);
+                    }
+                }
+            },
+            {
+                field: "meaning",
+                title: '<@spring.message "codevalue.meaning"/>',
+                width: 100,
+                editor: function (container, options) {
+                    $('<input name="' + options.field + '"/>')
+                            .appendTo(container)
+                            .kendoTLEdit({
+                                idField: 'codeValueId',
+                                field: 'meaning',
+                                dto: "com.ssm.sys.dto.CodeValue",
+                                model: options.model
+                            });
+                }
+            },
+            {
+                field: "description",
+                title: '<@spring.message "codevalue.description"/>',
+                width: 100,
+                editor: function (container, options) {
+                    $('<input name="' + options.field + '"/>')
+                            .appendTo(container)
+                            .kendoTLEdit({
+                                idField: 'codeValueId',
+                                field: options.field,
+                                dto: "com.ssm.sys.dto.CodeValue",
+                                model: options.model
+                            });
+                }
+            },
+            {
+                field: "orderSeq",
+                title: '<@spring.message "codevalue.orderseq"/>',
+                width: 80
+            },
+            {
+                field : "tag",
+                title : '标记',
+                attributes: {style: "text-align:center"},
+                width : 80
+            },
+            {
+                field : "enabledFlag",
+                title : '<@spring.message "hap.enableflag"/>',
+                attributes: {style: "text-align:center"},
+                width : 80
+            }
+        ],
+        editable: true
+    }).data("kendoGrid");
+
+    function deleteData() {
+
+        Hap.deleteGridSelection({
+            grid: $('#codeValueGrid')
+        });
+    }
+
+    $("#saveGrid").click(function () {
+        viewModel.model.__status = isedit ? 'update' : 'add';
+        //创建新的代码维护的时候，默认类型为USER
+        if(!isedit){
+            viewModel.model.type = 'USER';
+        }
+        Hap.submitForm({
+            url: '${base.contextPath}/sys/code/submit',
+            formModel: viewModel.model,
+            grid: {"codeValues": $("#codeValueGrid")},
+            success: function (data) {
+                if (isedit) {
+                    window.parent.$("#editWin").data("kendoWindow").close();
+                } else {
+                    window.parent.$("#newWin").data("kendoWindow").close();
+                }
+            }
+        });
+    });
+
+    //自动根据当前屏幕大小调整表格
+    Hap.autoResizeGrid("#codeValueGrid");
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ #{copyright}#
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.function.mapper.FunctionResourceMapper" >
+  <resultMap id="BaseResultMap" type="com.ssm.function.dto.FunctionResource">
+    <id column="FUNC_SRC_ID" property="funcSrcId" jdbcType="DECIMAL" />
+    <result column="FUNCTION_ID" property="functionId" jdbcType="DECIMAL" />
+    <result column="RESOURCE_ID" property="resourceId" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FUNC_SRC_ID, FUNCTION_ID, RESOURCE_ID
+  </sql>
+
+  <delete id="deleteByResource" parameterType="com.ssm.function.dto.Resource">
+    delete from  tb_function_resource
+    where RESOURCE_ID = #{resourceId,jdbcType=DECIMAL}
+  </delete>
+  <delete id="deleteByFunctionId" parameterType="java.lang.Long">
+    delete from tb_function_resource
+    where FUNCTION_ID = #{functionId,jdbcType=DECIMAL}
+  </delete>
+    <delete id="deleteFunctionResource">
+        delete from tb_function_resource
+        where function_id=#{functionId} and resource_id=#{resourceId}
+    </delete>
+</mapper>

@@ -1,0 +1,50 @@
+package com.ssm.account.service;
+
+import java.util.List;
+
+import com.ssm.account.dto.Role;
+import com.ssm.account.dto.User;
+import com.ssm.account.exception.RoleException;
+import com.ssm.core.request.IRequest;
+import com.ssm.sys.service.IBaseService;
+
+public interface IRoleService extends IBaseService<Role>{
+
+	List<Role> selectRolesByUser(IRequest requestContext, User user);
+
+	Role checkUserRoleExists(Long userId, Long roleId) throws RoleException;
+	
+	/**
+	 * 删除角色 
+	 * @param list
+	 */
+	void deleteRole(List<Role> list);
+	
+	/**
+	 * 保存角色
+	 * @param requestContext
+	 * @param list
+	 */
+	List<Role> submitRole(IRequest requestContext, List<Role> list);
+
+	/**
+	 * 查询角色
+	 * @param requestContext
+	 * @param role
+	 * @param page
+	 * @param pagesize
+	 * @return
+	 */
+	List<Role> selectRole(IRequest requestContext, Role role, int page, int pagesize);
+
+	/**
+	 * 查询用户没有的角色
+	 * @param requestContext
+	 * @param roleExt
+	 * @param page
+	 * @param pagesize
+	 * @return
+	 */
+	List<Role> selectRoleNotUserRoles(IRequest requestContext, Role roleExt, int page, int pagesize);
+
+}

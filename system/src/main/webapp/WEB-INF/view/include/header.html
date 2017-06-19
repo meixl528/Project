@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>${SYS_TITLE!'Application Platform'}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="X-CSRF-TOKEN" />
+    <link href="${base.contextPath}/resources/upload/favicon.png" rel="shortcut icon"/>
+    <!--[if IE 8]>
+    <script src="${base.contextPath}/resources/polyfill/respond.min.js"></script>
+    <script src="${base.contextPath}/resources/polyfill/es5-shim.min.js"></script>
+    <![endif]-->
+    <script src="${base.contextPath}/resources/kendoui/js/jquery.min.js"></script>
+    <script src="${base.contextPath}/resources/kendoui/js/kendo.all.min.js"></script>
+    <link href="${base.contextPath}/resources/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="${base.contextPath}/resources/font-awesome-4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="${base.contextPath}/resources/kendoui/styles/kendo.common-bootstrap.min.css" rel="stylesheet"
+          type="text/css"/>
+    <link href="${base.contextPath}/resources/kendoui/styles/kendo.bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="${base.contextPath}/resources/kendoui/styles/kendo.hap.css" rel="stylesheet" type="text/css"/>
+	<script src="${base.contextPath}/resources/kendoui/js/cultures/kendo.culture.${base.locale.toString()?replace('_','-')}.js"></script>
+    <script src="${base.contextPath}/resources/kendoui/js/messages/kendo.messages.${base.locale.toString()?replace('_','-')}.js"></script>
+    <script src="${base.contextPath}/resources/kendoui/js/kendo.hap.js"></script>
+    <script src="${base.contextPath}/common/prompts"></script>
+    <script>
+        _basePath = '${base.contextPath}', _locale = '${base.locale}';
+        kendo.culture("${base.locale.toString()?replace('_','-')}");
+    </script>
+</head>
+<#macro lov lovid>${lovProvider.getLov(base.contextPath,base.locale,lovid)}</#macro>

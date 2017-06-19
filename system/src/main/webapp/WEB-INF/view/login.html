@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>kendo UI Web</title>
+<script src="resources/kendoui/js/jquery.min.js"></script>
+
+<style type="text/css">
+.alert-error {
+	color: #f92e2d;
+	border-color: #ee4e1c;
+	padding: 8px 35px 8px 14px;
+	margin-bottom: 20px;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+</style>
+</head>
+<body>
+    <div id="page-content">
+    	<form id="login-form" style="margin-top:1px" method="post" action="login.html">
+    		<@spring.message "user.username"/>:<input id="name" name="name"  placeholder="admin">
+    		<@spring.message "user.password"/>:<input id="pass" name="pass"  placeholder="admin">
+    		<#if msg??>
+            	<div class="alert-error">
+                	<span>${msg}</span>
+           		</div>
+           	</#if>
+			<button id="login" type="submit"><@spring.message "hap.login"/></button>
+        </form>
+    </div>
+</body>
+
+</html>

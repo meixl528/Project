@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTDMapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssm.function.mapper.FunctionMapper">
+	<!-- <cache type="com.ssm.util.LoggingRedisCache"></cache> -->
+	
+	<resultMap id="BaseResultMap" type="com.ssm.function.dto.Function">
+	    <id column="FUNCTION_ID" property="functionId" jdbcType="DECIMAL" />
+	    <result column="MODULE_CODE" property="moduleCode" jdbcType="VARCHAR" />
+	    <result column="FUNCTION_ICON" property="functionIcon" jdbcType="VARCHAR" />
+	    <result column="FUNCTION_CODE" property="functionCode" jdbcType="VARCHAR" />
+	    <result column="FUNCTION_NAME" property="functionName" jdbcType="VARCHAR" />
+	    <result column="FUNCTION_DESCRIPTION" property="functionDescription" jdbcType="VARCHAR" />
+	    <result column="LANG" property="lang" jdbcType="VARCHAR" />
+	    <result column="RESOURCE_ID" property="resourceId" jdbcType="DECIMAL" />
+	    <result column="PARENT_FUNCTION_ID" property="parentFunctionId" jdbcType="DECIMAL"/>
+	    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+	    <result column="FUNCTION_SEQUENCE" property="functionSequence" jdbcType="DECIMAL" />
+	</resultMap>
+	  
+	<resultMap id="FunctionResourceResultMap" type="com.ssm.function.dto.Function">
+	    <id column="FUNCTION_ID" property="functionId" jdbcType="DECIMAL" />
+	    <result column="FUNCTION_ICON" property="functionIcon" jdbcType="VARCHAR" />
+	    <result column="FUNCTION_CODE" property="functionCode" jdbcType="VARCHAR" />
+	    <result column="FUNCTION_NAME" property="functionName" jdbcType="VARCHAR" />
+	    <result column="FUNCTION_DESCRIPTION" property="functionDescription" jdbcType="VARCHAR" />
+	    <result column="RESOURCE_ID" property="resourceId" jdbcType="DECIMAL" />
+	    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+	    <result column="FUNCTION_SEQUENCE" property="functionSequence" jdbcType="DECIMAL" />
+	    <result column="URL" property="url" jdbcType="VARCHAR" />
+	    <result column="NAME" property="name" jdbcType="VARCHAR" />
+	    <result column="FUNC_SRC_ID" property="funcSrcId" jdbcType="DECIMAL" />
+	    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+	    <result column="LOGIN_REQUIRE" property="loginRequire" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="FunctionDisplayMap" type="com.ssm.function.dto.FunctionDisplay" extends="BaseResultMap">
+      <result column="PARENT_FUNCTION_NAME" property="parentFunctionName" jdbcType="VARCHAR" />
+      <result column="RESOURCE_NAME" property="resourceName" jdbcType="VARCHAR" />
+    </resultMap>
+	
+	<select id="selectForCache" resultMap="BaseResultMap">
+        SELECT sfb.FUNCTION_ID,
+               sfb.MODULE_CODE,
+               sfb.FUNCTION_ICON,
+               sfb.FUNCTION_SEQUENCE,
+               sfb.FUNCTION_CODE,
+               sft.FUNCTION_NAME,
+               sft.FUNCTION_DESCRIPTION,
+               sfb.RESOURCE_ID,
+               sfb.TYPE,
+               sfb.PARENT_FUNCTION_ID,
+               sft.lang 
+          FROM tb_function_b sfb
+          LEFT OUTER JOIN  tb_function_tl sft
+            on (sfb.FUNCTION_ID = sft.FUNCTION_ID)
+            where sft.lang is not null 
+    </select>
+	
+	<select id="selectExistsResourcesByFunction" resultMap="FunctionResourceResultMap" parameterType="map">
+        <!-- select
+        sfr.FUNC_SRC_ID,
+        t.FUNCTION_NAME,
+        t.FUNCTION_CODE,
+        t.FUNCTION_ID,
+        b.RESOURCE_ID, 
+        b.URL,
+        b.TYPE, 
+        b.NAME,
+        b.DESCRIPTION
+        from tb_function_b t
+        LEFT JOIN tb_resource_b b 
+          on(b.resource_id = t.resource_id)
+        JOIN tb_FUNCTION_RESOURCE sfr 
+          on(b.RESOURCE_ID=sfr.RESOURCE_ID)
+        where b.type='HTML' and t.RESOURCE_ID is not null
+            <if test="resource.name != null">
+                AND b.name like concat('%',concat(#{resource.name,jdbcType=VARCHAR},'%'))
+            </if>
+      order by b.RESOURCE_ID -->
+      
+      SELECT
+        b.RESOURCE_ID, b.URL, b.TYPE, t.NAME, t.DESCRIPTION
+        FROM tb_RESOURCE_B b
+        LEFT OUTER JOIN tb_RESOURCE_TL t
+          ON(b.resource_id = t.resource_id AND t.lang = #{request.locale,jdbcType=VARCHAR})
+        <if test="function.functionId != null">
+         JOIN tb_FUNCTION_RESOURCE sfr 
+           ON(b.RESOURCE_ID=sfr.RESOURCE_ID AND sfr.FUNCTION_ID=#{function.functionId,jdbcType=DECIMAL})
+        </if>
+        <where>
+            <if test="resource.url != null">
+                AND b.URL like concat('%',concat(#{resource.url,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="resource.name != null">
+                AND t.NAME like concat('%',concat(#{resource.name,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="resource.type != null">
+                AND b.TYPE like concat('%',concat(#{resource.type,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="resource.description != null">
+                AND t.DESCRIPTION like concat('%',concat(#{resource.description,jdbcType=VARCHAR},'%'))
+            </if>
+        </where>
+      order by b.RESOURCE_ID
+  </select>
+  
+  <select id="selectFunctions" resultMap="FunctionDisplayMap" parameterType="com.ssm.function.dto.Function" >
+      SELECT sfb.FUNCTION_ID, sfb.MODULE_CODE, sfb.FUNCTION_ICON, sfb.FUNCTION_SEQUENCE, sfb.FUNCTION_CODE,
+	    sft.FUNCTION_NAME, sft.FUNCTION_DESCRIPTION, sfb.RESOURCE_ID, srtl.NAME as RESOURCE_NAME,
+	    sfb.TYPE, sfb.OBJECT_VERSION_NUMBER, sfb.REQUEST_ID,
+	    sfb.PROGRAM_ID, sfb.CREATION_DATE, sfb.CREATED_BY, 
+	    sfb.LAST_UPDATED_BY, sfb.LAST_UPDATE_DATE, sfb.LAST_UPDATE_LOGIN, 
+	    sfb.ATTRIBUTE_CATEGORY, sfb.ATTRIBUTE1,sfb.ATTRIBUTE2, sfb.ATTRIBUTE3, 
+	    sfb.ATTRIBUTE4, sfb.ATTRIBUTE5, sfb.ATTRIBUTE6, sfb.ATTRIBUTE7, sfb.ATTRIBUTE8, 
+	    sfb.ATTRIBUTE9, sfb.ATTRIBUTE10, sfb.ATTRIBUTE11, sfb.ATTRIBUTE12, 
+	    sfb.ATTRIBUTE13, sfb.ATTRIBUTE14, sfb.ATTRIBUTE15,sfb.PARENT_FUNCTION_ID
+	    FROM  tb_function_b sfb
+      LEFT OUTER JOIN  tb_function_tl sft
+        on( sfb.FUNCTION_ID = sft.FUNCTION_ID AND sft.lang = #{request.locale,jdbcType=VARCHAR})
+      LEFT OUTER JOIN tb_RESOURCE_TL srtl
+        ON ( sfb.resource_id = srtl.resource_id AND srtl.lang = #{request.locale,jdbcType=VARCHAR})
+    <where>
+       <if test="functionId != null">
+           sfb.FUNCTION_ID = #{functionId,jdbcType=DECIMAL}
+       </if>
+       <if test="moduleCode != null">
+           AND sfb.MODULE_CODE like concat('%',concat(#{moduleCode,jdbcType=VARCHAR},'%'))
+       </if>
+       <if test="functionCode != null">
+           AND sfb.FUNCTION_CODE like concat('%',concat(#{functionCode,jdbcType=VARCHAR},'%'))
+       </if>
+       <if test="parentFunctionId != null">
+           AND sfb.PARENT_FUNCTION_ID = #{parentFunctionId,jdbcType=DECIMAL}
+       </if>
+       <if test="functionName != null">
+           AND sft.FUNCTION_NAME like concat('%',concat(#{functionName,jdbcType=VARCHAR},'%'))
+       </if>
+	 </where>
+	</select>
+	
+	<insert id="saveFunction" parameterType="com.ssm.function.dto.Function" keyProperty="functionId" useGeneratedKeys="true">
+		insert into tb_function_b 
+		(MODULE_CODE,FUNCTION_ICON,FUNCTION_CODE,FUNCTION_NAME,FUNCTION_DESCRIPTION,RESOURCE_ID,TYPE,PARENT_FUNCTION_ID,FUNCTION_SEQUENCE,CREATED_BY) 
+		values 
+		(#{moduleCode},#{functionIcon},#{functionCode},#{functionName},#{functionDescription},#{resourceId},#{type},#{parentFunctionId},#{functionSequence},#{request.userId})
+	</insert>
+	
+	<update id="updateFunctionById" parameterType="Integer">
+		update tb_function_b
+		<set>
+			<if test="moduleCode !=null and moduleCode!=''">
+				MODULE_CODE = #{moduleCode},
+			</if>
+			<if test="functionIcon !=null and functionIcon !=''">
+				FUNCTION_ICON = #{functionIcon},
+			</if>
+			<if test="functionCode !=null and functionCode !=''">
+				FUNCTION_CODE = #{functionCode},
+			</if>
+			<if test="functionName !=null and functionName !=''">
+				FUNCTION_NAME = #{functionName},
+			</if>
+			<if test="functionDescription !=null and functionDescription!=''">
+				FUNCTION_DESCRIPTION = #{functionDescription},
+			</if>
+			<if test="resourceId !=null ">
+				RESOURCE_ID = #{resourceId},
+			</if>
+			<if test="type !=null and type !=''">
+				TYPE = #{type},
+			</if>
+			<if test="parentFunctionId !=null">
+				PARENT_FUNCTION_ID = #{parentFunctionId},
+			</if>
+			<if test="functionSequence !=null ">
+				FUNCTION_SEQUENCE = #{functionSequence},
+			</if>
+			<if test="moduleCode !=null and moduleCode!=''">
+				MODULE_CODE = #{moduleCode},
+			</if>
+			CREATED_BY = #{request.userId}
+		</set>
+		<where>
+			FUNCTION_ID = #{functionId}
+		</where>
+	</update>
+	
+	<delete id="deleteFunctionById">
+		delete from tb_function_b where function_id = #{functionId}
+	</delete>
+	
+</mapper>

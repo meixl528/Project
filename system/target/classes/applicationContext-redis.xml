@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	   http://www.springframework.org/schema/beans/spring-beans-4.0.xsd ">
+
+	<bean id="messageSource" class="com.ssm.i18n.CacheMessageSource"/>
+	<bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
+	
+	<!-- 读取数据库连接属性文件 -->
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:db.properties" />
+	</bean>
+
+	<!-- jedis 配置 -->
+	<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxIdle" value="${redis.maxIdle}" />
+		<property name="maxWaitMillis" value="${redis.maxWait}" />
+		<property name="testOnBorrow" value="${redis.testOnBorrow}" />
+	</bean>
+
+	<!-- redis工厂 -->
+	<bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+		p:host-name="${redis.host}" p:port="${redis.port}" p:password="${redis.password}" p:database="${redis.db}" />
+
+	<!-- 这里的是为了下面的 Session策略过滤器提供构造函数传入的参数，因为Session过滤器要依赖该对象来构造，所以创建一个先 -->
+	<bean name="redisOperationsSessionRepository"
+		class="org.springframework.session.data.redis.RedisOperationsSessionRepository">
+		<constructor-arg ref="jedisConnectionFactory" />
+		<property name="defaultMaxInactiveInterval" value="86400" />
+	</bean>
+
+	<bean id="stringRedisSerializer"
+          class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+          
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"> 
+		<property name="connectionFactory" ref="jedisConnectionFactory" />
+        <property name="keySerializer" ref="stringRedisSerializer"/>  
+	    <property name="valueSerializer" ref="stringRedisSerializer"/>  
+	    <property name="hashKeySerializer" ref="stringRedisSerializer"/>  
+	    <property name="hashValueSerializer" ref="stringRedisSerializer"/>  
+	</bean> 
+	
+	<bean id="roleFunctionCache" class="com.ssm.cache.impl.RoleFunctionCache">
+        <property name="name" value="role_function"/>
+    </bean>
+    <bean id="roleResourceCache" class="com.ssm.cache.impl.RoleResourceCache">
+        <property name="name" value="role_resource"/>
+    </bean>
+	
+	<!-- 提示 -->
+	<bean id="promptCache" class="com.ssm.cache.impl.HashStringRedisCache">
+        <property name="name" value="prompt"/>
+        <property name="type" value="java.lang.String"/>
+        <property name="keyField" value="promptCode,lang"/>
+        <property name="valueField" value="description"/>
+        <property name="loadOnStartUp" value="true"/>
+        <property name="sqlId" value="com.ssm.sys.mapper.PromptMapper.selectAll"/>
+    </bean>
+    
+    <!-- 系统语言 -->
+    <bean id="languageCache" class="com.ssm.cache.impl.HashStringRedisCache">
+        <property name="name" value="language"/>
+        <property name="type" value="com.ssm.sys.dto.Language"/>
+        <property name="keyField" value="langCode"/>
+        <property name="loadOnStartUp" value="true"/>
+        <property name="sqlId" value="com.ssm.sys.mapper.LanguageMapper.selectAll"/>
+    </bean>
+    
+    <!-- 代码维护  -->
+    <bean id="codeCache" class="com.ssm.cache.impl.SysCodeCache">
+        <property name="name" value="code"/>
+    </bean>
+    
+    <!-- 功能   -->
+    <bean id="functionCache" class="com.ssm.cache.impl.HashStringRedisCacheGroup">
+        <property name="name" value="function"/>
+        <property name="type" value="com.ssm.function.dto.Function"/>
+        <property name="groupField" value="lang"/>
+        <property name="keyField" value="functionId"/>
+        <property name="loadOnStartUp" value="true"/>
+        <property name="sqlId" value="com.ssm.function.mapper.FunctionMapper.selectForCache"/>
+    </bean>
+    
+    <bean class="com.ssm.cache.impl.RedisCache">
+         <property name="name" value="resource_url"/>
+         <property name="type" value="com.ssm.function.dto.Resource"/>
+         <property name="keyField" value="url"/>
+         <property name="loadOnStartUp" value="true"/>
+         <property name="sqlId" value="com.ssm.function.mapper.ResourceMapper.selectAll"/>
+     </bean>
+     <bean class="com.ssm.cache.impl.RedisCache">
+         <property name="name" value="resource_id"/>
+         <property name="type" value="com.ssm.function.dto.Resource"/>
+         <property name="keyField" value="resourceId"/>
+         <property name="loadOnStartUp" value="true"/>
+         <property name="sqlId" value="com.ssm.function.mapper.ResourceMapper.selectAll"/>
+     </bean>
+     
+     <bean id="resourceItemCache" class="com.ssm.cache.impl.ResourceItemCache">
+        <property name="name" value="resource_item"/>
+     </bean>
+     <bean id="roleResourceItemCache" class="com.ssm.cache.impl.RoleResourceItemCache">
+        <property name="name" value="role_resource_item"/>
+     </bean>
+     
+    <bean id="cacheManager" class="com.ssm.cache.impl.CacheManagerImpl">
+        <property name="caches">
+            <list>
+            	<!-- <ref bean="promptCache"/> -->
+            </list>
+        </property>
+    </bean>
+
+	<!-- 系统多语言缓存获取   -->
+	<bean id="languageProvider" class="com.ssm.core.impl.CacheBasedLanguageProvider">
+        <property name="cacheName" value="language"/>
+    </bean>
+	
+</beans>

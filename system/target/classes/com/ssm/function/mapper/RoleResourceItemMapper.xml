@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.function.mapper.RoleResourceItemMapper" >
+  <resultMap id="BaseResultMap" type="com.ssm.function.dto.RoleResourceItem" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
+    <id column="RSI_ID" property="rsiId" jdbcType="DECIMAL" />
+    <result column="ROLE_ID" property="roleId" jdbcType="DECIMAL" />
+    <result column="RESOURCE_ITEM_ID" property="resourceItemId" jdbcType="DECIMAL" />
+    <result column="OBJECT_VERSION_NUMBER" property="objectVersionNumber" jdbcType="DECIMAL" />
+    <result column="REQUEST_ID" property="requestId" jdbcType="DECIMAL" />
+    <result column="PROGRAM_ID" property="programId" jdbcType="DECIMAL" />
+    <result column="CREATION_DATE" property="creationDate" jdbcType="TIMESTAMP" />
+    <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+    <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DECIMAL" />
+    <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="TIMESTAMP" />
+    <result column="LAST_UPDATE_LOGIN" property="lastUpdateLogin" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    RSI_ID, ROLE_ID, RESOURCE_ITEM_ID, OBJECT_VERSION_NUMBER, REQUEST_ID, PROGRAM_ID, 
+    CREATION_DATE, CREATED_BY, LAST_UPDATED_BY, LAST_UPDATE_DATE, LAST_UPDATE_LOGIN
+  </sql>
+  
+  <delete id="deleteByResourceItemId">
+    DELETE FROM tb_ROLE_RESOURCE_ITEM  WHERE RESOURCE_ITEM_ID = #{0}
+  </delete>
+  <delete id="deleteByRoleIdAndFunctionId">
+    DELETE FROM tb_ROLE_RESOURCE_ITEM
+   WHERE ROLE_ID = #{0}
+   AND RESOURCE_ITEM_ID IN (SELECT SRI.RESOURCE_ITEM_ID  FROM tb_RESOURCE_ITEM_B SRI, tb_FUNCTION_RESOURCE SRF
+         WHERE SRI.OWNER_RESOURCE_ID = SRF.RESOURCE_ID
+           AND SRF.FUNCTION_ID = #{1})
+  </delete>
+  <insert id="insert" parameterType="com.ssm.function.dto.RoleResourceItem" >
+
+    insert into tb_ROLE_RESOURCE_ITEM (RSI_ID, ROLE_ID, RESOURCE_ITEM_ID, 
+      OBJECT_VERSION_NUMBER, REQUEST_ID, PROGRAM_ID, 
+      CREATION_DATE, CREATED_BY, LAST_UPDATED_BY, 
+      LAST_UPDATE_DATE, LAST_UPDATE_LOGIN, ATTRIBUTE_CATEGORY,
+      )
+    values (#{rsiId,jdbcType=DECIMAL}, #{roleId,jdbcType=DECIMAL}, #{resourceItemId,jdbcType=DECIMAL}, 
+      1, #{requestId,jdbcType=DECIMAL}, #{programId,jdbcType=DECIMAL}, 
+      current_timestamp, #{createdBy,jdbcType=DECIMAL}, #{lastUpdatedBy,jdbcType=DECIMAL}, 
+      current_timestamp, #{lastUpdateLogin,jdbcType=DECIMAL}, #{attributeCategory,jdbcType=VARCHAR}
+      )
+  </insert>
+  <select id="selectResourceItemsByRole" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    SELECT SRRI.RSI_ID,SRRI.ROLE_ID,SRRI.RESOURCE_ITEM_ID FROM tb_ROLE_RESOURCE_ITEM SRRI WHERE SRRI.ROLE_ID=#{roleId,jdbcType=DECIMAL}
+  </select>
+  
+  
+  <select id="selectByRoleIdAndResourceItemId" resultMap="BaseResultMap">
+    SELECT SRRI.RSI_ID FROM tb_ROLE_RESOURCE_ITEM SRRI WHERE SRRI.ROLE_ID=#{0} AND SRRI.RESOURCE_ITEM_ID = #{1} 
+  </select>
+
+  <select id="selectForCache" resultMap="BaseResultMap">
+    SELECT * from  tb_ROLE_RESOURCE_ITEM
+  </select>
+</mapper>
