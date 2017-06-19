@@ -24,6 +24,14 @@ import com.ssm.mybatis.annotation.Condition;
 public class Code extends BaseDTO {
     
     private static final long serialVersionUID = 2776430709705510697L;
+    
+    /**
+     * 表ID，主键，供其他表做外键.
+     */
+    @Id
+    @Column
+    @GeneratedValue(generator = GENERATOR_TYPE)
+    private Long codeId;
 
     /**
      * 快码类型.
@@ -32,14 +40,6 @@ public class Code extends BaseDTO {
     @Column
     @NotNull
     private String code;
-
-    /**
-     * 表ID，主键，供其他表做外键.
-     */
-    @Id
-    @Column
-    @GeneratedValue(generator = GENERATOR_TYPE)
-    private Long codeId;
 
     @Children
     @Transient

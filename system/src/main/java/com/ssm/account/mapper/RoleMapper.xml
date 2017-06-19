@@ -1,64 +1,93 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTDMapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ #{copyright}#
+  -->
 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ssm.account.mapper.RoleMapper">
-	<!-- <cache type="com.ssm.util.LoggingRedisCache"></cache> -->
-	<resultMap id="BaseResultMap" type="com.ssm.account.dto.Role" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
-		<result column="id" property="id"/>
-		<result column="user_id" property="userId"/>
-		<result column="role_id" property="roleId"/>
-		
-		<result column="role_code" property="roleCode"/>
-		<result column="role_name" property="roleName"/>
-		<result column="short_name" property="shortName"/>
-	</resultMap>
-	
-	<select id="selectByUser" resultMap="BaseResultMap" parameterType="com.ssm.account.dto.User">
-		select  
-			ur.role_Id,
-			(select role_Name from tb_role where role_Id = ur.role_Id) as roleName
-		from tb_user_role ur
-		<where>
-			<if test="id!= null">
-				and ur.user_Id =#{id}
-			</if>
-		</where>
-	</select>
-	
-	<select id="selectUserRoleCount" resultMap="BaseResultMap">
-        select 
-        	t.role_Id,
-        	(select role_Name from tb_role where role_Id = t.role_Id) as roleName
-		from tb_user_role t 
-		<where>
-			t.user_Id = #{0} and t.role_Id = #{1}
-		</where> 
+    <resultMap id="BaseResultMap" type="com.ssm.account.dto.Role" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
+        <result column="ROLE_ID" property="roleId" jdbcType="DECIMAL"/>
+        <result column="ROLE_CODE" property="roleCode" jdbcType="VARCHAR"/>
+        <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR"/>
+        <result column="ROLE_DESCRIPTION" property="roleDescription" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="BaseResultMapExt" type="com.ssm.account.dto.RoleExt" extends="BaseResultMap">
+        <result column="SUR_ID" property="surId" jdbcType="DECIMAL"/>
+        <result column="END_ACTIVE_DATE" property="endActiveDate"/>
+        <result column="enable_Flag" property="enableFlag" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List" >
+        ROLE_ID, ROLE_CODE, ROLE_NAME, ROLE_DESCRIPTION
+    </sql>
+
+    <select id="selectRoleNotUserRoles" parameterType="com.ssm.account.dto.RoleExt" resultMap="BaseResultMap">
+        select b.role_id, b.role_code, tl.role_name, tl.ROLE_DESCRIPTION
+        from tb_role_tl tl, tb_role_b b
+         where
+            b.role_id not in (select role_id from tb_user_role where user_id = #{userId,jdbcType=DECIMAL,javaType=java.lang.Long})
+            and tl.role_id = b.role_id
+            and tl.lang = #{request.locale,jdbcType=VARCHAR,javaType=java.lang.String}
+            and ( b.start_active_date is  null or CURRENT_TIMESTAMP>b.start_active_date)
+            and  (b.END_ACTIVE_DATE is null or b.END_ACTIVE_DATE>current_timestamp)
+            and b.enable_flag='Y'
+            <if test="roleCode!=null">
+                and b.role_code like concat('%',concat(#{roleCode},'%'))
+            </if>
+            <if test="roleName!=null">
+                and tl.role_name like concat('%',concat(#{roleName},'%'))
+            </if>
+        order by b.role_id
     </select>
-	
-	<select id="selectRole" resultMap="BaseResultMap" parameterType="com.ssm.account.dto.Role">
-		select * from tb_role
-		<where>
-			<if test="roleName !=null and roleName !=''">
-				role_Name like #{roleName}
-			</if>
-			<if test="shortName !=null and shortName !=''">
-				short_Name like #{shortName}
-			</if>
-		</where>
-	</select>
-	
-	<select id="selectRoleNotUserRoles" resultMap="BaseResultMap" parameterType="com.ssm.account.dto.Role">
-		SELECT 
-		*
-		FROM 
-		tb_role r
-		WHERE 
-		r.role_Id 
-		NOT IN (SELECT role_Id FROM tb_user_role WHERE user_Id = #{userId})
-		<if test="roleName !=null and roleName !=''">
-			and	r.role_Name like #{roleName}
-		</if>
-	</select>
+    <select id="selectUserRoles" parameterType="java.lang.Long" resultMap="BaseResultMapExt">
+        SELECT
+            ur.sur_id ,
+            ur.USER_ID ,
+            r.role_id,
+            r.role_code,
+            r.role_name,
+            r.role_description,
+            r.enable_flag,
+            r.end_active_date
+        FROM
+            tb_user_role ur ,
+            tb_role_b r
+        LEFT OUTER JOIN tb_role_tl tl ON(
+            r.ROLE_ID = tl.ROLE_ID
+            AND tl.LANG = #{request.locale,jdbcType=VARCHAR,javaType=java.lang.String}
+        )
+        WHERE
+            ur.ROLE_ID = r.ROLE_ID
+        AND ur.user_id = #{userId,jdbcType=DECIMAL,javaType=java.lang.Long}
+        ORDER BY
+            r.role_id
+    </select>
+
+    <select id="selectUserRoleCount" resultMap="BaseResultMap">
+        select trl.role_name,tur.role_id
+        from tb_user_role tur 
+        LEFT OUTER JOIN tb_role_tl trl on (tur.role_id = trl.role_id AND trl.lang = #{locale,jdbcType=VARCHAR})
+        left join tb_role_b trb on(trb.role_id=tur.role_id)
+        where tur.user_id = #{userId} and tur.role_id = #{roleId}
+    </select>
+
+
+    <select id="selectByUser" resultMap="BaseResultMap" parameterType="com.ssm.account.dto.User" >
+        SELECT sur.role_id, sr_tl.role_name
+          FROM tb_user_role sur
+          LEFT OUTER JOIN tb_role_tl sr_tl
+            on (sur.role_id = sr_tl.role_id AND
+                 sr_tl.lang = #{request.locale,jdbcType=VARCHAR})
+          left join tb_role_b b on(b.role_id=sur.role_id)
+           WHERE sur.user_id = #{userId, jdbcType = DECIMAL}
+            and (b.END_ACTIVE_DATE IS NULL OR b.END_ACTIVE_DATE>current_timestamp)
+            and (b.start_active_date is  null or CURRENT_TIMESTAMP>b.start_active_date )
+            and b.enable_flag='Y'
+           order by sur.role_id
+    </select>
+
+    <select id="selectRolesByUserWithoutLang" resultMap="BaseResultMap" parameterType="com.ssm.account.dto.User" >
+        SELECT sur.role_id
+          FROM tb_user_role sur
+         WHERE sur.user_id = #{userId, jdbcType = DECIMAL}
+    </select>
 </mapper>

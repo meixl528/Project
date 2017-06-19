@@ -2,6 +2,8 @@ package com.ssm.account.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ssm.account.dto.Role;
 import com.ssm.account.dto.User;
 
@@ -13,7 +15,7 @@ public interface RoleMapper extends Mapper<Role>{
 	List<Role> selectByUser(User user);
 	
 	//校验用户角色是否存在
-	List<Role> selectUserRoleCount(Long userId,Long roleId);
+	List<Role> selectUserRoleCount(@Param(value = "locale")String locale,@Param(value = "userId") Long userId,@Param(value = "roleId") Long roleId);
 
 	/**
 	 * 查询角色

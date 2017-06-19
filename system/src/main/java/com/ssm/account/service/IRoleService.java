@@ -12,7 +12,7 @@ public interface IRoleService extends IBaseService<Role>{
 
 	List<Role> selectRolesByUser(IRequest requestContext, User user);
 
-	Role checkUserRoleExists(Long userId, Long roleId) throws RoleException;
+	Role checkUserRoleExists(String locale,Long userId, Long roleId) throws RoleException;
 	
 	/**
 	 * 删除角色 

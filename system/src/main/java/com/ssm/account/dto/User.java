@@ -6,7 +6,10 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.ssm.mybatis.annotation.Condition;
 import com.ssm.sys.dto.BaseDTO;
 
@@ -27,84 +30,108 @@ public class User extends BaseDTO{
 	@Id
 	@Column
 	@GeneratedValue(generator = GENERATOR_TYPE)
-	private Long id;
+	private Long userId;
 	
 	@Column
 	@Condition(operator=LIKE,autoWrap = true)
-	private String name;
+	private String userName;
+	
 	
 	@Column
-	private String pass;
+	private String password;
 	
 	@Column
 	private String email;
 	
-	//@DateTimeFormat(pattern = "yyyy-MM-dd")
-	//@JsonFormat(pattern = "yyyy-MM-dd")
 	@Column
-	private Date actvFrom;
-	
-	//@DateTimeFormat(pattern = "yyyy-MM-dd")
-	//@JsonFormat(pattern = "yyyy-MM-dd")
-	@Column
-	private Date actvTo;
-	
-	@Column
-	private String status;
-	
-	@Column
-	private String telephone;
+	private String phone;
 	
 	@Column
 	private String address;
 	
+	//@DateTimeFormat(pattern = "yyyy-MM-dd")
+		//@JsonFormat(pattern = "yyyy-MM-dd")
 	@Column
-	private String description;
+    @Condition(operator = ">=")
+    private Date startActiveDate;
+
+    @Column
+    @Condition(operator = "<=")
+    private Date endActiveDate;
+
+    // 状态
+    @JsonInclude(Include.NON_NULL)
+    @Column
+    private String status;
+
+    // 最后一次登录时间
+    @Column
+    private Date lastLoginDate;
+
+    // 最后一次修改密码时间
+    @Column
+    private Date lastPasswordUpdateDate;
+
+    // 是否第一次登录
+    @Column
+    private String firstLogin;
+
+    private String description;
+    //员工ID
+    private Long employeeId;
+    //客户ID
+    private Long customerId;
+    //供应商ID
+    private Long supplierId;
+    @Transient
+    private String employeeCode;
+    @Transient
+    private String employeeName;
 	
 	public User(){}
 	
-	public User(String name,String pass){
-		this.name = name;
-		this.pass = pass;
+	public User(String userName,String password){
+		this.userName = userName;
+		this.password = password;
 	}
 
-	public User(String name, String pass, String telephone, String address) {
-		this.name = name;
-		this.pass = pass;
-		this.telephone = telephone;
+	public User(String userName, String password, String phone, String address) {
+		this.userName = userName;
+		this.password = password;
+		this.phone = phone;
 		this.address = address;
 	}
 
-	public Long getId() {
-		return id;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
-	public String getName() {
-		return name;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
-	public String getPass() {
-		return pass;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setPass(String pass) {
-		this.pass = pass;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
-	public String getTelephone() {
-		return telephone;
+	public String getPhone() {
+		return phone;
 	}
 
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 	public String getAddress() {
@@ -129,20 +156,87 @@ public class User extends BaseDTO{
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-	public Date getActvFrom() {
-		return actvFrom;
+	
+	public Date getStartActiveDate() {
+		return startActiveDate;
 	}
 
-	public void setActvFrom(Date actvFrom) {
-		this.actvFrom = actvFrom;
+	public void setStartActiveDate(Date startActiveDate) {
+		this.startActiveDate = startActiveDate;
 	}
-	public Date getActvTo() {
-		return actvTo;
+
+	public Date getEndActiveDate() {
+		return endActiveDate;
 	}
-	public void setActvTo(Date actvTo) {
-		this.actvTo = actvTo;
+
+	public void setEndActiveDate(Date endActiveDate) {
+		this.endActiveDate = endActiveDate;
 	}
+
+	public Date getLastLoginDate() {
+		return lastLoginDate;
+	}
+
+	public void setLastLoginDate(Date lastLoginDate) {
+		this.lastLoginDate = lastLoginDate;
+	}
+
+	public Date getLastPasswordUpdateDate() {
+		return lastPasswordUpdateDate;
+	}
+
+	public void setLastPasswordUpdateDate(Date lastPasswordUpdateDate) {
+		this.lastPasswordUpdateDate = lastPasswordUpdateDate;
+	}
+
+	public String getFirstLogin() {
+		return firstLogin;
+	}
+
+	public void setFirstLogin(String firstLogin) {
+		this.firstLogin = firstLogin;
+	}
+
+	public Long getEmployeeId() {
+		return employeeId;
+	}
+
+	public void setEmployeeId(Long employeeId) {
+		this.employeeId = employeeId;
+	}
+
+	public Long getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(Long customerId) {
+		this.customerId = customerId;
+	}
+
+	public Long getSupplierId() {
+		return supplierId;
+	}
+
+	public void setSupplierId(Long supplierId) {
+		this.supplierId = supplierId;
+	}
+
+	public String getEmployeeCode() {
+		return employeeCode;
+	}
+
+	public void setEmployeeCode(String employeeCode) {
+		this.employeeCode = employeeCode;
+	}
+
+	public String getEmployeeName() {
+		return employeeName;
+	}
+
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
+
 	public String getDescription() {
 		return description;
 	}

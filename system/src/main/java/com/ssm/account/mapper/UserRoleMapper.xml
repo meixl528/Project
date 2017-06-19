@@ -6,27 +6,28 @@ PUBLIC "-//mybatis.org//DTDMapper 3.0//EN"
 <mapper namespace="com.ssm.account.mapper.UserRoleMapper">
 	<!-- <cache type="com.ssm.util.LoggingRedisCache"></cache> -->
 	<resultMap id="BaseResultMap" type="com.ssm.account.dto.UserRole" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
-		<result column="id" property="id"/>
-		<result column="user_id" property="userId"/>
-		<result column="role_id" property="roleId"/>
-		
-		<result column="role_code" property="roleCode"/>
-		<result column="role_name" property="roleName"/>
-		<result column="description" property="description"/>
-	</resultMap>
-	
-	<select id="selectUserRoles" resultMap="BaseResultMap" parameterType="com.ssm.account.dto.UserRole">
-		SELECT 
-			tr.role_code,
-			tr.role_name,
-			tr.description,
-			tr.role_Id
-		FROM tb_role tr
-		<where>
-			tr.role_id IN (SELECT role_id FROM tb_user_role WHERE user_id = #{userId})
-			<if test="roleName !=null and roleName !=''">
-				t.roleName like #{roleName}
-			</if>
-		</where>
-	</select>
+    <id column="SUR_ID" property="surId" jdbcType="DECIMAL" />
+    <result column="USER_ID" property="userId" jdbcType="DECIMAL" />
+    <result column="ROLE_ID" property="roleId" jdbcType="DECIMAL" />
+    <result column="DEFAULT_FLAG" property="defaultFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SUR_ID, USER_ID, ROLE_ID, DEFAULT_FLAG
+  </sql>
+  
+  <delete id="deleteByUserId" parameterType="java.lang.Long" >
+    delete from tb_USER_ROLE
+    where USER_ID = #{userId,jdbcType=DECIMAL}
+  </delete>
+  
+  <delete id="deleteByRecord" parameterType="com.ssm.account.dto.UserRole">
+    delete from tb_USER_ROLE
+    where user_id = #{userId,jdbcType=DECIMAL}
+    AND role_id = #{roleId,jdbcType=DECIMAL}
+  </delete>
+    <delete id="deleteByRoleId" parameterType="java.lang.Long">
+        delete from tb_USER_ROLE
+        where role_id = #{roleId,jdbcType=DECIMAL}
+    </delete>
+
 </mapper>

@@ -37,8 +37,8 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleServi
 	
 	@Override
     @Transactional(propagation = Propagation.SUPPORTS)
-    public Role checkUserRoleExists(Long userId, Long roleId) throws RoleException {
-		List<Role> list = roleMapper.selectUserRoleCount(userId, roleId);
+    public Role checkUserRoleExists(String locale,Long userId, Long roleId) throws RoleException {
+		List<Role> list = roleMapper.selectUserRoleCount(locale,userId, roleId);
         if (list.size() != 1) {
             throw new RoleException(RoleException.MSG_INVALID_USER_ROLE, RoleException.MSG_INVALID_USER_ROLE, null);
         }

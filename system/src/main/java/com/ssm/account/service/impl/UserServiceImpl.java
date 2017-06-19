@@ -37,39 +37,36 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements IUserServi
 	public String validateUser(List<User> list){
 		StringBuilder builder = new StringBuilder();
 		for (User user : list) {
-			if (user.getId() == null) {
+			if (user.getUserId() == null) {
 				/** 查询录入时,用户名是否存在 */
-            	User u = userMapper.selectByUserName(user.getName());
+            	User u = userMapper.selectByUserName(user.getUserName());
             	if(u!=null) 
-            		builder.append(user.getName()).append(",");
-            }else if(user.getId() != null){
+            		builder.append(",").append(user.getUserName());
+            }else if(user.getUserId() != null){
             	/** 查询修改时,用户名修改了的,是否存在 */
             	User uId = userMapper.selectByPrimaryKey(user);
-            	if(!user.getName().equals(uId.getName())){
-            		User uName = userMapper.selectByUserName(user.getName());
+            	if(!user.getUserName().equals(uId.getUserName())){
+            		User uName = userMapper.selectByUserName(user.getUserName());
             		if(uName!=null) 
-                		builder.append(user.getName()).append(",");
+                		builder.append(",").append(user.getUserName());
             	}
             }
 		}
-		if(builder.length() >0){
-			return builder.substring(0, builder.length()-1);
-		}
-		return null;
+		return builder.length() >0?builder.substring(1):null;
 	}
 	
 	@Override
 	@Transactional
 	public List<User> submitUser(HttpServletRequest request,IRequest iRequest,@StdWho List<User> list) {
 		for (User user : list) {
-            if (user.getId() == null) {
+            if (user.getUserId() == null) {
             	userMapper.insertSelective(user);
             } else {
             	userMapper.updateByPrimaryKey(user);
             	HttpSession session = request.getSession();
-            	if(session.getAttribute(User.FIELD_USER_ID).equals(user.getId())){
-            		if(!session.getAttribute(User.FIELD_USER_NAME).equals(user.getName())){
-            			session.setAttribute(User.FIELD_USER_NAME, user.getName());
+            	if(session.getAttribute(User.FIELD_USER_ID).equals(user.getUserId())){
+            		if(!session.getAttribute(User.FIELD_USER_NAME).equals(user.getUserName())){
+            			session.setAttribute(User.FIELD_USER_NAME, user.getUserName());
             		}
             	}
             }
@@ -94,26 +91,26 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements IUserServi
 	
 	@Override
     public User login(User user) throws UserException {
-        if (user == null || org.apache.commons.lang3.StringUtils.isAnyBlank(user.getName(), user.getPass())) {
+        if (user == null || org.apache.commons.lang3.StringUtils.isAnyBlank(user.getUserName(), user.getPassword())) {
             throw new UserException(UserException.ERROR_USER_PASSWORD, UserException.ERROR_USER_PASSWORD, null);
         }
-        User user1 = userMapper.selectByUserName(user.getName());
+        User user1 = userMapper.selectByUserName(user.getUserName());
         if (user1 == null) {
             throw new UserException(UserException.ERROR_USER_PASSWORD, UserException.ERROR_USER_PASSWORD, null);
         }
         if (User.STATUS_LOCK.equals(user1.getStatus())) {
             throw new UserException(UserException.ERROR_USER_EXPIRED, UserException.ERROR_USER_EXPIRED, null);
         }
-        if (user1.getActvFrom() != null && user1.getActvFrom().getTime() > System.currentTimeMillis()) {
+        if (user1.getStartActiveDate() != null && user1.getStartActiveDate().getTime() > System.currentTimeMillis()) {
             throw new UserException(UserException.ERROR_USER_EXPIRED, UserException.ERROR_USER_EXPIRED, null);
         }
-        if (user1.getActvTo() != null && user1.getActvTo().getTime() < System.currentTimeMillis()) {
+        if (user1.getEndActiveDate() != null && user1.getEndActiveDate().getTime() < System.currentTimeMillis()) {
             throw new UserException(UserException.ERROR_USER_EXPIRED, UserException.ERROR_USER_EXPIRED, null);
         }
 /*        if (!user.getPass().matches(user1.getPass())) {
             throw new UserException(UserException.ERROR_USER_PASSWORD, UserException.ERROR_USER_PASSWORD, null);
         }*/
-        if (!Md5Util.MD5(user.getPass()).matches(user1.getPass())) {
+        if (!Md5Util.MD5(user.getPassword()).matches(user1.getPassword())) {
             throw new UserException(UserException.ERROR_USER_PASSWORD, UserException.ERROR_USER_PASSWORD, null);
         }
         return user1;
@@ -124,9 +121,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements IUserServi
 	public void updatePassword(Long userId, String password) {
 		String passwordEncrypted = Md5Util.MD5(password);
 		User u = new User();
-		u.setId(userId);
-		u.setPass(passwordEncrypted);
-		userMapper.updateUser(u);
+		u.setUserId(userId);
+		u.setPassword(passwordEncrypted);
+		userMapper.updateByPrimaryKeySelective(u);
 	}
 	
 }

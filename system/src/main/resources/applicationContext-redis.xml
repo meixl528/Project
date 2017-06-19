@@ -69,6 +69,10 @@
         <property name="sqlId" value="com.ssm.sys.mapper.LanguageMapper.selectAll"/>
     </bean>
     
+    <!-- lov -->
+    <bean id="lovCache" class="com.ssm.cache.impl.LovCache">
+        <property name="name" value="lov"/>
+    </bean>
     <!-- 代码维护  -->
     <bean id="codeCache" class="com.ssm.cache.impl.SysCodeCache">
         <property name="name" value="code"/>

@@ -44,7 +44,7 @@ import com.ssm.util.StringUtil;
 
 /**
  * 默认登陆代理类.
- * @author  TODO:URL和页面分开
+ * @author URL和页面分开
  */
 @Component
 public class DefaultLoginAdaptor implements ILoginAdaptor {
@@ -76,10 +76,10 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
             checkCaptcha(view, user, request, response);
             user = userService.login(user);
             HttpSession session = request.getSession(true);
-            session.setAttribute(User.FIELD_USER_ID, user.getId());
-            session.setAttribute(User.FIELD_USER_NAME, user.getName());
+            session.setAttribute(User.FIELD_USER_ID, user.getUserId());
+            session.setAttribute(User.FIELD_USER_NAME, user.getUserName());
             session.setAttribute(IRequest.FIELD_LOCALE, locale.toString());
-            setTimeZoneFromPreference(session, user.getId());
+            setTimeZoneFromPreference(session, user.getUserId());
 //            generateSecurityKey(session);
             afterLogin(view, user, request, response);
         } catch (UserException e) {
@@ -179,27 +179,24 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
     protected void afterLogin(ModelAndView view, User user, HttpServletRequest request, HttpServletResponse response)
             throws UserException {
         view.setViewName(UrlUtil.REDIRECT + UrlUtil.VIEW_ROLE_SELECT);
-        Cookie cookie = new Cookie(User.FIELD_USER_NAME, user.getName());
+        Cookie cookie = new Cookie(User.FIELD_USER_NAME, user.getUserName());
         cookie.setPath(StringUtils.defaultIfEmpty(request.getContextPath(), "/"));
         cookie.setMaxAge(-1);
         response.addCookie(cookie);
     }
 
     @Override
-    public ModelAndView doSelectRole(Role role, HttpServletRequest request, HttpServletResponse response) throws RoleException {
+    public ModelAndView doSelectRole(Long roleId, HttpServletRequest request, HttpServletResponse response) throws RoleException {
         ModelAndView result = new ModelAndView();
         // 选择角色
         HttpSession session = request.getSession(false);
         if (session != null) {
-        	Long roleId = null;
-        	if(role !=null && role.getRoleId() !=null){
-        		roleId = role.getRoleId();
-            }else{
+        	if(roleId ==null){
             	roleId = (Long) session.getAttribute(Role.FIELD_ROLE_ID);
             }
         	if(roleId!=null){
         		Long userId = (Long) session.getAttribute(User.FIELD_USER_ID);
-                role =  roleService.checkUserRoleExists(userId, roleId);
+        		Role role =  roleService.checkUserRoleExists(request.getLocale().toString(),userId, roleId);
                 session.setAttribute(Role.FIELD_ROLE_ID, role.getRoleId());
                 session.setAttribute(Role.FIELD_ROLE_NAME, role.getRoleName());
                 result.setViewName(UrlUtil.REDIRECT + UrlUtil.VIEW_WELCOME);
@@ -268,7 +265,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
         User sessionUser = (User)session.getAttribute(User.FIELD_SESSION_USER);
         String code = "";
         if(sessionUser==null){
-        	if(StringUtil.isNull(user.getName()) && StringUtil.isNull(user.getPass())){
+        	if(StringUtil.isNull(user.getUserName()) && StringUtil.isNull(user.getPassword())){
         		return view;
         	}
         	try {
@@ -286,10 +283,10 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
             String msg = messageSource.getMessage(code, null, locale);
             view.addObject("msg", msg);
         }else{
-        	if(StringUtil.isNotNull(user.getName()) && StringUtil.isNotNull(user.getPass())){
+        	if(StringUtil.isNotNull(user.getUserName()) && StringUtil.isNotNull(user.getPassword())){
         		session.setAttribute(User.FIELD_SESSION_USER, user);
-            	session.setAttribute(User.FIELD_USER_ID, user.getId());
-                session.setAttribute(User.FIELD_USER_NAME, user.getName());
+            	session.setAttribute(User.FIELD_USER_ID, user.getUserId());
+                session.setAttribute(User.FIELD_USER_NAME, user.getUserName());
                 session.setMaxInactiveInterval(24*60*60);
                 
                 //存储 登录用户 ip等信息
@@ -313,7 +310,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
             Long userId = (Long) session.getAttribute(User.FIELD_USER_ID);
             if (userId != null) {
                 User user = new User();
-                user.setId(userId);
+                user.setUserId(userId);
                 session.setAttribute(User.FIELD_USER_ID, userId);
                 addCookie(User.FIELD_USER_ID, userId.toString(), request, response);
                 List<Role> roles = roleService.selectRolesByUser(RequestHelper.createServiceRequest(request), user);
@@ -358,7 +355,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
             Object roleIdObj = request.getParameter(Role.FIELD_ROLE_ID);
             if (userIdObj != null && roleIdObj != null) {
                 Long userId = Long.valueOf(userIdObj.toString()), roleId = Long.valueOf(roleIdObj.toString());
-                roleService.checkUserRoleExists(userId, roleId);
+                roleService.checkUserRoleExists(request.getLocale().toString(),userId, roleId);
                 HttpSession session = request.getSession();
                 session.setAttribute(User.FIELD_USER_ID, userId);
                 session.setAttribute(Role.FIELD_ROLE_ID, roleId);

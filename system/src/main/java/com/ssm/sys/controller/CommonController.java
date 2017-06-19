@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssm.adaptor.UrlUtil;
@@ -38,6 +38,7 @@ import com.ssm.cache.impl.SysCodeCache;
 import com.ssm.core.BaseConstants;
 import com.ssm.core.ILanguageProvider;
 import com.ssm.core.impl.DefaultTableNameProvider;
+import com.ssm.core.request.IRequest;
 import com.ssm.core.util.DTOFieldsUtil;
 import com.ssm.message.components.DefaultPromptListener;
 import com.ssm.sys.dto.Code;
@@ -46,6 +47,7 @@ import com.ssm.sys.dto.Language;
 import com.ssm.sys.dto.Prompt;
 import com.ssm.sys.mapper.LanguageMapper;
 import com.ssm.sys.responceFactory.ResponseData;
+import com.ssm.sys.service.ILovService;
 
 /**
  * 通用的 Controller,用来获取公共数据.
@@ -60,6 +62,9 @@ public class CommonController extends BaseController{
     
     @Autowired
     private CacheManager cacheManager;
+    
+    @Autowired
+    private ILovService commonLovService;
     
     @Autowired
     private ILanguageProvider languageProvider;
@@ -201,7 +206,8 @@ public class CommonController extends BaseController{
     public ResponseData getLovDatas(@PathVariable String id, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
             @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pagesize, @RequestParam Map<String, String> params,
             HttpServletRequest request) {
-        return new ResponseData();
+    	IRequest requestContext = createRequestContext(request);
+        return new ResponseData(commonLovService.selectDatas(requestContext, id, params, page, pagesize));
     }
 
     @RequestMapping(value = "/{folder1}/{name}.html")

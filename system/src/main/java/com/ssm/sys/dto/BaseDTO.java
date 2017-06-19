@@ -114,7 +114,7 @@ public class BaseDTO implements Serializable, BaseConstants {
      * 只能是自动的 update xx set a=1, object_version_number = object_version_number +
      * 1 where xxx
      */
-    //@JsonIgnore
+    @JsonIgnore
     @Column(updatable = false)
     @Condition(exclude = true)
     private Long objectVersionNumber;
@@ -122,28 +122,28 @@ public class BaseDTO implements Serializable, BaseConstants {
     //// 下面是标准 WHO 字段////
 
 
-    //@JsonIgnore
+    @JsonIgnore
     @Column(updatable = false)
     @Condition(exclude = true)
     private Long createdBy;
 
-    //@JsonIgnore
+    @JsonIgnore
     @Column(updatable = false)
     @Condition(exclude = true)
     private Date creationDate;
 
 
-    //@JsonIgnore
+    @JsonIgnore
     @Column
     @Condition(exclude = true)
     private Long lastUpdatedBy;
 
-    //@JsonIgnore
+    @JsonIgnore
     @Column
     @Condition(exclude = true)
     private Date lastUpdateDate;
 
-    //@JsonIgnore
+    @JsonIgnore
     @Column
     @Condition(exclude = true)
     private Long lastUpdateLogin;
@@ -153,7 +153,7 @@ public class BaseDTO implements Serializable, BaseConstants {
     /**
      * 扩展属性分类.
      */
-    /*@JsonInclude(Include.NON_NULL)
+    @JsonInclude(Include.NON_NULL)
     @Column
     private String attributeCategory;
 
@@ -215,7 +215,7 @@ public class BaseDTO implements Serializable, BaseConstants {
 
     @JsonInclude(Include.NON_NULL)
     @Column
-    private String attribute15;*/
+    private String attribute15;
 
     public String get__id() {
         return __id;

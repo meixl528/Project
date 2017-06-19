@@ -25,17 +25,16 @@ public class DTOFieldsUtil {
 	 */
 	public static Field[] getFieldsWithAnnotation(Class<?> dto,Class annotation){
 		List<Field> list = new ArrayList<>();
-		
 		Field[] fields = dto.getDeclaredFields();
 		//ReflectionUtils.doWithFields(dto.getClass(), fields::add);
         for (Field f : fields) {
         	f.setAccessible(true);
-        	Annotation an = f.getAnnotation(annotation);
+        	Annotation an = f.getDeclaredAnnotation(annotation);
         	if(an!=null){
         		list.add(f);
 			}
         }
-		return list.toArray(new Field[list.size()]);
+        return list.size()>0?list.toArray(new Field[list.size()]):new Field[0];
 	}
 
 	/**获取指定dto的指定注解的字段
@@ -47,11 +46,11 @@ public class DTOFieldsUtil {
         Field[] fields = dto.getClass().getDeclaredFields();
         for (Field f : fields) {
         	f.setAccessible(true);
-			Annotation an = f.getAnnotation(annotation);
+			Annotation an = f.getDeclaredAnnotation(annotation);
         	if(an!=null)
         		list.add(f);
         }
-		return list.toArray(new Field[list.size()]);
+		return list.size()>0?list.toArray(new Field[list.size()]):new Field[0];
 	}
 	
 	

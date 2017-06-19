@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.ssm.account.dto.Role;
 import com.ssm.account.dto.User;
 import com.ssm.account.exception.RoleException;
 import com.ssm.adaptor.ILoginAdaptor;
@@ -50,9 +49,9 @@ public class LoginController extends BaseController{
      * @param role 角色对象
      * @throws RoleException 
      */
-    @RequestMapping(value = {"/selectedRole.html","/selectedRole"})
-    public ModelAndView selectRole(final Role role, final HttpServletRequest request,final HttpServletResponse response) throws RoleException{
-        return loginAdaptor.doSelectRole(role, request, response);
+    @RequestMapping(value = {"/selectedRole.html","/selectedRole"}, method = RequestMethod.POST)
+    public ModelAndView selectRole(final Long roleId, final HttpServletRequest request,final HttpServletResponse response) throws RoleException{
+        return loginAdaptor.doSelectRole(roleId, request, response);
     }
     
     /**

@@ -323,8 +323,12 @@
                     return dataItem['parentFunctionName'] || ''
                 },
                 editor: function (container, options) {
-                    $('<input name="' + options.field + '"/>')
-                            .appendTo(container);
+                	$('<input name="' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoLov($.extend(<@lov "LOV_PARENTFUNCTION"/>, {
+                        textField: 'parentFunctionName',
+                        model: options.model
+                    }));
                 }
             },
             {
@@ -335,8 +339,12 @@
                     return dataItem['resourceName'] || ''
                 },
                 editor: function (container, options) {
-                    $('<input name="' + options.field + '"/>')
-                            .appendTo(container);
+                	$('<input name="' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoLov($.extend(<@lov "LOV_RESOURCE"/>, {
+                        textField: 'resourceName',
+                        model: options.model
+                    }));
                 }
             },
             {

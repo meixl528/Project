@@ -4,6 +4,7 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 此处命名空间随意,子xml的extends需要此命名 -->
 <mapper namespace="com.ssm.mapper.BaseMapper">
     <resultMap id="BaseResultMap" type="com.ssm.sys.dto.BaseDTO">
         <result column="OBJECT_VERSION_NUMBER" property="objectVersionNumber" jdbcType="DECIMAL"/>

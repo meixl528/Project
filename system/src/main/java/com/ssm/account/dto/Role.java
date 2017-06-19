@@ -6,9 +6,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.ssm.core.annotation.MultiLanguage;
 import com.ssm.sys.dto.BaseDTO;
 
-@Table(name="tb_role")
+@MultiLanguage
+@Table(name="tb_role_b")
 public class Role extends BaseDTO{
 	
 	public static final String FIELD_ROLE_ID = "roleId";
@@ -26,10 +28,10 @@ public class Role extends BaseDTO{
 	private String roleName;
 	
 	@Column
-	private String shortName;
+	private String enableFlag;
 	
 	@Column
-	private String description;
+	private String roleDescription;
 	
 	@Transient
 	private Long userId; 
@@ -38,10 +40,10 @@ public class Role extends BaseDTO{
 	
 	public Role(){}
 	
-	public Role(String roleCode,String roleName,String description){
+	public Role(String roleCode,String roleName,String roleDescription){
 		this.roleCode = roleCode;
 		this.roleName = roleName;
-		this.description = description;
+		this.roleDescription = roleDescription;
 	}
 
 	public Long getRoleId() {
@@ -68,20 +70,12 @@ public class Role extends BaseDTO{
 		this.roleName = roleName;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getRoleDescription() {
+		return roleDescription;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getShortName() {
-		return shortName;
-	}
-
-	public void setShortName(String shortName) {
-		this.shortName = shortName;
+	public void setRoleDescription(String roleDescription) {
+		this.roleDescription = roleDescription;
 	}
 
 	public Long getUserId() {
@@ -98,6 +92,14 @@ public class Role extends BaseDTO{
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	public String getEnableFlag() {
+		return enableFlag;
+	}
+
+	public void setEnableFlag(String enableFlag) {
+		this.enableFlag = enableFlag;
 	}
 	
 }

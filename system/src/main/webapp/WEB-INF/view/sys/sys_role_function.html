@@ -26,9 +26,10 @@
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
         <div style="float:left;margin-right:5px;">
-            <input type="text" id="role" style="width:150px;" placeholder='<@spring.message "function.parentfunctionid"/>' name="${Session.roleId}" value="${Session.roleName}" >
+        	<input type="text" id="role" style="width:150px;" placeholder='<@spring.message "function.parentfunctionid"/>'  data-bind="value:model.roleId,text:model.roleName">
+            <!-- <input type="text" id="role" style="width:150px;" placeholder='<@spring.message "function.parentfunctionid"/>' name="${Session.roleId}" value="${Session.roleName}" > -->
             <script>
-			 
+             	$("#role").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "LOV_ROLE")})
 			</script>
         </div>
         <span class="btn btn-primary" id="query"  data-bind="click:queryResource" type="submit"><i class="fa fa-search" style="margin-right:3px;"></i><@spring.message "hap.query"/></span>

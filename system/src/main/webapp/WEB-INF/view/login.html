@@ -18,8 +18,8 @@
 <body>
     <div id="page-content">
     	<form id="login-form" style="margin-top:1px" method="post" action="login.html">
-    		<@spring.message "user.username"/>:<input id="name" name="name"  placeholder="admin">
-    		<@spring.message "user.password"/>:<input id="pass" name="pass"  placeholder="admin">
+    		<@spring.message "user.username"/>:<input id="userName" name="userName"  placeholder="admin">
+    		<@spring.message "user.password"/>:<input id="password" name="password"  placeholder="admin">
     		<#if msg??>
             	<div class="alert-error">
                 	<span>${msg}</span>

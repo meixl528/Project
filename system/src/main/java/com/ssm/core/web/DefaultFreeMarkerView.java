@@ -9,6 +9,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerView;
 
+import com.ssm.sys.service.IKendoLovService;
+import com.ssm.sys.service.ILovService;
+
 import freemarker.template.SimpleHash;
 /**
  * @name        DefaultFreeMarkerView
@@ -19,13 +22,15 @@ import freemarker.template.SimpleHash;
  */
 public class DefaultFreeMarkerView extends FreeMarkerView {
 
-    /*private ILovService lovService;
-    private IAccessService accessService;*/
+    private ILovService lovService;
+    private IKendoLovService kendoLovService;
+    /*private IAccessService accessService;*/
     private FreeMarkerBeanProvider beanProvider;
 
     protected FreeMarkerConfig autodetectConfiguration() throws BeansException {
-        /*lovService = getApplicationContext().getBean(ILovService.class);
-        accessService = getApplicationContext().getBean(IAccessService.class);*/
+    	lovService = getApplicationContext().getBean(ILovService.class);
+    	kendoLovService = getApplicationContext().getBean(IKendoLovService.class);
+        /*accessService = getApplicationContext().getBean(IAccessService.class);*/
         beanProvider = getApplicationContext().getBean(FreeMarkerBeanProvider.class);
         return super.autodetectConfiguration();
     }
@@ -33,9 +38,10 @@ public class DefaultFreeMarkerView extends FreeMarkerView {
     protected SimpleHash buildTemplateModel(Map<String, Object> model, HttpServletRequest request,
             HttpServletResponse response) {
         SimpleHash fmModel = super.buildTemplateModel(model, request, response);
-        /*accessService.setRequest(request);
+        /*accessService.setRequest(request);*/
+        fmModel.put("lovProvider", kendoLovService);
         fmModel.put("lovService", lovService);
-        fmModel.put("accessService", accessService);*/
+        /*fmModel.put("accessService", accessService);*/
         Map<String, Object> beans = beanProvider.getAvailableBean();
         if (beans != null) {
             fmModel.putAll(beans);

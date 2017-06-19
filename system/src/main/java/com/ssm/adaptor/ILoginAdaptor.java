@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.ssm.account.dto.Role;
 import com.ssm.account.dto.User;
 import com.ssm.account.exception.RoleException;
 import com.ssm.account.exception.UserException;
@@ -50,7 +49,7 @@ public interface ILoginAdaptor {
      * @return view
      * @throws RoleException
      */
-    ModelAndView doSelectRole(Role role, HttpServletRequest request, HttpServletResponse response) throws RoleException;
+    ModelAndView doSelectRole(Long roleId, HttpServletRequest request, HttpServletResponse response) throws RoleException;
 
     /**
      * 显示主界面.
@@ -93,4 +92,5 @@ public interface ILoginAdaptor {
      * 退出登录
      */
 	ModelAndView logout(HttpServletRequest request, HttpServletResponse response);
+
 }
