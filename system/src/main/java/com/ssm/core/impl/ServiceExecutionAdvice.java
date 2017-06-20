@@ -4,7 +4,6 @@
 
 package com.ssm.core.impl;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -27,13 +26,15 @@ import com.ssm.cache.CacheManager;
 import com.ssm.cache.annotation.CacheDelete;
 import com.ssm.cache.annotation.CacheSet;
 import com.ssm.cache.impl.HashStringRedisCache;
-import com.ssm.core.annotation.Children;
+import com.ssm.core.annotation.AuditEntry;
 import com.ssm.core.annotation.StdWho;
+import com.ssm.core.interceptor.AuditInterceptor;
 import com.ssm.core.request.IRequest;
 import com.ssm.core.request.IRequestAware;
 import com.ssm.core.request.impl.RequestHelper;
-import com.ssm.core.util.DTOFieldsUtil;
+import com.ssm.mybatis.entity.EntityField;
 import com.ssm.sys.dto.BaseDTO;
+import com.ssm.sys.dto.DTOClassInfo;
 
 /**
  * service 方法执行通知.
@@ -46,7 +47,6 @@ import com.ssm.sys.dto.BaseDTO;
  * 
  * @author 
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
 public class ServiceExecutionAdvice implements MethodInterceptor {
 
     private Logger logger = LoggerFactory.getLogger(ServiceExecutionAdvice.class);
@@ -131,15 +131,15 @@ public class ServiceExecutionAdvice implements MethodInterceptor {
             dto.setLastUpdateDate(new Date());
         }
         // logger.info("auto assign request property for " + dto);
-        for (Field field : DTOFieldsUtil.getFieldsWithAnnotation(dto.getClass(), Children.class)) {
-            if (!checkChildrenType(field.getType())) {
+        for (EntityField field : DTOClassInfo.getChildrenFields(dto.getClass())) {
+            if (!checkChildrenType(field.getJavaType())) {
                 if (logger.isWarnEnabled()) {
                     logger.warn("property '{}' is annotated by @Children, incorrect usage.", field.getName());
                 }
                 return;
             }
             try {
-                Object p = field.get(dto);
+                Object p = PropertyUtils.getProperty(dto,field.getName());
                 if (p instanceof BaseDTO) {
                     autoAssignStdProperty(logger, request, (BaseDTO) p, stdWhoSupport);
                 } else if (p instanceof Collection) {
@@ -149,7 +149,7 @@ public class ServiceExecutionAdvice implements MethodInterceptor {
                         }
                     }
                 }
-            } catch (IllegalAccessException e) {
+            } catch (Exception e) {
                 if (logger.isErrorEnabled()) {
                     logger.error(e.getMessage(), e);
                 }
@@ -184,8 +184,22 @@ public class ServiceExecutionAdvice implements MethodInterceptor {
             serviceLogger.trace("{}, parameters: {}", methodStamp, Arrays.toString(invocation.getArguments()));
         }
         long ts = System.currentTimeMillis();
+        AuditEntry entry = null;
+        boolean createAuditSessionId = false;
         try {
             before(method, invocation.getArguments(), target);
+            entry = AnnotationUtils.findAnnotation(method, AuditEntry.class);
+            if (entry != null) {
+                String entityCode = entry.value();
+                String auditFlag = getAuditFlag(entityCode);
+                if ("Y".equalsIgnoreCase(auditFlag)) {
+                    if (AuditInterceptor.LOCAL_AUDIT_SESSION.get() == null) {
+                        // create audit session id only when there is no one
+                        AuditInterceptor.generateAndSetAuditSessionId();
+                        createAuditSessionId = true;
+                    }
+                }
+            }
             Object ret = invocation.proceed();
             if (logger.isTraceEnabled()) {
                 serviceLogger.trace("{}, return value: {}", methodStamp, ret);
@@ -193,6 +207,9 @@ public class ServiceExecutionAdvice implements MethodInterceptor {
             proceedAutoCacheOperation(invocation, ret);
             return ret;
         } finally {
+            if (entry != null && createAuditSessionId) {
+                AuditInterceptor.clearAuditSessionId();
+            }
             long timeUsed = System.currentTimeMillis() - ts;
             if (logger.isTraceEnabled()) {
                 logger.trace("{}, execution time: {}ms.", methodStamp, timeUsed);
@@ -215,6 +232,7 @@ public class ServiceExecutionAdvice implements MethodInterceptor {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void proceedCacheSet(Method method, CacheSet cacheSet, Object ret)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String cacheName = cacheSet.cache();
@@ -241,6 +259,7 @@ public class ServiceExecutionAdvice implements MethodInterceptor {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void proceedCacheDelete(MethodInvocation invocation, CacheDelete cacheDelete) throws NoSuchMethodException {
         String cacheName = cacheDelete.cache();
         if (!StringUtils.hasText(cacheName)) {
@@ -259,5 +278,14 @@ public class ServiceExecutionAdvice implements MethodInterceptor {
         if (logger.isDebugEnabled()) {
             logger.debug("{} cache auto remove. key={}", invocation.getMethod().getName(), key);
         }
+    }
+    private String getAuditFlag (String entityCode) {
+       /* String auditFlag = "N";
+        Cache cache = cacheManager.getCache("audit");
+        if (cache != null) {
+            auditFlag = (String) cache.getValue(entityCode);
+        }
+        return auditFlag;*/
+        return "Y";
     }
 }

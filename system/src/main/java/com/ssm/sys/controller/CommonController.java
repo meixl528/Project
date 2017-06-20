@@ -44,8 +44,10 @@ import com.ssm.message.components.DefaultPromptListener;
 import com.ssm.sys.dto.Code;
 import com.ssm.sys.dto.CodeValue;
 import com.ssm.sys.dto.Language;
+import com.ssm.sys.dto.MultiLanguageField;
 import com.ssm.sys.dto.Prompt;
 import com.ssm.sys.mapper.LanguageMapper;
+import com.ssm.sys.mapper.MultiLanguageMapper;
 import com.ssm.sys.responceFactory.ResponseData;
 import com.ssm.sys.service.ILovService;
 
@@ -68,6 +70,9 @@ public class CommonController extends BaseController{
     
     @Autowired
     private ILanguageProvider languageProvider;
+    
+    @Autowired
+    private MultiLanguageMapper multiLanguageMapper;
     
     @Autowired
     private LanguageMapper languageMapper;
@@ -180,9 +185,21 @@ public class CommonController extends BaseController{
     @RequestMapping(value = "/common/code/{code}/", produces = "application/javascript;charset=utf8")
     @ResponseBody
     public String getCommonCode(@PathVariable String code, HttpServletRequest request) throws JsonProcessingException {
-        Locale locale = RequestContextUtils.getLocale(request);
-
+    	Locale locale = RequestContextUtils.getLocale(request);
+        SysCodeCache codeCache = (SysCodeCache) (Cache<?>) cacheManager.getCache("code");
+        Code code2 = codeCache.getValue(code + "." + locale);
+        if (code2 == null) {
+            return "[]";
+        }
+        if(BaseConstants.NO.equals(code2.getEnabledFlag())){
+            return "[]";
+        }
+        List<CodeValue> enabledCodeValues = getEnabledCodeValues(code2);
+        if (enabledCodeValues==null){
+            return "[]";
+        }
         StringBuilder sb = new StringBuilder();
+        toJson(sb, null, enabledCodeValues);
         return sb.toString();
     }
 
@@ -268,9 +285,31 @@ public class CommonController extends BaseController{
     @RequestMapping(value = "sys/sys_multilanguage_editor.html")
     public ModelAndView loadMultiLanguageFields(HttpServletRequest request, @RequestParam String id,
             @RequestParam String dto, @RequestParam String field) {
-        ModelAndView view = new ModelAndView();
+        ModelAndView view = new ModelAndView("/sys/sys_multilanguage_editor");
         if (StringUtils.isNotEmpty(id) && StringUtils.isNotEmpty(dto) && StringUtils.isNotEmpty(field)) {
             Class<?> clazz;
+            try {
+                clazz = Class.forName(dto);
+                Table table = clazz.getAnnotation(Table.class);
+                Field idField = DTOFieldsUtil.getFieldsWithAnnotation(clazz, Id.class)[0];
+                if (table != null && idField != null) {
+                	Map<String, String> map = new HashMap<>();
+                    map.put("table", DefaultTableNameProvider.getInstance().getTlTableName(table.name()));
+                    map.put("idName", DTOFieldsUtil.getColumnName(idField));
+                    map.put("tlName", DTOFieldsUtil.getColumnName(clazz,field));
+                    map.put("id", id);
+                    List<MultiLanguageField> list = multiLanguageMapper.select(map);
+                    view.addObject("list", list);
+                }
+            } catch (Exception e) {
+                if (logger.isErrorEnabled()) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        } else {
+            List<Language> list = languageProvider.getSupportedLanguages();
+            list.sort((a, b) -> a.getLangCode().compareTo(b.getLangCode()));
+            view.addObject("list", list);
         }
         return view;
     }

@@ -1,9 +1,6 @@
 package com.ssm.account.mapper;
 
-import java.util.List;
-
 import com.ssm.account.dto.UserRole;
-
 import com.ssm.mybatis.common.Mapper;
 /**
  * @name        UserRoleMapper
@@ -14,12 +11,11 @@ import com.ssm.mybatis.common.Mapper;
  */
 public interface UserRoleMapper extends Mapper<UserRole>{
 
-	/**
-	 * 查询用户角色
-	 * @param userRole
-	 * @return
-	 */
-	List<UserRole> selectUserRoles(UserRole userRole);
+	int deleteByUserId(Long userId);
+
+    int deleteByRecord(UserRole record);
+
+    int deleteByRoleId(Long roleId);
 	
 	
 }

@@ -1,90 +1,65 @@
 package com.ssm.account.dto;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.ssm.sys.dto.BaseDTO;
 
 @Table(name="tb_user_role")
-public class UserRole extends BaseDTO{
+public class UserRole extends BaseDTO {
 
-	/**
-	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2098581833914123800L;
 
-	@Id
-	@GeneratedValue(generator = GENERATOR_TYPE)
-	private Long id;
-	
-	private Long userId;
-	
-	private Long roleId;
-	
-	@Transient
-	private String userName;
-	@Transient
-	private String roleCode;
-	@Transient
-	private String roleName;
-	@Transient
-	private String description;
+    /**
+     * 表ID，主键，供其他表做外键.
+     *
+     */
+    @Id
+    @Column
+    @GeneratedValue(generator = GENERATOR_TYPE)
+    private Long surId;
 
-	public Long getId() {
-		return id;
-	}
+    @Column
+    private Long userId;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column
+    private Long roleId;
 
-	public Long getUserId() {
-		return userId;
-	}
+    @Column
+    private String defaultFlag;
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
+    public Long getRoleId() {
+        return roleId;
+    }
 
-	public Long getRoleId() {
-		return roleId;
-	}
+    public Long getSurId() {
+        return surId;
+    }
 
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
-	}
+    public Long getUserId() {
+        return userId;
+    }
 
-	public String getUserName() {
-		return userName;
-	}
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public void setSurId(Long surId) {
+        this.surId = surId;
+    }
 
-	public String getRoleName() {
-		return roleName;
-	}
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
-	}
+    public String getDefaultFlag() {
+        return defaultFlag;
+    }
 
-	public String getRoleCode() {
-		return roleCode;
-	}
-
-	public void setRoleCode(String roleCode) {
-		this.roleCode = roleCode;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDefaultFlag(String defaultFlag) {
+        this.defaultFlag = defaultFlag;
+    }
 	
 }

@@ -9,7 +9,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.PageHelper;
+import com.ssm.core.annotation.StdWho;
+import com.ssm.core.exception.UpdateFailedException;
 import com.ssm.core.request.IRequest;
+import com.ssm.extensible.components.ServiceListenerChainFactory;
 import com.ssm.mybatis.common.Mapper;
 import com.ssm.sys.dto.BaseDTO;
 import com.ssm.sys.dto.DTOStatus;
@@ -17,8 +20,11 @@ import com.ssm.sys.service.IBaseService;
 
 @Service
 public abstract class BaseServiceImpl<T> implements IBaseService<T> {
-	@Autowired
+    @Autowired
     protected Mapper<T> mapper;
+
+    @Autowired
+    private ServiceListenerChainFactory chainFactory;
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
@@ -30,28 +36,38 @@ public abstract class BaseServiceImpl<T> implements IBaseService<T> {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public T insert(IRequest request, T record) {
+        record = (T) chainFactory.getChain(this).beforeInsert(request, record);
         mapper.insert(record);
+        record = (T) chainFactory.getChain(this).afterInsert(request, record);
         return record;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public T insertSelective(IRequest request, T record) {
+        record = (T) chainFactory.getChain(this).beforeInsert(request, record);
         mapper.insertSelective(record);
+        record = (T) chainFactory.getChain(this).afterInsert(request, record);
         return record;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public T updateByPrimaryKey(IRequest request, T record) {
-        mapper.updateByPrimaryKey(record);
+    public T updateByPrimaryKey(IRequest request, @StdWho T record) {
+        record = (T) chainFactory.getChain(this).beforeUpdate(request, record);
+        int ret = mapper.updateByPrimaryKey(record);
+        checkOvn(ret, record);
+        record = (T) chainFactory.getChain(this).afterUpdate(request, record);
         return record;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public T updateByPrimaryKeySelective(IRequest request,T record) {
-        mapper.updateByPrimaryKeySelective(record);
+    public T updateByPrimaryKeySelective(IRequest request, @StdWho T record) {
+        record = (T) chainFactory.getChain(this).beforeUpdate(request, record);
+        int ret = mapper.updateByPrimaryKeySelective(record);
+        checkOvn(ret, record);
+        record = (T) chainFactory.getChain(this).afterUpdate(request, record);
         return record;
     }
 
@@ -64,15 +80,38 @@ public abstract class BaseServiceImpl<T> implements IBaseService<T> {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int deleteByPrimaryKey(T record) {
-        return mapper.deleteByPrimaryKey(record);
+        record = (T) chainFactory.getChain(this).beforeDelete(null, record);
+        int ret = mapper.deleteByPrimaryKey(record);
+        checkOvn(ret, record);
+        record = (T) chainFactory.getChain(this).afterDelete(null, record);
+        return ret;
+    }
+
+    /**
+     * 检查乐观锁<br>
+     * 检测到更新，删除失败时，抛出UpdateFailedException 异常
+     * 
+     * @param updateCount
+     *            update,delete 操作返回的值
+     * @param record
+     *            操作参数
+     */
+    protected void checkOvn(int updateCount, Object record) {
+        if (updateCount == 0 && record instanceof BaseDTO) {
+            BaseDTO baseDTO = (BaseDTO) record;
+            if (baseDTO.getObjectVersionNumber() != null) {
+                throw new RuntimeException(new UpdateFailedException(baseDTO));
+            }
+        }
     }
 
     @Override
+    @Deprecated
     @Transactional(propagation = Propagation.SUPPORTS)
     public List<T> selectAll() {
         return mapper.selectAll();
     }
-    
+
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
     public List<T> selectAll(IRequest request) {
@@ -98,7 +137,11 @@ public abstract class BaseServiceImpl<T> implements IBaseService<T> {
                 self.insertSelective(request, t);
                 break;
             case DTOStatus.UPDATE:
-                self.updateByPrimaryKeySelective(request, t);
+                if (useSelectiveUpdate()) {
+                    self.updateByPrimaryKeySelective(request, t);
+                } else {
+                    self.updateByPrimaryKey(request, t);
+                }
                 break;
             case DTOStatus.DELETE:
                 self.deleteByPrimaryKey(t);
@@ -108,6 +151,17 @@ public abstract class BaseServiceImpl<T> implements IBaseService<T> {
             }
         }
         return list;
+    }
+
+    /**
+     * 默认 true,表示在 batchUpdate 中,更新操作,使用updateByPrimaryKeySelective(只更新不为 null
+     * 的字段)。<br>
+     * 若返回 false,则使用 updateByPrimaryKey(更新所有字段)
+     * 
+     * @return
+     */
+    protected boolean useSelectiveUpdate() {
+        return true;
     }
 
     @Override

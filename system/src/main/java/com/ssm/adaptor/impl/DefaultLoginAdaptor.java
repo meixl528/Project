@@ -28,6 +28,7 @@ import com.ssm.account.dto.Role;
 import com.ssm.account.dto.User;
 import com.ssm.account.exception.RoleException;
 import com.ssm.account.exception.UserException;
+import com.ssm.account.service.IRole;
 import com.ssm.account.service.IRoleService;
 import com.ssm.account.service.IUserService;
 import com.ssm.adaptor.ILoginAdaptor;
@@ -313,7 +314,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
                 user.setUserId(userId);
                 session.setAttribute(User.FIELD_USER_ID, userId);
                 addCookie(User.FIELD_USER_ID, userId.toString(), request, response);
-                List<Role> roles = roleService.selectRolesByUser(RequestHelper.createServiceRequest(request), user);
+                List<IRole> roles = roleService.selectRolesByUser(RequestHelper.createServiceRequest(request), user);
                 if(roles == null || roles.isEmpty()){
                 	cleanSession(request,response);
                 	String msg = messageSource.getMessage(RoleException.MSG_INVALID_USER_ROLE, null, RequestContextUtils.getLocale(request));

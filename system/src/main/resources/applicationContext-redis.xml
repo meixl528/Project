@@ -78,6 +78,11 @@
         <property name="name" value="code"/>
     </bean>
     
+    <!-- 序列号  -->
+    <bean id="sequenceCache" class="com.ssm.fnd.cache.SequenceCache">
+        <property name="name" value="sequence"/>
+    </bean>
+    
     <!-- 功能   -->
     <bean id="functionCache" class="com.ssm.cache.impl.HashStringRedisCacheGroup">
         <property name="name" value="function"/>

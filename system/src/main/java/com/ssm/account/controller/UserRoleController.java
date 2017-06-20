@@ -46,7 +46,7 @@ public class UserRoleController extends BaseController{
     		@RequestParam(defaultValue = DEFAULT_PAGE) int page,
             @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pagesize) {
         IRequest requestContext = createRequestContext(request);
-        return new ResponseData(userRoleService.selectUserRoles(requestContext,userRole,page,pagesize));
+        return new ResponseData(userRoleService.selectUserRoles(requestContext,userRole));
     }
 
     /**

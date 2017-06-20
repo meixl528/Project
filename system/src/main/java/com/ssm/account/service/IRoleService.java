@@ -10,7 +10,7 @@ import com.ssm.sys.service.IBaseService;
 
 public interface IRoleService extends IBaseService<Role>{
 
-	List<Role> selectRolesByUser(IRequest requestContext, User user);
+	List<IRole> selectRolesByUser(IRequest requestContext, User user);
 
 	Role checkUserRoleExists(String locale,Long userId, Long roleId) throws RoleException;
 	

@@ -12,7 +12,9 @@ import com.ssm.account.dto.Role;
 import com.ssm.account.dto.User;
 import com.ssm.account.exception.RoleException;
 import com.ssm.account.mapper.RoleMapper;
+import com.ssm.account.service.IRole;
 import com.ssm.account.service.IRoleService;
+import com.ssm.core.annotation.StdWho;
 import com.ssm.core.request.IRequest;
 import com.ssm.sys.service.impl.BaseServiceImpl;
 /**
@@ -30,8 +32,8 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleServi
 	
 	@Override
     @Transactional(propagation = Propagation.SUPPORTS)
-    public List<Role> selectRolesByUser(IRequest requestContext, User user) {
-        List<Role> rootRoles = roleMapper.selectByUser(user);
+    public List<IRole> selectRolesByUser(IRequest requestContext, User user) {
+        List rootRoles = roleMapper.selectByUser(user);
         return rootRoles;
     }
 	
@@ -61,7 +63,7 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleServi
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public List<Role> submitRole(IRequest requestContext, List<Role> list){
+	public List<Role> submitRole(IRequest requestContext,@StdWho List<Role> list){
 		for (Role role : list) {
 			if(role.getRoleId()==null){
 				roleMapper.insertSelective(role);

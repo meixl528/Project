@@ -22,6 +22,6 @@ public interface IUserRoleService extends IBaseService<UserRole>,ProxySelf<IUser
 	 * @param example
 	 * @return
 	 */
-	List<UserRole> selectUserRoles(IRequest requestContext, UserRole userRole, int page, int pagesize);
+	List<IRole> selectUserRoles(IRequest requestContext, UserRole userRole);
 
 }

@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -25,6 +27,7 @@ import com.ssm.account.exception.UserException;
 import com.ssm.account.service.IUserService;
 import com.ssm.core.exception.BaseException;
 import com.ssm.core.request.IRequest;
+import com.ssm.fnd.service.ISequenceService;
 import com.ssm.sys.controller.BaseController;
 import com.ssm.sys.responceFactory.ResponseData;
 /**
@@ -37,8 +40,12 @@ import com.ssm.sys.responceFactory.ResponseData;
 @Controller
 public class UserController extends BaseController{
 	
+	Logger logger =LoggerFactory.getLogger(UserController.class);
+	
 	@Autowired
     private IUserService userService;
+	@Autowired
+	private ISequenceService sequenceService;
 	
 	/**
 	 * 用户名已存在    ex : 用户名:{0}已存在!
@@ -63,7 +70,6 @@ public class UserController extends BaseController{
     @ResponseBody
     public ResponseData selectUsers(HttpServletRequest request,@ModelAttribute User user, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
                                     @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pagesize) {
-        //return new ResponseData(userService.select(null, user, page, pagesize));
     	IRequest iRequest = createRequestContext(request);
     	return new ResponseData(userService.select(iRequest,user, page, pagesize));
     }

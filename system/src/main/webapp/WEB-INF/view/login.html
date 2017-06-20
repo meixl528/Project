@@ -30,4 +30,11 @@
     </div>
 </body>
 
+	<script type="text/javascript">
+	/* tab中如果登录失效,顶层页面刷新   */
+	if(window.top!=window.self){
+	    window.top.location="${base.contextPath}/login.html"
+	}
+	</script>
+
 </html>

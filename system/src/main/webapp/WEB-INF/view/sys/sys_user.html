@@ -4,7 +4,7 @@
 -->
 <#include "../include/header.html">
 <body>
-    <!-- <script src="${base.contextPath}/common/code?userStatusData=SYS.USER_STATUS" type="text/javascript"></script> -->
+    <script src="${base.contextPath}/common/code?userStatusData=SYS.USER_STATUS" type="text/javascript"></script>
       <script type="text/javascript">
     //密码 viewModel
       //var message = null;
@@ -239,13 +239,13 @@
                         model: {
                             id: "id",
                             fields: {
-                                //status: {defaultValue:userStatusData[0].value},
-                                status: {defaultValue:"ACTV"},
+                                status: {defaultValue:userStatusData[0].value},
+                                //status: {defaultValue:"ACTV"},
                                 name:{validation: { required: true }},
                                 email:{type:"email",validation: { required: true }},
                                 telephone:{validation: { number: true ,required: true}},
-                                /* actvFrom:{type:'date'},
-                                actvTo:{type:'date',defaultValue:null} */
+                                startActiveDate:{type:'date'},
+                                endActiveDate:{type:'date',defaultValue:null}
                             }
                         }
                     },
@@ -276,8 +276,8 @@
                             width : 90,
                             attributes: {style: "text-align:center"},
                             template : function (rowdata) {
-                                if (!!rowdata.id) {
-                                    return '<a href="#" onclick="choiceRole(' + rowdata.id + ')"><@spring.message "user.allocationrole"/></a>'
+                                if (!!rowdata.userId) {
+                                    return '<a href="#" onclick="choiceRole(' + rowdata.userId + ')"><@spring.message "user.allocationrole"/></a>'
                                 }else return ''
                             },
                         },
@@ -287,14 +287,14 @@
                             attributes: {style: "text-align:center"},
                             width : 90,
                             template : function (rowdata) {
-                                if (!!rowdata.id) {
-                                    return '<a href="#" onclick="editPassWord(' + rowdata.id + ')"><@spring.message "user.updatepassword"/></a>'
+                                if (!!rowdata.userId) {
+                                    return '<a href="#" onclick="editPassWord(' + rowdata.userId + ')"><@spring.message "user.updatepassword"/></a>'
                                 }else return ''
                             }
 
                         },
                         { 
-                          field: "name",
+                          field: "userName",
                           title: '<@spring.message "user.username"/>', 
                           width: 100 ,
                         },
@@ -302,7 +302,7 @@
                           title: '<@spring.message "user.email"/>',
                           width: 180,
                         },
-                        { field: "telephone", 
+                        { field: "phone", 
                           title: '<@spring.message "user.phone"/>',
                           width: 130,
                         },
@@ -316,14 +316,14 @@
                           width: 80,
                           template: function(dataItem){
                              var v = dataItem.status;
-                             /* $.each(userStatusData,function(i,n){
+                             $.each(userStatusData,function(i,n){
                                  if((n.value||'').toLowerCase() == (v||'').toLowerCase()){
                                      v = n.meaning;
                                      return v;
                                  }
-                             }) */
+                             })
                              return v;
-                          }/* ,
+                          },
                           editor: function(container, options){
                         	  $('<input name="' + options.field + '"/>')
                               .appendTo(container)
@@ -332,7 +332,7 @@
                                   dataValueField: "value",
                                   dataSource: userStatusData
                               }); 
-                          } */
+                          }
                         },
                         { field: "startActiveDate",
                           attributes: {style: "text-align:center"},

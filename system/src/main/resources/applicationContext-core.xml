@@ -60,19 +60,20 @@
 		<aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut" />
 	</aop:config>  -->
 	
-	<!-- 由于spring AOP动态代理默认是通过接口，所以注入事务层的地方都要通过接口进行注入，如果通过实现类进行注入 -->
-	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/> 
+	<!-- 由于spring AOP动态代理默认是通过接口，所以注入事务层的地方都要通过接口进行注入，如果通过实现类进行注入 :需要proxy-target-class="true",但invoke得到到的method是impl方法,而不是interface -->
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="false"/> 
+
+	<!-- 扫描注解 -->
+	<context:component-scan base-package="**.*.service"/>
+	<context:component-scan base-package="**.*.components"/>
 
 	<!-- 拦截器ServiceExecutionAdvice,处理@StdWho等自动填充及多语言处理   -->
 	<bean id="requestAD" class="com.ssm.core.impl.ServiceExecutionAdvice"/>
+	
 	<aop:config expose-proxy="true">
         <aop:pointcut id="servicePointcut" expression="execution(* *..*ServiceImpl.*(..))"/>
         <aop:advisor advice-ref="requestAD" pointcut-ref="servicePointcut"/>
     </aop:config>
-	
-	<!-- 扫描注解 -->
-	<context:component-scan base-package="**.*.service"/>
-	<context:component-scan base-package="**.*.components"/>
 	
 	<bean id="cookieHttpSessionStrategy"
 		class="org.springframework.session.web.http.CookieHttpSessionStrategy">

@@ -1,5 +1,7 @@
 package com.ssm.account.dto;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -7,6 +9,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.ssm.core.annotation.MultiLanguage;
+import com.ssm.mybatis.annotation.Condition;
 import com.ssm.sys.dto.BaseDTO;
 
 @MultiLanguage
@@ -29,6 +32,14 @@ public class Role extends BaseDTO{
 	
 	@Column
 	private String enableFlag;
+	
+	@Column
+    @Condition(operator = ">=")
+    private Date startActiveDate;
+
+    @Column
+    @Condition(operator = "<=")
+    private Date endActiveDate;
 	
 	@Column
 	private String roleDescription;
@@ -100,6 +111,22 @@ public class Role extends BaseDTO{
 
 	public void setEnableFlag(String enableFlag) {
 		this.enableFlag = enableFlag;
+	}
+
+	public Date getStartActiveDate() {
+		return startActiveDate;
+	}
+
+	public void setStartActiveDate(Date startActiveDate) {
+		this.startActiveDate = startActiveDate;
+	}
+
+	public Date getEndActiveDate() {
+		return endActiveDate;
+	}
+
+	public void setEndActiveDate(Date endActiveDate) {
+		this.endActiveDate = endActiveDate;
 	}
 	
 }

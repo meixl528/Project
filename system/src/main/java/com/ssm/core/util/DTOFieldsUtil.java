@@ -70,11 +70,9 @@ public class DTOFieldsUtil {
 		Field field = null;
 		try {
 			field = clazz.getDeclaredField(colName);
-		} catch (NoSuchFieldException e) {
+		} catch (NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
+		} 
 		if(field ==null) 
 			return null;
         return getColumnName(field);
