@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ #{copyright}#
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.sys.mapper.LovMapper">
+    <resultMap id="BaseResultMap" type="com.ssm.sys.dto.Lov" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
+        <id column="LOV_ID" property="lovId" jdbcType="DECIMAL" />
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+        <result column="SQL_ID" property="sqlId" jdbcType="VARCHAR" />
+        <result column="CUSTOM_SQL" property="customSql" jdbcType="VARCHAR" />
+        <result column="CUSTOM_URL" property="customUrl" jdbcType="VARCHAR" />
+        <result column="QUERY_COLUMNS" property="queryColumns" jdbcType="SMALLINT"/>
+        <result column="VALUE_FIELD" property="valueField" jdbcType="VARCHAR" />
+        <result column="TEXT_FIELD" property="textField" jdbcType="VARCHAR" />
+        <result column="TITLE" property="title" jdbcType="VARCHAR" />
+        <result column="WIDTH" property="width" jdbcType="SMALLINT" />
+        <result column="HEIGHT" property="height" jdbcType="SMALLINT" />
+        <result column="CODE" property="code" jdbcType="VARCHAR" />
+        <result column="PLACEHOLDER" property="placeholder" jdbcType="VARCHAR" />
+        <result column="DELAY_LOAD" property="delayLoad" jdbcType="VARCHAR"/>
+        <result column="EDITABLE" property="editableFlag" jdbcType="VARCHAR"/>
+        <result column="CAN_POPUP" property="canPopup" jdbcType="VARCHAR"/>
+        <result column="NEED_QUERY_PARAM" property="needQueryParam" jdbcType="VARCHAR"/>
+        <result column="CREATION_DATE" property="creationDate" jdbcType="TIMESTAMP" />
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DECIMAL" />
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        LOV_ID, DESCRIPTION, SQL_ID,CUSTOM_SQL,CUSTOM_URL,QUERY_COLUMNS,VALUE_FIELD, TEXT_FIELD, TITLE, WIDTH, HEIGHT, CODE, PLACEHOLDER,DELAY_LOAD,CAN_POPUP,EDITABLE,NEED_QUERY_PARAM, CREATION_DATE, CREATED_BY, LAST_UPDATED_BY, LAST_UPDATE_DATE
+    </sql>
+
+    <select id="selectByCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM tb_lov
+        WHERE CODE = #{code,jdbcType=VARCHAR}
+    </select>
+    
+     <select id="selectLovs" resultMap="BaseResultMap" parameterType="com.ssm.sys.dto.Lov" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM tb_lov
+        <where>
+            <if test="code != null">
+                CODE like
+                concat('%',concat(#{code,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="description != null">
+                DESCRIPTION like
+                concat('%',concat(#{description,jdbcType=VARCHAR},'%'))
+            </if>
+        </where>
+    </select>
+
+</mapper>

@@ -14,7 +14,6 @@ import com.ssm.account.exception.RoleException;
 import com.ssm.account.mapper.RoleMapper;
 import com.ssm.account.service.IRole;
 import com.ssm.account.service.IRoleService;
-import com.ssm.core.annotation.StdWho;
 import com.ssm.core.request.IRequest;
 import com.ssm.sys.service.impl.BaseServiceImpl;
 /**
@@ -25,6 +24,7 @@ import com.ssm.sys.service.impl.BaseServiceImpl;
  * @version
  */
 @Service
+@Transactional
 public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleService {
 
 	@Autowired
@@ -63,10 +63,11 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleServi
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public List<Role> submitRole(IRequest requestContext,@StdWho List<Role> list){
+	public List<Role> submitRole(IRequest requestContext,List<Role> list){
 		for (Role role : list) {
 			if(role.getRoleId()==null){
 				roleMapper.insertSelective(role);
+				//self().insertRole(requestContext,role);
 			}else{
 				roleMapper.updateByPrimaryKey(role);
 			}
@@ -78,6 +79,7 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleServi
 	 * 查询角色
 	 */
 	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
 	public List<Role> selectRole(IRequest requestContext, Role role, int page, int pagesize) {
 		PageHelper.startPage(page, pagesize);
 		return roleMapper.selectRole(role);
@@ -87,6 +89,7 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleServi
 	 * 查询用户没有的角色
 	 */
 	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
 	public List<Role> selectRoleNotUserRoles(IRequest requestContext, Role roleExt, int page, int pagesize) {
 		PageHelper.startPage(page, pagesize);
 		return roleMapper.selectRoleNotUserRoles(roleExt);

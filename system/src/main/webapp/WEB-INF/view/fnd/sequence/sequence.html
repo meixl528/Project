@@ -1,0 +1,199 @@
+<#include "../../include/header.html">
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+        model: {},
+        createSequence: function () {
+            $('#Grid').data('kendoGrid').addRow();
+        },
+        saveSequence: function () {
+            $('#Grid').data('kendoGrid').saveChanges();
+        },
+        querySequence: function (e) {
+            $('#Grid').data('kendoGrid').dataSource.page(1);
+        }
+    });
+</script>
+<body>
+<script src="${base.contextPath}/common/code?fndColumType=FND.SEQ_DATE_FORMAT"
+		type="text/javascript">		
+</script>
+<div id="page-content">
+    <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createSequence"><@spring.message "hap.new"/></span>
+        <span class="btn btn-success k-grid-save-changes" data-bind="click:saveSequence" style="float:left;margin-right:5px;"><@spring.message "hap.save"/></span>
+        <span onclick="deleteData()" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>
+    </div>
+    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
+    <div class="pull-right" id="query-form" style="padding-bottom:10px;">
+            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "wg.fnd.sequence.sequence_code"/>'
+                   data-bind="value:model.sequenceCode" class="k-textbox">
+            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "wg.fnd.sequence.sequence_name"/>'
+                   data-bind="value:model.sequenceName" class="k-textbox">
+        <span class="btn btn-primary" style="float:left;width:70px" data-bind="click:querySequence" type="submit"><@spring.message "hap.query"/></span>
+        <div style="clear:both"></div>
+    </div>
+    <script>kendo.bind($('#query-form'), viewModel);</script>
+    <div style="clear:both">
+        <div id="Grid"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var BaseUrl = _basePath;
+    dataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: BaseUrl + "/fnd/sequence/query",
+                type: "POST",
+                dataType: "json"
+            },
+            update: {
+                url: BaseUrl + "/fnd/sequence/submit",
+                type: "POST",
+                contentType: "application/json"
+            },
+            destroy: {
+                url: BaseUrl + "/fnd/sequence/remove",
+                type: "POST",
+                contentType: "application/json"
+            },
+            create: {
+                url: BaseUrl + "/fnd/sequence/submit",
+                type: "POST",
+                contentType: "application/json"
+            },
+            parameterMap: function (options, type) {
+                if (type !== "read" && options.models) {
+                    var datas = Hap.prepareSubmitParameter(options, type)
+                    return kendo.stringify(datas);
+                } else if (type === "read") {
+                    return Hap.prepareQueryParameter(viewModel.model.toJSON(), options)
+                }
+            }
+        },
+        batch: true,
+        serverPaging: true,
+        pageSize: 10,
+        schema: {
+            data: 'rows',
+            total: 'total',
+            model: {
+                id: "sequenceId",
+                fields: {
+                	sequenceCode : {validation : {required : true},type : "string"},
+                	sequenceName : {validation : {required : true},type : "string"},
+                	seqLength: {validation : {required : true},type: "number", defaultValue: 5},
+                	/* objectVersionNumber: {defaultValue: 1} */
+                }
+            }
+        }
+    });
+
+    $("#Grid").kendoGrid({
+        dataSource: dataSource,
+        height: '100%',
+        resizable: true,
+        scrollable: true,
+        navigatable: false,
+        selectable: 'multiple, rowbox',
+        pageable: {
+            pageSizes: [5, 10, 20, 50],
+            refresh: true,
+            buttonCount: 5
+        },
+        columns: [
+            {
+                field: "sequenceCode",
+                title: '<@spring.message "wg.fnd.sequence.sequence_code"/>',
+                width: 120,
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style: "text-align: center"
+                },
+                editor: function(container, options){
+                	var html;
+                	if("options",options.model.sequenceId){
+                		html = '<span name="sequenceCode" data-bind="text:sequenceCode"></span>';
+                	}else{
+                		html = '<input required validationMessage="<@spring.message "wg.notempty"/>" class="k-input k-textbox" type="text" name="sequenceCode" data-bind="value:sequenceCode">';
+                	}
+                	$(html).appendTo(container);
+                }
+            },
+                    {
+                field: "sequenceName",
+                title: '<@spring.message "wg.fnd.sequence.sequence_name"/>',
+                width: 160,
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style: "text-align: center"
+                },
+                editor: function(container, options){
+                	var html = '<input required validationMessage="<@spring.message "wg.notempty"/>" class="k-input k-textbox" type="text" name="sequenceName" data-bind="value:sequenceName">';
+                	$(html).appendTo(container);
+                }
+            },
+                    {
+                field: "sequencePrefix",
+                title: '<@spring.message "wg.fnd.sequence.sequence_prefix"/>',
+                width: 120,
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style: "text-align: center"
+                }
+            },
+            {
+            	field : 'dateFormat',
+            	title: '<@spring.message "wg.fnd.sequence.date_format"/>',
+            	width: 120,
+	        	template: function(dataItem){
+					return dataItem.dateFormat || '';
+	           	}
+	        	,
+	        	editor: function(container, options){
+		        	$('<input name="' + options.field + '"/>')
+                         .appendTo(container)
+                         .kendoDropDownList({
+                         	 optionLabel: " ",
+                             dataTextField: "meaning",
+                             dataValueField: "value",
+                             valuePrimitive: true,
+                             dataSource: fndColumType
+                             
+                    });
+                 }
+            },
+            {field: "seqLength", 
+             title: '<@spring.message "wg.fnd.sequence.seq_length"/>', 
+             width:"60px",
+             editor: function (container, options) {
+                 var editor = $('<input type="text" data-role="numerictextbox" name="' + options.field + '"  required validationMessage="<@spring.message "wg.notempty"/>">');
+                 container.append(editor);
+             }
+             }
+            ,
+            {
+            	command	:  [{
+	         	 	name:"edit",
+	         	 },{
+	         	 	name:"destroy"
+	         	 }],
+	         	 width:"80px" ,
+            },
+        ],
+        editable: "inline"
+    }).data("kendoGrid");
+
+    function deleteData() {
+        Hap.deleteGridSelection({
+            grid: $('#Grid')
+        });
+    }
+    
+    //自适应屏幕
+    Hap.autoResizeGrid("#Grid");
+    
+</script>
+</body>
+</html>

@@ -5,10 +5,12 @@ import java.util.List;
 import com.ssm.account.dto.Role;
 import com.ssm.account.dto.User;
 import com.ssm.account.exception.RoleException;
+import com.ssm.core.annotation.StdWho;
+import com.ssm.core.proxy.ProxySelf;
 import com.ssm.core.request.IRequest;
 import com.ssm.sys.service.IBaseService;
 
-public interface IRoleService extends IBaseService<Role>{
+public interface IRoleService extends IBaseService<Role>, ProxySelf<IRoleService>{
 
 	List<IRole> selectRolesByUser(IRequest requestContext, User user);
 
@@ -25,7 +27,7 @@ public interface IRoleService extends IBaseService<Role>{
 	 * @param requestContext
 	 * @param list
 	 */
-	List<Role> submitRole(IRequest requestContext, List<Role> list);
+	List<Role> submitRole(IRequest requestContext,@StdWho List<Role> list);
 
 	/**
 	 * 查询角色

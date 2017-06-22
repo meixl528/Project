@@ -70,7 +70,7 @@
 	<!-- 拦截器ServiceExecutionAdvice,处理@StdWho等自动填充及多语言处理   -->
 	<bean id="requestAD" class="com.ssm.core.impl.ServiceExecutionAdvice"/>
 	
-	<aop:config expose-proxy="true">
+	<aop:config expose-proxy="true" >
         <aop:pointcut id="servicePointcut" expression="execution(* *..*ServiceImpl.*(..))"/>
         <aop:advisor advice-ref="requestAD" pointcut-ref="servicePointcut"/>
     </aop:config>

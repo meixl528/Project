@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ #{copyright}#
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.fnd.mapper.SequenceMapper">
+    <resultMap id="BaseResultMap" type="com.ssm.fnd.dto.Sequence" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
+        <result column="sequence_id" property="sequenceId" jdbcType="DECIMAL" />
+        <result column="sequence_code" property="sequenceCode" jdbcType="VARCHAR" />
+        <result column="sequence_name" property="sequenceName" jdbcType="VARCHAR" />
+        <result column="sequence_prefix" property="sequencePrefix" jdbcType="VARCHAR" />
+        <result column="date_format" property="dateFormat" jdbcType="VARCHAR" />
+        <result column="incr_code" property="incrCode" jdbcType="VARCHAR" />
+        <result column="seq_length" property="seqLength" jdbcType="TINYINT" />
+    </resultMap>
+</mapper>

@@ -24,7 +24,7 @@ import com.ssm.sys.service.impl.BaseServiceImpl;
  * @date        2017年6月19日上午9:19:55
  * @version
  */
-@Service("userService")
+@Service()
 public class UserServiceImpl extends BaseServiceImpl<User> implements IUserService{
 	
 	@Autowired

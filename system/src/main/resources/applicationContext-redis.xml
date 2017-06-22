@@ -79,7 +79,7 @@
     </bean>
     
     <!-- 序列号  -->
-    <bean id="sequenceCache" class="com.ssm.fnd.cache.SequenceCache">
+    <bean id="sequenceCache" class="com.ssm.cache.impl.SequenceCache">
         <property name="name" value="sequence"/>
     </bean>
     
