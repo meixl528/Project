@@ -10,7 +10,7 @@
        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd ">
        
 
-    <bean id="helloWordService" class="com.ssm.interfaces.webservice.service.impl.HelloWordServiceImpl"/>
-    <jaxws:endpoint id="HelloWord" implementor="#helloWordService" address="/helloWord" />
+    <bean id="helloWordService" class="com.ssm.interfaces.webservice.impl.HelloWordServiceImpl"/>
+    <jaxws:endpoint id="HelloWords" implementor="#helloWordService" address="/helloWord" />
 
 </beans>

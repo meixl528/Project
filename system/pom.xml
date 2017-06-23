@@ -8,7 +8,9 @@
   <name>system Maven Webapp</name>
   <url>http://maven.apache.org</url>
   
-  
+  <properties>
+        <spring.version>4.2.5.RELEASE</spring.version>
+    </properties>
   <dependencies>
         <!-- 自定义 mybatis-base -->
   		<!-- <dependency> 
@@ -84,63 +86,68 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>4.1.6.RELEASE</version>
-		</dependency>
+			<version>${spring.version}</version>
+		</dependency> 
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>4.1.6.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aspects</artifactId>
-			<version>4.1.6.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>4.1.6.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
-			<version>4.1.6.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>4.1.6.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>4.1.6.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-expression</artifactId>
-			<version>4.1.6.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
-			<version>4.1.6.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
-			<version>4.1.6.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-jms</artifactId>
+		    <version>${spring.version}</version>
+		</dependency>
 
 
 		<!-- springmvc文件上传 包 -->
@@ -378,11 +385,11 @@
             <version>3.1.6</version>
         </dependency>
         <!-- 在jetty环境下需要的包 -->
-        <dependency>
+        <!-- <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http-jetty</artifactId>
             <version>3.1.6</version>
-        </dependency>
+        </dependency> -->
         <!-- 开发rest接口需要的包 -->
         <dependency>
             <groupId>org.apache.cxf</groupId>
@@ -408,10 +415,28 @@
         </dependency>
 
 		<!-- active包  全部 -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-all</artifactId>
 			<version>5.14.4</version>
+		</dependency> --> 
+
+		<dependency>  
+	        <groupId>org.apache.activemq</groupId>  
+	        <artifactId>activemq-core</artifactId>  
+	        <version>5.7.0</version>
+	    </dependency> 
+	    <dependency>  
+	        <groupId>org.apache.activemq</groupId>  
+	        <artifactId>activemq-pool</artifactId>  
+	        <version>5.12.1</version>  
+	    </dependency>
+			
+	    <!-- 不加此包cxf注入bean报错  : java.lang.NoSuchFieldError: REFLECTION ; jaxb-core与jaxb-impl包版本要一致-->
+		<dependency>
+		    <groupId>com.sun.xml.bind</groupId>
+		    <artifactId>jaxb-impl</artifactId>
+		    <version>2.2.11</version>
 		</dependency>
 	</dependencies>
 

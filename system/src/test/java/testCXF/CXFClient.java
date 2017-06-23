@@ -20,9 +20,9 @@ public class CXFClient {
 		headArg.put("Content-Type", "application/json;charset=UTF-8");
 		headArg.put("User-Agent", "HAP");
 		
-		String interfaceAddress = "http://localhost:8081/system/ws/helloWord/say";
+		String interfaceAddress = "http://192.168.10.32:8081/system/ws/helloWord/say";
 		String xml = "<wsdl:definitions xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\" xmlns:tns=\"http://impl.service.webservice.interfaces.ssm.com/\" xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\" xmlns:ns2=\"http://schemas.xmlsoap.org/soap/http\" xmlns:ns1=\"http://service.webservice.interfaces.ssm.com/\" name=\"HelloWord\" targetNamespace=\"http://impl.service.webservice.interfaces.ssm.com/\">"
-					+"<wsdl:import location=\"http://localhost:8081/system/ws/helloWord?wsdl=HelloWordService.wsdl\" namespace=\"http://service.webservice.interfaces.ssm.com/\"></wsdl:import>"
+					+"<wsdl:import location=\"http://192.168.10.32:8081/system/ws/helloWord?wsdl=HelloWordService.wsdl\" namespace=\"http://service.webservice.interfaces.ssm.com/\"></wsdl:import>"
 					+"<wsdl:binding name=\"HelloWordSoapBinding\" type=\"ns1:HelloWordService\">"
 					+"<soap:binding style=\"document\" transport=\"http://schemas.xmlsoap.org/soap/http\"/>"
 					+"<wsdl:operation name=\"say\">"
@@ -37,7 +37,7 @@ public class CXFClient {
 					+"</wsdl:binding>"
 					+"<wsdl:service name=\"HelloWord\">"
 					+"<wsdl:port binding=\"tns:HelloWordSoapBinding\" name=\"HelloWordServiceImplPort\">"
-					+"<soap:address location=\"http://localhost:8081/system/ws/helloWord\"/>"
+					+"<soap:address location=\"http://192.168.10.32:8081/system/ws/helloWord\"/>"
 					+"</wsdl:port>"
 					+"</wsdl:service>"
 					+"</wsdl:definitions>";
