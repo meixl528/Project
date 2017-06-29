@@ -41,16 +41,18 @@
     </bean>
 
     <!-- Message Sender Definition -->
-    <bean id="messageSender" class="com.ssm.activeMQ.MessageSender">
+    <!-- <bean id="messageSender" class="com.ssm.activeMQ.MessageSender"> -->
         <!-- <constructor-arg index="0" ref="jmsTemplate" />
         <constructor-arg index="1" ref="destination" /> -->
-    </bean>
+    <!-- </bean> -->
 
     <!-- 消息监听器，主要监听的目的地址 Message Receiver Definition -->
-    <bean id="topicMessageReceiver" class="com.ssm.activeMQ.TopicMessageReceiver"/>
+    <bean id="topicMessageReceiver" class="com.ssm.activeMQ.service.impl.TopicMessageReceiver"/>
 
-    <bean id="QueueMessageReceiver" class="com.ssm.activeMQ.QueueMessageReceiver"/>
+    <bean id="QueueMessageReceiver" class="com.ssm.activeMQ.service.impl.QueueMessageReceiver"/>
     
+    <!-- 测试mq  位置TestRestController-->
+    <bean id="testMq" class="com.ssm.Test.mq.TestMqQueue"/>
     
     <!-- <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
         <property name="connectionFactory" ref="connectionFactory" />

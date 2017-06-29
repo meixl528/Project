@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Copyright Hand China Co.,Ltd.
-  -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -16,7 +13,7 @@
     <import resource="classpath*:**/cxf-beans-*.xml"/>
 
     <!--ws的调用记录feature-->
-    <!-- <bean id = "hapInvokeFeature" class="com.hand.hap.intergration.ws.feature.HapInvokeFeature"></bean>
+    <!-- <bean id = "hapInvokeFeature" class="com.xxx.intergration.ws.feature.HapInvokeFeature"></bean>
 
     <cxf:bus>
         <cxf:features>

@@ -1,11 +1,6 @@
-/*
- * Copyright Hand China Co.,Ltd.
- */
-
 package com.ssm.extensible.dto;
 
 /**
- * @author shengyang.zhou@hand-china.com
  */
 public interface IBaseDto {
     String __ID = "__id";

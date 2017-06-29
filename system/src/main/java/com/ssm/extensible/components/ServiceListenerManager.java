@@ -1,7 +1,3 @@
-/*
- * Copyright Hand China Co.,Ltd.
- */
-
 package com.ssm.extensible.components;
 
 import java.util.ArrayList;
@@ -18,14 +14,14 @@ import com.ssm.core.util.CommonUtils;
 import com.ssm.extensible.base.IServiceListener;
 
 /**
- * @author shengyang.zhou@hand-china.com
  */
 @Component
+@SuppressWarnings("rawtypes")
 public class ServiceListenerManager implements AppContextInitListener {
 
     Map<Class<?>, List<IServiceListener>> listenerMapping = new HashMap<>();
 
-    @Override
+	@Override
     public void contextInitialized(ApplicationContext applicationContext) {
         Map<String, IServiceListener> map = applicationContext.getBeansOfType(IServiceListener.class);
         map.forEach((k, v) -> {

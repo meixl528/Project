@@ -1,16 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Copyright Hand China Co.,Ltd.
-  -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd ">
+       http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+       http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd ">
        
 
     <bean id="helloWordService" class="com.ssm.interfaces.webservice.impl.HelloWordServiceImpl"/>
     <jaxws:endpoint id="HelloWords" implementor="#helloWordService" address="/helloWord" />
+    
+    <bean id="helloWordService2" class="com.ssm.interfaces.webservice.impl.HelloWordServiceImpl2"/>
+    <bean id="helloWordService3" class="com.ssm.interfaces.webservice.impl.HelloWordServiceImpl3"/>
+	<jaxrs:server id="HelloWords2" address="/helloWord2">  
+        <jaxrs:serviceBeans>  
+            <ref bean="helloWordService2" />  
+            <ref bean="helloWordService3" /> 
+        </jaxrs:serviceBeans>  
+        <jaxrs:extensionMappings>  
+            <entry key="json" value="application/json" />  
+            <entry key="xml" value="application/xml" />  
+        </jaxrs:extensionMappings>  
+        <jaxrs:languageMappings>  
+               <entry key="en" value="en-gb"/> 
+               <entry key="zh" value="zh-cn"/>   
+        </jaxrs:languageMappings>  
+        <jaxrs:providers>  
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>  
+        </jaxrs:providers>
+    </jaxrs:server>
+    <!-- <jaxws:endpoint id="HelloWords2" implementor="#helloWordService2" address="/helloWord2" /> -->
+
 
 </beans>

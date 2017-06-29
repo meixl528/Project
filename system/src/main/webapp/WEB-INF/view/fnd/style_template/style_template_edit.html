@@ -1,0 +1,186 @@
+<#include "../../include/header.html">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+</head>
+<body>
+<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script>
+    var _templateId = '${RequestParameters.templateId!0}';
+    newViewModel = kendo.observable({
+        model: {}
+    });
+
+    viewModel = kendo.observable({
+        model: {}
+    });
+
+    $.ajax({
+        async:false,
+        type:'post',
+        data:{
+        	templateId:_templateId,
+        },
+        url    : '${base.contextPath}/fnd/styleTemplate/query',
+        success: function (args) {
+            var a0 = args.rows[0] || {};
+            for (var k in a0) {
+                newViewModel.model.set(k, a0[k]);
+            }
+        }
+    });
+    if(_templateId==0){
+        newViewModel.model.enabledFlag='Y';
+    }
+
+</script>
+
+<div id="page-content">
+    <div class="panel" style="padding: 0px;border:none;box-shadow: none;">
+        <form class="form-horizontal" id="query-form" style="margin-top: 1px;">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label" style="width: 25%;float: left;"><@spring.message 'wg.fnd.style_template.template_code'/></label>
+                            <div  style="float: left;padding-left: 5px;">
+								<input id="templateCode" name="templateCode" type="text" data-role="maskedtextbox" style="float:left;width: 100%;"
+								placeholder="<@spring.message 'wg.fnd.style_template.template_code'/>" data-bind="value: model.templateCode" class="k-textbox">
+                                <script>
+                                    kendo.bind($('#templateCode'), newViewModel);
+                                    if(_templateId && _templateId != 0){
+                                    	textCantEdit("templateCode", true);
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label" style="width: 45%;float: left;"><@spring.message 'wg.fnd.style_template.template_name'/></label>
+                            <div  style="float: left;padding-left: 5px;">
+                                <input id="templateName" name="templateName" type="text" data-role="maskedtextbox" style="float:left;width: 100%;"
+								placeholder="<@spring.message 'wg.fnd.style_template.template_name'/>" data-bind="value: model.templateName" class="k-textbox">
+                                <script>
+                                    kendo.bind($('#templateName'), newViewModel);
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label" style="width: 45%;float: left;"><@spring.message "wg.fnd.style_template.is_horizontal"/></label>
+                            <div  style="float: left;padding-left: 5px;padding-top: 5px;">
+                                <input id="isHorizontal" type="checkbox"  data-bind="value:model.isHorizontal">
+                                <script>
+                                    $('#isHorizontal').kendoCheckbox({
+                                        checkedValue:'Y',
+                                        unCheckedValue:'N',
+                                    });
+                                    kendo.bind($('#isHorizontal'), newViewModel);
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label" style="width: 45%;float: left;"><@spring.message "hap.enableflag"/></label>
+                            <div  style="float: left;padding-left: 5px;padding-top: 5px;">
+                                <input id="enabledFlag" type="checkbox"  data-bind="value:model.enabledFlag">
+                                <script>
+                                    $('#enabledFlag').kendoCheckbox({
+                                        checkedValue:'Y',
+                                        unCheckedValue:'N',
+                                    });
+                                    kendo.bind($('#enabledFlag'), newViewModel);
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="control-label" style="width: 45%;float: left;"><@spring.message "wg.fnd.style_template.log_flag"/></label>
+                            <div  style="float: left;padding-left: 5px;padding-top: 5px;">
+                                <input id="logFlag" type="checkbox"  data-bind="value:model.logFlag">
+                                <script>
+                                    $('#logFlag').kendoCheckbox({
+                                        checkedValue:'Y',
+                                        unCheckedValue:'N',
+                                    });
+                                    kendo.bind($('#logFlag'), newViewModel);
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                	<label class="control-label" style="float: left;"><@spring.message "wg.fnd.style_template.template_content"/></label>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12" style="margin-bottom: 10px;">
+                        <div class="form-group">
+                            <textarea id="templateContent" name="templateContent" data-bind="value:model.templateContent" rows="15" cols="135" spellcheck="false"></textarea>
+                            <script>
+                                kendo.bind($('#templateContent'), newViewModel);
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6" style="margin-left: 30%">
+                        <div class="form-group">
+                            <div class="col-xs-9" style="float:right">
+                                <span id="saveGrid" class="btn btn-success k-grid-save-changes" style="float:center;margin-right:5px;"><i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<script>
+    $("#saveGrid").click(function () {
+        var isedit=true;
+        if(newViewModel.model.templateId==''||newViewModel.model.templateId==null){
+            isedit=false;
+        }
+        if(newViewModel.model.templateCode==''||newViewModel.model.templateCode==null){
+            kendo.ui.showInfoDialog({
+                message:"<@spring.message 'wg.fnd.style_template.template_code_not_null'/>"
+            })
+        }else if(newViewModel.model.templateName==''||newViewModel.model.templateName==null){
+            kendo.ui.showInfoDialog({
+                message:'<@spring.message "wg.fnd.style_template.template_name_not_null"/>'
+            })
+        }else if(newViewModel.model.templateContent==''||newViewModel.model.templateContent==null){
+            kendo.ui.showInfoDialog({
+                message:'<@spring.message "wg.fnd.style_template.template_content_not_null"/>'
+            })
+        } else {
+            newViewModel.model.__status = isedit ? 'update' : 'add';
+            Hap.submitForm({
+                url: '${base.contextPath}/fnd/styleTemplate/submit',
+                formModel: newViewModel.model,
+                success: function (data) {
+                    kendo.ui.showInfoDialog({
+                        title: $l('hap.tip.info'),
+                        message: $l('hap.save.success')
+                    })
+                    window.parent.$('#Grid').data('kendoGrid').dataSource.page(1);
+                    window.parent.$("#lineDialog").data("kendoWindow").close();
+                }
+            });
+        }
+    });
+
+    $("#page-content").kendoValidator();
+</script>
+
+</body>
+</html>

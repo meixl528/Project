@@ -1,7 +1,3 @@
-/*
- * Copyright Hand China Co.,Ltd.
- */
-
 package com.ssm.extensible.base;
 
 import java.util.ArrayList;
@@ -12,6 +8,7 @@ import com.ssm.extensible.components.ServiceListenerManager;
 
 /**
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class ServiceListenerChain<T> {
 
     private ServiceListenerManager manager;
@@ -25,7 +22,7 @@ public class ServiceListenerChain<T> {
 
     }
 
-    public ServiceListenerChain(ServiceListenerManager manager, Object service) {
+	public ServiceListenerChain(ServiceListenerManager manager, Object service) {
         super();
         this.manager = manager;
         this.service = service;
@@ -91,7 +88,7 @@ public class ServiceListenerChain<T> {
         return record;
     }
 
-    public ServiceListenerChain copy() {
+	public ServiceListenerChain copy() {
         ServiceListenerChain copy = new ServiceListenerChain();
         copy.manager = manager;
         copy.service = service;

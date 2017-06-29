@@ -1,7 +1,3 @@
-/*
- * Copyright Hand China Co.,Ltd.
- */
-
 package com.ssm.extensible.base;
 
 import java.io.IOException;

@@ -1,11 +1,7 @@
-/*
- * Copyright Hand China Co.,Ltd.
- */
-
 package com.ssm.extensible.base;
 
 /**
- * @author shengyang.zhou@hand-china.com
+ * @author meixl
  */
 public class ExtendedField {
 

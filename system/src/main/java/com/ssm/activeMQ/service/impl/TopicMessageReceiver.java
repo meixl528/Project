@@ -1,12 +1,12 @@
-package com.ssm.activeMQ;
+package com.ssm.activeMQ.service.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+/*import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;*/
 
 import javax.jms.Message;
 
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.ssm.activeMQ.annotation.Topic;
 import com.ssm.activeMQ.listener.ITopicListener;
@@ -31,7 +32,9 @@ public class TopicMessageReceiver implements InitializingBean {
 
 	@Autowired
 	private ApplicationContext applicationContext;
-	private ExecutorService executorService;
+	
+	@Autowired
+	private ThreadPoolTaskExecutor taskExecutor;
 
 	@Autowired
 	@Qualifier("topicJmsTemplate")
@@ -62,7 +65,7 @@ public class TopicMessageReceiver implements InitializingBean {
 		});
 		if(!beanMap.isEmpty()){
 			Iterator<String> it = beanMap.keySet().iterator();
-			executorService = Executors.newFixedThreadPool(beanMap.keySet().size());
+			//executorService = Executors.newFixedThreadPool(beanMap.keySet().size());
 			String channel;
 			List<ITopicListener> list;
 			Task task;
@@ -70,7 +73,8 @@ public class TopicMessageReceiver implements InitializingBean {
 				channel = it.next();
 				list = beanMap.get(channel);
 				task = new Task(channel,list);
-				executorService.execute(task);
+				taskExecutor.execute(task);
+				//executorService.execute(task);
 			}
 		}
 		

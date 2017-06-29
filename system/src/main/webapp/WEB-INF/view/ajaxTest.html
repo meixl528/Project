@@ -1,0 +1,75 @@
+<#include "./include/header.html">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	姓名:<input type="text" name="name">
+	<button id="button" type="button">restApi测试</button>
+	
+	<br><br>
+	
+	interface:soap
+	<button id="jsonButton" type="button">soap测试</button>
+	<br>
+	
+	interface:rest
+	<button id="jsonButton2" type="button">rest测试</button>
+	
+</body>
+<script>
+	$("#button").click(function(){
+		$.ajax({
+			url:"http://192.168.10.32:8081/system/restapi/test",
+			data:{
+				//name : $("input[name='name']").val()
+				name :"meixl",
+				pass :"meixl"
+			},
+			dataType:"json",
+			type:"post",
+			cache:false,
+			success:function(data){
+				alert(data)
+			},
+			error:function(er){
+				alert("error")
+			}
+		})
+	})
+	
+	$("#jsonButton").click(function(){
+		$.ajax({
+			url:"${base.contextPath}/sys/interface/testSoap",
+			data:{},
+			dataType:"json",
+			type:"post",
+			cache:false,
+			success:function(data){
+				alert("Soap ok")
+			},
+			error:function(er){
+				alert("error")
+			}
+		})
+	})
+	
+	$("#jsonButton2").click(function(){
+		$.ajax({
+			url:"${base.contextPath}/sys/interface/testRest",
+			data:{},
+			dataType:"json",
+			type:"post",
+			cache:false,
+			success:function(data){
+				alert("Rest ok")
+			},
+			error:function(er){
+				alert("error")
+			}
+		})
+	})
+	
+</script>
+</html>

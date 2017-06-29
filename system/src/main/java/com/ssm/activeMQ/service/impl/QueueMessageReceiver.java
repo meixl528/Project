@@ -1,20 +1,21 @@
-package com.ssm.activeMQ;
+package com.ssm.activeMQ.service.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+/*import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;*/
 
-import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.TextMessage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.ssm.activeMQ.annotation.Queue;
 import com.ssm.activeMQ.listener.IQueueListener;
@@ -25,11 +26,14 @@ import com.ssm.activeMQ.listener.IQueueListener;
  */
 @SuppressWarnings({"rawtypes","unchecked"})
 public class QueueMessageReceiver implements InitializingBean {
+	
+	static Logger logger = LoggerFactory.getLogger(QueueMessageReceiver.class);
     
 	public QueueMessageReceiver(){}
 	@Autowired
     private ApplicationContext applicationContext;
-    private ExecutorService executorService;
+	@Autowired
+	private ThreadPoolTaskExecutor taskExecutor;
 	
 	@Autowired
 	@Qualifier("queueJmsTemplate")
@@ -49,10 +53,10 @@ public class QueueMessageReceiver implements InitializingBean {
 			}
 		});
 		if(listeners!=null && listeners.size() >0){
-			executorService = Executors.newFixedThreadPool(listeners.size());
+			//executorService = Executors.newFixedThreadPool(listeners.size());
 			for (Map<IQueueListener, String> listener : listeners) {
 				Task task = new Task(listener);
-				executorService.execute(task);
+				taskExecutor.execute(task);
 			}
 		}
 	}
@@ -66,7 +70,7 @@ public class QueueMessageReceiver implements InitializingBean {
 		}
 		
 		@Override
-		public void run() {
+		public void run(){
 			while(true){
 				Message message = queueJmsTemplate.receive(queue);
 				if(message==null){
@@ -76,14 +80,25 @@ public class QueueMessageReceiver implements InitializingBean {
 					} catch (InterruptedException e) {
 					}
 				}
-				if (message instanceof TextMessage) {
+				bean.onQueueMessage(message, queue);
+				/*if (message instanceof TextMessage) {
 					TextMessage textMessage = (TextMessage) message;
-		            try {
-		            	String text = textMessage.getText();
-		                bean.onQueueMessage(text, queue);
-		            } catch (JMSException e) {
-		            }
-		        }
+				   
+				    String text = textMessage.getText();
+				    bean.onQueueMessage(text, queue);
+				    
+				}else if(message instanceof MapMessage || message instanceof ObjectMessage){
+					ObjectMessage objectMessage = (ObjectMessage)message;
+					
+					Object object = objectMessage.getObject();
+					bean.onQueueMessage(object, queue);
+					
+				}else if(message instanceof StreamMessage){
+					StreamMessage streamMessage = (StreamMessage)message;
+					
+					String str =streamMessage.readString();
+					bean.onQueueMessage(str, queue);
+				}*/
 			}
 		}
 	}

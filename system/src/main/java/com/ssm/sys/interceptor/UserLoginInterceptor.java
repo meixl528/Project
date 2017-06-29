@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -49,8 +50,10 @@ public class UserLoginInterceptor implements HandlerInterceptor {
 		}
 		
 		//webservcie测试
-		if(req.getParameter("name").equals("meixl") && req.getParameter("pass").equals("meixl")){
+		if(StringUtils.isNotEmpty(req.getParameter("name")) && req.getParameter("name").equals("meixl") && req.getParameter("pass").equals("meixl")){
 			return true;
+		}else{
+			System.out.println("需要访问名和密码 !");
 		}
 		resp.sendRedirect(req.getContextPath() + UrlUtil.VIEW_LOGIN);
 		return false;

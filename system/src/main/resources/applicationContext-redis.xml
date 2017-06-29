@@ -83,6 +83,16 @@
         <property name="name" value="sequence"/>
     </bean>
     
+    <!-- 样式模板/接口报文模板   -->
+    <bean id="styleTemplateCache" class="com.ssm.cache.impl.HashStringRedisCache">
+		<property name="category" value="hap:cache:fnd" />
+		<property name="name" value="style_template" />
+		<property name="type" value="com.ssm.fnd.dto.StyleTemplate" />
+		<property name="keyField" value="templateCode" />
+		<property name="loadOnStartUp" value="false" />
+		<property name="sqlId" value="com.ssm.fnd.mapper.StyleTemplateMapper.selectAll" />
+	</bean>
+    
     <!-- 功能   -->
     <bean id="functionCache" class="com.ssm.cache.impl.HashStringRedisCacheGroup">
         <property name="name" value="function"/>
@@ -119,6 +129,7 @@
         <property name="caches">
             <list>
             	<!-- <ref bean="promptCache"/> -->
+            	<ref bean="styleTemplateCache" />
             </list>
         </property>
     </bean>

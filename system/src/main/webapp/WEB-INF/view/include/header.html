@@ -27,5 +27,6 @@
         _basePath = '${base.contextPath}', _locale = '${base.locale}';
         kendo.culture("${base.locale.toString()?replace('_','-')}");
     </script>
+    <script src="${base.contextPath}/resources/js/wg.js"></script>
 </head>
 <#macro lov lovid>${lovProvider.getLov(base.contextPath,base.locale,lovid)}</#macro>

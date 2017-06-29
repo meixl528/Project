@@ -1,7 +1,3 @@
-/*
- * Copyright Hand China Co.,Ltd.
- */
-
 package com.ssm.extensible.components;
 
 import java.util.HashMap;
@@ -13,9 +9,9 @@ import org.springframework.stereotype.Component;
 import com.ssm.extensible.base.ServiceListenerChain;
 
 /**
- * @author shengyang.zhou@hand-china.com
  */
 @Component
+@SuppressWarnings("rawtypes")
 public class ServiceListenerChainFactory {
 
     @Autowired
@@ -23,7 +19,8 @@ public class ServiceListenerChainFactory {
 
     Map<Object, ServiceListenerChain> chainCache = new HashMap<>();
 
-    public ServiceListenerChain getChain(Object service) {
+    
+	public ServiceListenerChain getChain(Object service) {
         ServiceListenerChain chain = chainCache.get(service);
         if (chain == null) {
             chain = new ServiceListenerChain(manager, service);

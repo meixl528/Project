@@ -1,4 +1,4 @@
-package com.ssm.fnd.utils;
+package com.ssm.util;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -23,8 +23,6 @@ import javax.net.ssl.SSLSession;
  * 
  * @name HttpUtil
  * @description Http请求工具类
- * @author gaokuo.dai@hand-china.com 2017年5月15日上午10:05:13
- * @version 1.2
  */
 public class HttpUtil {
 	/**
@@ -45,8 +43,6 @@ public class HttpUtil {
 	/**
 	 * @name HttpMethod
 	 * @description 请求类型 
-	 * @author gaokuo.dai@hand-china.com	2017年5月24日下午4:20:03
-	 * @version 1.0
 	 */
 	public enum HttpMethod {
 		GET("GET"), POST("POST");
@@ -166,9 +162,6 @@ public class HttpUtil {
 
 	/**
 	 * 将map型转为请求参数型,GET请求时很有用
-	 * 
-	 * @author gaokuo.dai@hand-china.com 2017年5月15日
-	 * 
 	 * @param data
 	 *            map型参数
 	 * @return 拼接好的URL参数
@@ -192,9 +185,6 @@ public class HttpUtil {
 	
 	/**
 	 * 发送报文，接收结果
-	 * 
-	 * @author gaokuo.dai@hand-china.com 2017年5月15日
-	 * 
 	 * @param urlStr
 	 *            String类型的url地址，请一定要带上协议类型(http:// or https://)不然会报错
 	 * @param data

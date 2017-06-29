@@ -237,7 +237,6 @@ public class FndUtil {
 	
 	/**
 	 * 从IRequest对象中获得Locale对象
-	 * @author gaokuo.dai@hand-china.com
 	 * 2017年5月12日
 	 * 
 	 * @param request

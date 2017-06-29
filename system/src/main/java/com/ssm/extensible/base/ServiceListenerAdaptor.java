@@ -1,7 +1,3 @@
-/*
- * Copyright Hand China Co.,Ltd.
- */
-
 package com.ssm.extensible.base;
 
 import com.ssm.core.request.IRequest;
