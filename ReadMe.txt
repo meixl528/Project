@@ -1,1 +1,1 @@
-项目仅供学习使用!
+just for learning!
