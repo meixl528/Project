@@ -52,7 +52,8 @@
     <bean id="QueueMessageReceiver" class="com.ssm.activeMQ.service.impl.QueueMessageReceiver"/>
     
     <!-- 测试mq  位置TestRestController-->
-    <bean id="testMq" class="com.ssm.Test.mq.TestMqQueue"/>
+    <bean id="testMqQueue" class="com.ssm.interfaces.mq.TestMqQueue"/>
+    <bean id="testMqTopic" class="com.ssm.interfaces.mq.TestMqTopic"/>
     
     <!-- <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
         <property name="connectionFactory" ref="connectionFactory" />

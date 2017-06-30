@@ -1,4 +1,4 @@
-package com.ssm.Test.controller;
+package com.ssm.interfaces.controller;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -25,6 +25,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.ssm.account.dto.User;
+import com.ssm.activeMQ.service.IMessageSender;
 import com.ssm.fnd.dto.StyleTemplate;
 import com.ssm.fnd.service.IStyleTemplateService;
 import com.ssm.sys.controller.BaseController;
@@ -38,6 +39,9 @@ public class TestSoapController extends BaseController{
 	
 	@Autowired
 	private IStyleTemplateService styleTemplateService;
+	
+	@Autowired
+	private IMessageSender messageSender;
 	
 	@RequestMapping(value = "/sys/interface/testSoap")
     @ResponseBody
@@ -140,6 +144,8 @@ public class TestSoapController extends BaseController{
 			System.out.println("响应报文中解析出 userName = "+ userName);
 		}
 		conn.disconnect();
+		
+		messageSender.sendTopic(resNodeList.item(0).getTextContent(), "test.soap.topic");
         
         return new ResponseData(true);
     }

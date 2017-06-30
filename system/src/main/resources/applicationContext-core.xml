@@ -123,6 +123,7 @@
             </map>
         </property>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="configFile" value="/config.properties"/>
     </bean>
 	
 	<!-- 使用tk.mybatis通用工具包    必须这样扫描 -->

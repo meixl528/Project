@@ -11,7 +11,7 @@
 	<!-- 读取数据库连接属性文件 -->
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" value="classpath:db.properties" />
+		<property name="location" value="classpath:config.properties" />
 	</bean>
 
 	<!-- jedis 配置 -->
@@ -89,7 +89,7 @@
 		<property name="name" value="style_template" />
 		<property name="type" value="com.ssm.fnd.dto.StyleTemplate" />
 		<property name="keyField" value="templateCode" />
-		<property name="loadOnStartUp" value="false" />
+		<property name="loadOnStartUp" value="true" />
 		<property name="sqlId" value="com.ssm.fnd.mapper.StyleTemplateMapper.selectAll" />
 	</bean>
     
@@ -129,7 +129,6 @@
         <property name="caches">
             <list>
             	<!-- <ref bean="promptCache"/> -->
-            	<ref bean="styleTemplateCache" />
             </list>
         </property>
     </bean>

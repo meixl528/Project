@@ -8,11 +8,12 @@ import java.util.List;
 import com.ssm.core.proxy.ProxySelf;
 import com.ssm.core.request.IRequest;
 import com.ssm.function.dto.RoleFunction;
+import com.ssm.sys.service.IBaseService;
 
 /**
  * @author meixl
  */
-public interface IRoleFunctionService extends ProxySelf<IRoleFunctionService> {
+public interface IRoleFunctionService extends IBaseService<RoleFunction>, ProxySelf<IRoleFunctionService> {
 
     /**
      * 保存角色分配的功能.

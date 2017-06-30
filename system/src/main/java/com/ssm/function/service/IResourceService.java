@@ -11,11 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ssm.core.proxy.ProxySelf;
 import com.ssm.core.request.IRequest;
 import com.ssm.function.dto.Resource;
+import com.ssm.sys.service.IBaseService;
 
 /**
  * @author meixl
  */
-public interface IResourceService extends ProxySelf<IResourceService> {
+public interface IResourceService extends IBaseService<Resource>, ProxySelf<IResourceService> {
 
    /**
     * 根据资源的url查询资源数据.

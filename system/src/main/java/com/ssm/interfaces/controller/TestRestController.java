@@ -1,4 +1,4 @@
-package com.ssm.Test.controller;
+package com.ssm.interfaces.controller;
 
 import java.io.IOException;
 import java.util.HashMap;

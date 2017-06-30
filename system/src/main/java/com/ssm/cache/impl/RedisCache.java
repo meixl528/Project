@@ -341,6 +341,9 @@ public class RedisCache<T> implements Cache<T>, BeanNameAware {
         }
         Map<String, Object> map = PropertyUtils.describe(obj);
         map.remove("class"); // describe会包含 class 属性,此处无用
+        
+        //map.put("class", ((Class)map.get("class")).getName());
+        //Map<String,String> map2 =BeanUtils.describe(obj);
         return map;
     }
 

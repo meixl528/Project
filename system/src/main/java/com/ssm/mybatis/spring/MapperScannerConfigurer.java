@@ -41,9 +41,14 @@ public class MapperScannerConfigurer extends org.mybatis.spring.mapper.MapperSca
 
 
     private Map<String,String> propertiesMap;
+    
+    //   默认"/config.properties"
+    private String configFile = "/config.properties";
+	public void setConfigFile(String configFile) {
+		this.configFile = configFile;
+	}
 
-
-    public void setMarkerInterface(Class<?> superClass) {
+	public void setMarkerInterface(Class<?> superClass) {
         super.setMarkerInterface(superClass);
         if (Marker.class.isAssignableFrom(superClass)) {
             mapperHelper.registerMapper(superClass);
@@ -94,7 +99,8 @@ public class MapperScannerConfigurer extends org.mybatis.spring.mapper.MapperSca
         Properties config = new Properties();
         Properties p = new Properties();
         try {
-            config.load(getClass().getResourceAsStream("/db.properties"));
+        	/*config.load(getClass().getResourceAsStream("/config.properties"));*/
+            config.load(getClass().getResourceAsStream(configFile));
             if (propertiesMap.get("ORDER") == null) {
                 if ("JDBC".equalsIgnoreCase(propertiesMap.get("IDENTITY"))) {
                     p.put("ORDER", "AFTER");

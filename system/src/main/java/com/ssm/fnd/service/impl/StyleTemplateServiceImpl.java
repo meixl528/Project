@@ -12,6 +12,7 @@ import com.ssm.cache.annotation.CacheSet;
 import com.ssm.cache.impl.HashStringRedisCache;
 import com.ssm.core.request.IRequest;
 import com.ssm.fnd.dto.StyleTemplate;
+import com.ssm.fnd.mapper.StyleTemplateMapper;
 import com.ssm.fnd.service.IStyleTemplateService;
 import com.ssm.sys.service.impl.BaseServiceImpl;
 /**
@@ -25,6 +26,9 @@ public class StyleTemplateServiceImpl extends BaseServiceImpl<StyleTemplate> imp
 	
 	@Autowired
 	private ApplicationContext applicationContext;
+	
+	@Autowired
+	private StyleTemplateMapper styleTemplateMapper;
 	
 	@Override
     @CacheSet(cache = STYLE_TEMPLATE)
@@ -46,6 +50,12 @@ public class StyleTemplateServiceImpl extends BaseServiceImpl<StyleTemplate> imp
         return template;
     }
     
+    @Override
+    @CacheSet(cache = STYLE_TEMPLATE)
+    public StyleTemplate getStyleTemplateFromDB(String templateCode){
+		return styleTemplateMapper.selectStyleTemplateFromDB(templateCode);
+    }
+    
     /**
      * 获取样式模板对象
      * @param templateCode 模版代码
@@ -56,6 +66,9 @@ public class StyleTemplateServiceImpl extends BaseServiceImpl<StyleTemplate> imp
 		// 获取打印模板
 		Cache<?> cache = applicationContext.getBean(CacheManager.class).getCache(STYLE_TEMPLATE);
 		StyleTemplate styleTemplate = ((HashStringRedisCache<StyleTemplate>)cache).getValue(templateCode);
+		if(styleTemplate == null){
+			styleTemplate = self().getStyleTemplateFromDB(templateCode);
+		}
         return styleTemplate;
     }
     

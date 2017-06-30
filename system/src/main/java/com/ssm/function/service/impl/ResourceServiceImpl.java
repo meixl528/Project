@@ -19,13 +19,14 @@ import com.ssm.function.dto.Resource;
 import com.ssm.function.mapper.FunctionResourceMapper;
 import com.ssm.function.mapper.ResourceMapper;
 import com.ssm.function.service.IResourceService;
+import com.ssm.sys.service.impl.BaseServiceImpl;
 
 /**
  * @author wuyichu
  */
 @Transactional
 @Service
-public class ResourceServiceImpl implements IResourceService {
+public class ResourceServiceImpl extends BaseServiceImpl<Resource> implements IResourceService {
 
     @Autowired
     private CacheManager cacheManager;

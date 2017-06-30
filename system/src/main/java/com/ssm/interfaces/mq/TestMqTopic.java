@@ -1,4 +1,4 @@
-package com.ssm.Test.mq;
+package com.ssm.interfaces.mq;
 
 import javax.jms.BytesMessage;
 import javax.jms.MapMessage;
@@ -9,23 +9,23 @@ import javax.jms.TextMessage;
 import org.springframework.stereotype.Component;
 
 import com.ssm.account.dto.User;
-import com.ssm.activeMQ.annotation.Queue;
-import com.ssm.activeMQ.listener.IQueueListener;
+import com.ssm.activeMQ.annotation.Topic;
+import com.ssm.activeMQ.listener.ITopicListener;
 
 @Component
-@Queue(queue="test.rest.queue")
-public class TestMqQueue implements IQueueListener<Object>{
+@Topic(channel = "test.soap.topic")
+public class TestMqTopic implements ITopicListener<Object>{
 	
-	private String queue = "test.rest.queue";
+	private String[] topic = new String[]{"test.soap.topic"};
 
 	@Override
-	public String getQueue() {
-		return queue;
+	public String[] getTopic() {
+		return topic;
 	}
 
 	@Override
-	public void onQueueMessage(Object message, String queue) {
-		System.out.println("message = "+message+" and queue = "+ queue);
+	public void onTopicMessage(Object message, String pattern) {
+		System.out.println("收到soap发布消息topic = "+message);
 		try {
 			if(message instanceof TextMessage){ //接收文本消息     
 	            TextMessage m = (TextMessage)message;     

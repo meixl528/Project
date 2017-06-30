@@ -22,6 +22,7 @@ import com.ssm.function.mapper.FunctionMapper;
 import com.ssm.function.mapper.ResourceItemMapper;
 import com.ssm.function.mapper.RoleResourceItemMapper;
 import com.ssm.function.service.IRoleResourceItemService;
+import com.ssm.sys.service.impl.BaseServiceImpl;
 /**
  * @name        RoleResourceItemServiceImpl
  * @description 
@@ -30,7 +31,7 @@ import com.ssm.function.service.IRoleResourceItemService;
  */
 @Transactional
 @Service
-public class RoleResourceItemServiceImpl implements IRoleResourceItemService {
+public class RoleResourceItemServiceImpl extends BaseServiceImpl<RoleResourceItem> implements IRoleResourceItemService {
 
     @Autowired
     private ResourceItemMapper resourceItemMapper;

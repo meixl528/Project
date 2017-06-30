@@ -31,7 +31,7 @@ import com.ssm.util.FndUtil;
  */
 @RestController
 @CrossOrigin(origins = FndUtil.WG_ALLOW_ORIGIN)
-public class BaseRestController {
+public class BaseRestApiController {
 
 	@Autowired
 	private Validator validator;

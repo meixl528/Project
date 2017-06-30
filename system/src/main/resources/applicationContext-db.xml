@@ -7,7 +7,7 @@
 	<!-- 读取数据库连接属性文件 -->
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" value="classpath:db.properties" />
+		<property name="location" value="classpath:config.properties" />
 	</bean>
 
 	<!-- 配置datasource -->

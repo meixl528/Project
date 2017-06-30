@@ -50,10 +50,18 @@ public class UserLoginInterceptor implements HandlerInterceptor {
 		}
 		
 		//webservcie测试
-		if(StringUtils.isNotEmpty(req.getParameter("name")) && req.getParameter("name").equals("meixl") && req.getParameter("pass").equals("meixl")){
-			return true;
-		}else{
-			System.out.println("需要访问名和密码 !");
+		if(StringUtils.isNotEmpty(req.getParameter("name")) && StringUtils.isNotEmpty(req.getParameter("pass"))){
+			if(req.getParameter("name").equals("meixl") && req.getParameter("pass").equals("meixl")){
+				return true;
+			}else{
+				System.out.println("访问用户名和密码不正确 !");
+			}
+		}else if(req.getAttribute("name")!= null && req.getAttribute("pass")!=null){
+			if(req.getAttribute("name").toString().equals("meixl") && req.getAttribute("pass").toString().equals("meixl")){
+				return true;
+			}else{
+				System.out.println("访问用户名和密码不正确 !");
+			}
 		}
 		resp.sendRedirect(req.getContextPath() + UrlUtil.VIEW_LOGIN);
 		return false;

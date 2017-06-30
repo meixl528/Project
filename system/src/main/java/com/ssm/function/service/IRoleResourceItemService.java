@@ -8,6 +8,7 @@ import com.ssm.core.request.IRequest;
 import com.ssm.function.dto.MenuItem;
 import com.ssm.function.dto.Resource;
 import com.ssm.function.dto.RoleResourceItem;
+import com.ssm.sys.service.IBaseService;
 /**
  * @name        IRoleResourceItemService
  * @description 
@@ -15,7 +16,7 @@ import com.ssm.function.dto.RoleResourceItem;
  * @date        2017年5月9日下午1:30:30
  * @version
  */
-public interface IRoleResourceItemService extends ProxySelf<IRoleResourceItemService> {
+public interface IRoleResourceItemService extends IBaseService<RoleResourceItem>, ProxySelf<IRoleResourceItemService> {
     /**
      * 查询角色资源下未获得授权的组件id
      *

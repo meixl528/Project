@@ -10,4 +10,6 @@ import com.ssm.mybatis.common.Mapper;
  */
 public interface StyleTemplateMapper extends Mapper<StyleTemplate>{
 
+	StyleTemplate selectStyleTemplateFromDB(String templateCode);
+	
 }

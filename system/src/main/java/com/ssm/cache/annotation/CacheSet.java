@@ -11,6 +11,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 设置结果到缓存
  * @author meixl
  */
 @Inherited

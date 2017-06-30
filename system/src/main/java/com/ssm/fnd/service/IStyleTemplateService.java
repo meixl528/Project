@@ -26,5 +26,12 @@ public interface IStyleTemplateService extends IBaseService<StyleTemplate>, Prox
      * @return
      */
 	public String getStyleTemplateStr(String templateCode);
+
+	/**
+	 * 从数据库查询  模板
+	 * @param templateCode
+	 * @return
+	 */
+	public StyleTemplate getStyleTemplateFromDB(String templateCode);
 	
 }

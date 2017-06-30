@@ -16,12 +16,13 @@ import com.ssm.core.request.IRequest;
 import com.ssm.function.dto.RoleFunction;
 import com.ssm.function.mapper.RoleFunctionMapper;
 import com.ssm.function.service.IRoleFunctionService;
+import com.ssm.sys.service.impl.BaseServiceImpl;
 
 /**
  */
 @Transactional
 @Service
-public class RoleFunctionServiceImpl implements IRoleFunctionService {
+public class RoleFunctionServiceImpl extends BaseServiceImpl<RoleFunction> implements IRoleFunctionService {
 
     @Autowired
     private RoleFunctionMapper rolefunctionMapper;

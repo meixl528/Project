@@ -280,12 +280,12 @@ public class ServiceExecutionAdvice implements MethodInterceptor {
         }
     }
     private String getAuditFlag (String entityCode) {
-       /* String auditFlag = "N";
-        Cache cache = cacheManager.getCache("audit");
+       String auditFlag = "N";
+        Cache<?> cache = cacheManager.getCache("audit");
         if (cache != null) {
             auditFlag = (String) cache.getValue(entityCode);
         }
-        return auditFlag;*/
-        return "Y";
+        return auditFlag;
+        //return "Y";
     }
 }

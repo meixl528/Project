@@ -52,29 +52,30 @@ public class MessageSender implements IMessageSender{
     	MessageCreator ms = new MessageCreator() {
 			@Override
 			public Message createMessage(Session session) throws JMSException {
-				Message msg = session.createMessage();
-				// 设置消息属性  
-                msg.setStringProperty("Code", "Test");  
-				
 				if(message instanceof String){ //接收文本消息     
-					((TextMessage) msg).setText((String)message);
-					
-    	        }else if(message instanceof MapMessage){ //接收键值对消息     
-    	        	((MapMessage) msg).setObject("map", message);
-    	            
+					TextMessage msg = session.createTextMessage();
+					msg.setText((String)message);
+					return msg;
+    	        }else if(message instanceof MapMessage){ //接收键值对消息    
+    	        	MapMessage msg = session.createMapMessage();
+    	        	msg.setObject("map", message);
+    	        	return msg;
     	        }else if(message instanceof StreamMessage){ //接收流消息     
-    	        	((StreamMessage) msg).writeObject(message);
-    	           
+    	        	StreamMessage msg = session.createStreamMessage();
+    	        	msg.writeObject(message);
+    	        	return msg;
     	        }else if(message instanceof BytesMessage){ //接收字节消息     
-    	        	((BytesMessage) msg).writeBytes((byte[]) message);
-    	              
+    	        	BytesMessage msg = session.createBytesMessage();
+    	        	msg.writeBytes((byte[]) message);
+    	        	return msg;
     	        }else if(message instanceof ObjectMessage){ //接收对象消息     
-    	        	((ObjectMessage) msg).setObject(SerializeUtil.serialize(message));
+    	        	ObjectMessage msg= session.createObjectMessage();
+    	        	msg.setObject(SerializeUtil.serialize(message));
+    	        	return msg;
     	        }else{     
     	        	logger.debug("message :"+ message + " is unclear");  
 					throw new JMSException("message type is unclear");
     	        }
-				return msg;
 			}
 		};
 		for (String top : topic) {
