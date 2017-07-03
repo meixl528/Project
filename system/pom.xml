@@ -255,10 +255,11 @@
 			<version>1.2.2.RELEASE</version>
 		</dependency>
 
+		<!-- 1.7支持集群 -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-redis</artifactId>
-			<version>1.6.6.RELEASE</version>
+			<version>1.7.0.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>redis.clients</groupId>

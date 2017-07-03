@@ -288,7 +288,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
         		session.setAttribute(User.FIELD_SESSION_USER, user);
             	session.setAttribute(User.FIELD_USER_ID, user.getUserId());
                 session.setAttribute(User.FIELD_USER_NAME, user.getUserName());
-                session.setMaxInactiveInterval(24*60*60);
+                session.setMaxInactiveInterval(60*60);
                 
                 //存储 登录用户 ip等信息
                 Map<String, ISaveIpAddressListener> listeners = applicationContext.getBeansOfType(ISaveIpAddressListener.class);

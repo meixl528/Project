@@ -48,7 +48,8 @@ PUBLIC "-//mybatis.org//DTDMapper 3.0//EN"
         <include refid="Base_Column_List" />,
         <include refid="com.ssm.mapper.BaseMapper.Base_Column_List"/>
         from tb_USER
-        where upper(USER_NAME) = upper(#{userName,jdbcType=VARCHAR})
+        <!-- where upper(USER_NAME) = upper(#{userName,jdbcType=VARCHAR}) -->
+        where USER_NAME  = #{userName,jdbcType=VARCHAR}
     </select>
     
     <select id="selectByIdList" resultMap="BaseResultMap">

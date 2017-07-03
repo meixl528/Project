@@ -18,8 +18,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class TestRestApiContoller extends BaseRestApiController{
 	
 	@RequestMapping(value = "/restapi/test", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String query(@RequestParam String name) throws JsonProcessingException {
-		System.out.println("name = "+name);
+	public String query(@RequestParam String restApiName) throws JsonProcessingException {
+		System.out.println("name = "+restApiName);
 		return "ajax调用成功!";
 	}
 	

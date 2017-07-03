@@ -36,7 +36,11 @@ public class SaveIpAddressImpl implements ISaveIpAddressListener {
 		String ipAddress = getIpAddress(request);
 
         UserLoginDetail userLogin = new UserLoginDetail();
-        userLogin.setUserId((Long)request.getSession(false).getAttribute(User.FIELD_USER_ID));
+        
+        Long userId = (Long) request.getSession(false).getAttribute(User.FIELD_USER_ID);
+        userId = userId==null?((User)request.getSession(false).getAttribute(User.FIELD_SESSION_USER)).getUserId():userId;
+        
+        userLogin.setUserId(userId);
         String path = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getRequestURI();
         String referer = request.getHeader("Referer");
         referer = StringUtils.isBlank(referer)?path:referer;

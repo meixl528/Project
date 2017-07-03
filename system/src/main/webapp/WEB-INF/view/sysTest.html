@@ -24,14 +24,16 @@
 </body>
 <script>
 	$("#button").click(function(){
-		var data = JSON.stringify({name :"meixl",pass :"meixl"});
+		var data = JSON.stringify({"restApiName" :"meixl","restApiPass" :"meixl"});
 		$.ajax({
-			url:"http://192.168.10.32:8081/system/restapi/test?name=meixl&pass=meixl",
-			//url:"http://192.168.10.32:8081/system/restapi/test",
-			contentType:'application/x-www-form-urlencoded',
+			url:"http://192.168.10.27:8081/system/restapi/test?restApiName=meixl&restApiPass=meixl",
+			//url:"http://192.168.10.27:8081/system/restapi/test",
+			//contentType:'application/json',
 			type:"Post",
-			data: data,
-			async:false,
+			//data: data,
+			dataType:"text",  
+	        async:false,  
+	        cache:false, 
 			success:function(data){
 				alert(data)
 			},

@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class InterfaceResponce<T> {
 	
-	static final String statusCodeSuccess = "S";
-	static final String statusCodeError = "E";
+	public static final String statusCodeSuccess = "S";
+	public static final String statusCodeError = "E";
 	public InterfaceResponce() {}
 	
 	public InterfaceResponce(String statusCode) {
