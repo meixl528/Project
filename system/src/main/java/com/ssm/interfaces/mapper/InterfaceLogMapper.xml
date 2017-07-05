@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.interfaces.mapper.InterfaceLogMapper" >
+  <resultMap id="BaseResultMap" type="com.ssm.interfaces.dto.InterfaceLog">
+      <id column="interface_log_id" property="interfaceLogId" jdbcType="DECIMAL" />
+      <result column="interface_code" property="interfaceCode" jdbcType="VARCHAR" />
+      <result column="interface_url" property="interfaceUrl" jdbcType="VARCHAR" />
+      <result column="status" property="status" jdbcType="VARCHAR" />
+      <result column="core_data" property="coreData" jdbcType="VARCHAR" />
+      <result column="log_message" property="logMessage" jdbcType="VARCHAR" />
+        
+      <result column="run_date" property="runDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+</mapper>

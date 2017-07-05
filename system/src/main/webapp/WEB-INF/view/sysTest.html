@@ -8,7 +8,6 @@
 	<div style="padding:10px;height:350px">
 		姓名:<input type="text" name="name">
 		<button id="button" type="button">restApi测试</button>
-		
 		<br><br>
 		
 		interface:soap
@@ -17,12 +16,19 @@
 		
 		interface:rest
 		<button id="jsonButton2" type="button">rest测试</button>
+		<br><br>
+		
+		job:quartz
+		<button id="jsonButton3" type="button">quartz测试</button>
+	</div>
+	<div id="tips" style="font-size:30px;text-align: center">
 	</div>
 	<div id="content" style="font-size:30px;text-align: center">
-	
 	</div>
 </body>
 <script>
+
+	//测试  restApi
 	$("#button").click(function(){
 		var data = JSON.stringify({"restApiName" :"meixl","restApiPass" :"meixl"});
 		$.ajax({
@@ -43,6 +49,7 @@
 		})
 	})
 	
+	//测试 接口  soap
 	$("#jsonButton").click(function(){
 		$.ajax({
 			url:"${base.contextPath}/sys/interface/testSoap",
@@ -51,7 +58,13 @@
 			type:"post",
 			cache:false,
 			success:function(data){
-				$("#content").text("Soap ok");
+				$("#tips").text("Soap ok");
+				var rows = data.rows;
+				var text = "";
+				for(var i in rows){
+					text += "userName = "+ rows[i].userName+ ";";
+				}
+				$("#content").text(text);
 			},
 			error:function(er){
 				alert("error")
@@ -59,6 +72,7 @@
 		})
 	})
 	
+	//测试 接口  rest
 	$("#jsonButton2").click(function(){
 		$.ajax({
 			url:"${base.contextPath}/sys/interface/testRest",
@@ -67,7 +81,13 @@
 			type:"post",
 			cache:false,
 			success:function(data){
-				$("#content").text("Rest ok");
+				$("#tips").text("Rest ok");
+				var rows = data.rows;
+				var text = "";
+				for(var i in rows){
+					text += "userName = "+ rows[i].userName+ ", phone = " + rows[i].phone +";";
+				}
+				$("#content").text(text);
 			},
 			error:function(er){
 				alert("error")
@@ -75,5 +95,21 @@
 		})
 	})
 	
+	// 测试  定时任务job
+	$("#jsonButton3").click(function(){
+		$.ajax({
+			url:"${base.contextPath}/quartz/create/test",
+			data:{},
+			dataType:"json",
+			type:"post",
+			cache:false,
+			success:function(data){
+				$("#tips").text(data.message);
+			},
+			error:function(er){
+				alert("error")
+			}
+		})
+	})
 </script>
 </html>

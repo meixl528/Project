@@ -59,7 +59,7 @@ public class StyleTemplateController extends BaseController {
      */
     @RequestMapping(value = "/fnd/styleTemplate/removeRow", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseData deleteRowGuide(HttpServletRequest request,StyleTemplate template) {
+    public ResponseData deleteRowGuide(HttpServletRequest request,@RequestBody StyleTemplate template) {
     	int i = service.deleteByPrimaryKey(template);
     	if(i > 0){
     		return new ResponseData(true);

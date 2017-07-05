@@ -23,6 +23,12 @@
     <bean id="destination" class="org.apache.activemq.command.ActiveMQQueue">
         <constructor-arg index="0" value="test.activemq.queue" />
     </bean>
+    
+    <!-- Message Sender Definition -->
+    <!-- <bean id="messageSender" class="com.ssm.activeMQ.MessageSender"> -->
+        <!-- <constructor-arg index="0" ref="jmsTemplate" />
+        <constructor-arg index="1" ref="destination" /> -->
+    <!-- </bean> -->
 
 	<!-- JmsTemplate Definition -->
     <bean id="queueJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
@@ -37,14 +43,8 @@
         <property name="connectionFactory" ref="connectionFactory" />
         <!-- 订阅发布模式 -->  
         <property name="pubSubDomain" value="true" />  
-        <!-- <property name="receiveTimeout" value="10000" /> -->
+        <property name="receiveTimeout" value="0" />
     </bean>
-
-    <!-- Message Sender Definition -->
-    <!-- <bean id="messageSender" class="com.ssm.activeMQ.MessageSender"> -->
-        <!-- <constructor-arg index="0" ref="jmsTemplate" />
-        <constructor-arg index="1" ref="destination" /> -->
-    <!-- </bean> -->
 
     <!-- 消息监听器，主要监听的目的地址 Message Receiver Definition -->
     <bean id="topicMessageReceiver" class="com.ssm.activeMQ.service.impl.TopicMessageReceiver"/>

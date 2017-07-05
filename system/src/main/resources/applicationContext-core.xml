@@ -132,4 +132,8 @@
 		<property name="markerInterface" value="tk.mybatis.mapper.common.Mapper"/>
 	</bean> -->
    
+    <!-- lock -->
+    <bean id="distributeLockTemplate" class="com.ssm.lock.impl.DistributedLockFactoryBean">
+        <property name="mode" value="MULTIPLE"/>
+    </bean>
 </beans>

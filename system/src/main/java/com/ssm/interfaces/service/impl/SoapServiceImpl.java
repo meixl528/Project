@@ -9,6 +9,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssm.account.dto.User;
 import com.ssm.activeMQ.service.IMessageSender;
+import com.ssm.core.request.IRequest;
 import com.ssm.fnd.dto.StyleTemplate;
 import com.ssm.fnd.service.IStyleTemplateService;
+import com.ssm.interfaces.dto.InterfaceLog;
 import com.ssm.interfaces.dto.InterfaceResponce;
+import com.ssm.interfaces.service.IInetfaceLogService;
 import com.ssm.interfaces.service.ISoapService;
 import com.ssm.util.XmlUtil;
 
@@ -37,15 +44,18 @@ import freemarker.template.Template;
 @Service
 public class SoapServiceImpl implements ISoapService {
 	@Autowired
+	private ObjectMapper objectMapper;
+	@Autowired
 	private IStyleTemplateService styleTemplateService;
-	
 	@Autowired
 	private IMessageSender messageSender;
+	@Autowired
+	private IInetfaceLogService inetfaceLogService;
 	
 	public static final Configuration freeMarkerConfig = new Configuration(Configuration.VERSION_2_3_21);
 	
 	@Override
-	public InterfaceResponce<?> doProgress(String interfaceUrl,Map<String,?> mapDatas,String temp,String loginName,String loginPass) throws Exception{
+	public InterfaceResponce<?> doProgress(IRequest iRequest,String interfaceUrl,Map<String,Object> mapDatas,String temp,String loginName,String loginPass) throws Exception{
 		
 		//模板加载
 		StyleTemplate styleTemplate = styleTemplateService.getStyleTemplate(temp);
@@ -116,19 +126,25 @@ public class SoapServiceImpl implements ISoapService {
 		//Element root = document.getRootElement();
 		Element root = document.getDocumentElement();
 		NodeList resNodeList = root.getElementsByTagName("userName");
+		
+		List<User> list = new ArrayList<>();
 		for (int i = 0; i < resNodeList.getLength(); i++) {
 			String userName = resNodeList.item(i).getTextContent();
 			System.out.println("响应报文中解析出 userName = "+ userName);
+			
+			User u= new User(userName,null);
+			list.add(u);
 		}
 		conn.disconnect();
 		
 		try {
 			messageSender.sendTopic(resNodeList.item(0).getTextContent(), "test.soap.topic");
 		} finally{
-			
-			//write log
+			//write log  接口调用日志记录
+			String statusCode = root.getElementsByTagName("statusCode").item(0).getTextContent();
+			inetfaceLogService.insertSelective(iRequest, new InterfaceLog(interfaceUrl, temp, statusCode, objectMapper.writeValueAsString(list)));
 		}
-		return new InterfaceResponce<>();
+		return new InterfaceResponce<>(list);
 		
 	}
 

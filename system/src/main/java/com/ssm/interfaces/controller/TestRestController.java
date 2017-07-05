@@ -1,6 +1,8 @@
 package com.ssm.interfaces.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssm.core.request.IRequest;
 import com.ssm.interfaces.dto.InterfaceResponce;
 import com.ssm.interfaces.service.IRestService;
 import com.ssm.sys.controller.BaseController;
@@ -31,24 +34,33 @@ public class TestRestController extends BaseController{
     @ResponseBody
     public ResponseData testRest(HttpServletRequest request) throws Exception {
 		//Configuration freeMarkerConfig = new Configuration(Configuration.VERSION_2_3_21);
+		IRequest iRequest = createRequestContext(request);
 		
 		String interfaceUrl = "http://192.168.10.27:8081/system/ws/helloWord2/rest/json";
 		
 		Map<String,Object> map = new HashMap<>();
-		map.put("data", "测试");
-		map.put("data2", "测试2");
+		map.put("userName", "测试");
+		map.put("phone", "测试2");
 		
 		String jsonDatas = objectMapper.writeValueAsString(map);
 		String loginName = "meixl";
 		String loginPass = "meixl";
 		
-		InterfaceResponce<?> responce = restService.doProgress(interfaceUrl, jsonDatas, loginName, loginPass);
+		InterfaceResponce<?> resp = restService.doProgress(iRequest, interfaceUrl, jsonDatas, loginName, loginPass);
 		
-		ResponseData resp = new ResponseData(true);
-		if(!responce.getStatusCode().equals(InterfaceResponce.statusCodeSuccess)){
-			resp.setSuccess(false);
+		ResponseData responce = new ResponseData(true);
+		if(!resp.getStatusCode().equals(InterfaceResponce.statusCodeSuccess)){
+			responce.setSuccess(false);
 		}
-		return resp;
+		if(resp.getPojo()!=null){
+			List<Object> list = new ArrayList<>();
+			list.add(resp.getPojo());
+			responce.setRows(list);
+		}
+		if(resp.getRows()!=null && !resp.getRows().isEmpty()){
+			responce.setRows(resp.getRows());
+		}
+		return responce;
 	}
 	
 }
