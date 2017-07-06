@@ -78,6 +78,7 @@ public class QueueMessageReceiver implements InitializingBean {
 						Thread.sleep(100);
 						continue;
 					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 				}
 				bean.onQueueMessage(message, queue);

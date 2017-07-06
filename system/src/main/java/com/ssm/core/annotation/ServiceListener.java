@@ -12,10 +12,11 @@ import com.ssm.extensible.base.IServiceListener;
  */
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@SuppressWarnings("rawtypes")
 public @interface ServiceListener {
     Class<?> target();
+    
+	Class<? extends IServiceListener>[] before() default {};
 
-    Class<? extends IServiceListener>[] before() default {};
-
-    Class<? extends IServiceListener>[] after() default {};
+	Class<? extends IServiceListener>[] after() default {};
 }

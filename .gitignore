@@ -1,2 +1,4 @@
 /system/.svn
 /system/target
+.settings
+/system/.settings

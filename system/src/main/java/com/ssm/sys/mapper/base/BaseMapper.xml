@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!--
-  ~ #{copyright}#
-  -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <!-- 此处命名空间随意,子xml的extends需要此命名 -->
@@ -16,7 +13,7 @@
         <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="TIMESTAMP"/>
         <result column="LAST_UPDATE_LOGIN" property="lastUpdateLogin" jdbcType="DECIMAL"/>
         <result column="ATTRIBUTE_CATEGORY" property="attributeCategory" jdbcType="VARCHAR"/>
-<!--         <result column="ATTRIBUTE1" property="attribute1" jdbcType="VARCHAR"/>
+        <result column="ATTRIBUTE1" property="attribute1" jdbcType="VARCHAR"/>
         <result column="ATTRIBUTE2" property="attribute2" jdbcType="VARCHAR"/>
         <result column="ATTRIBUTE3" property="attribute3" jdbcType="VARCHAR"/>
         <result column="ATTRIBUTE4" property="attribute4" jdbcType="VARCHAR"/>
@@ -30,13 +27,13 @@
         <result column="ATTRIBUTE12" property="attribute12" jdbcType="VARCHAR"/>
         <result column="ATTRIBUTE13" property="attribute13" jdbcType="VARCHAR"/>
         <result column="ATTRIBUTE14" property="attribute14" jdbcType="VARCHAR"/>
-        <result column="ATTRIBUTE15" property="attribute15" jdbcType="VARCHAR"/> -->
+        <result column="ATTRIBUTE15" property="attribute15" jdbcType="VARCHAR"/> 
     </resultMap>
     <sql id="Base_Column_List">
         OBJECT_VERSION_NUMBER, REQUEST_ID,PROGRAM_ID,
-        CREATION_DATE, CREATED_BY, LAST_UPDATED_BY, LAST_UPDATE_DATE, LAST_UPDATE_LOGIN<!-- ,
+        CREATION_DATE, CREATED_BY, LAST_UPDATED_BY, LAST_UPDATE_DATE, LAST_UPDATE_LOGIN,
         ATTRIBUTE_CATEGORY, ATTRIBUTE1, ATTRIBUTE2, ATTRIBUTE3, ATTRIBUTE4, ATTRIBUTE5, ATTRIBUTE6, 
         ATTRIBUTE7, ATTRIBUTE8, ATTRIBUTE9, ATTRIBUTE10, ATTRIBUTE11, ATTRIBUTE12, ATTRIBUTE13, 
-        ATTRIBUTE14, ATTRIBUTE15 -->
+        ATTRIBUTE14, ATTRIBUTE15 
     </sql>
 </mapper>
