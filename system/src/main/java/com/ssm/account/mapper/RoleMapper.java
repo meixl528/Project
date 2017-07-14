@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.ssm.account.dto.Role;
+import com.ssm.account.dto.RoleExt;
 import com.ssm.account.dto.User;
 
 import com.ssm.mybatis.common.Mapper;
@@ -12,7 +13,7 @@ import com.ssm.mybatis.common.Mapper;
 
 public interface RoleMapper extends Mapper<Role>{
 	
-	List<Role> selectByUser(User user);
+	List<RoleExt> selectByUser(User user);
 	
 	//校验用户角色是否存在
 	List<Role> selectUserRoleCount(@Param(value = "locale")String locale,@Param(value = "userId") Long userId,@Param(value = "roleId") Long roleId);

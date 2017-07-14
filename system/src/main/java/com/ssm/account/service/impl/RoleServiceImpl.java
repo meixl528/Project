@@ -9,10 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.PageHelper;
 import com.ssm.account.dto.Role;
+import com.ssm.account.dto.RoleExt;
 import com.ssm.account.dto.User;
 import com.ssm.account.exception.RoleException;
 import com.ssm.account.mapper.RoleMapper;
-import com.ssm.account.service.IRole;
 import com.ssm.account.service.IRoleService;
 import com.ssm.core.request.IRequest;
 import com.ssm.sys.service.impl.BaseServiceImpl;
@@ -32,9 +32,8 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleServi
 	
 	@Override
     @Transactional(propagation = Propagation.SUPPORTS)
-    public List<IRole> selectRolesByUser(IRequest requestContext, User user) {
-        List rootRoles = roleMapper.selectByUser(user);
-        return rootRoles;
+    public List<RoleExt> selectRolesByUser(IRequest requestContext, User user) {
+		return roleMapper.selectByUser(user);
     }
 	
 	@Override

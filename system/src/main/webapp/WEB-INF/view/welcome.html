@@ -421,6 +421,14 @@
             <input type="hidden" name="lang"/>
         </form>
         <ul class="navbar-links navbar-right">
+        	<li style="margin-top: 11px; ">
+        		<select name="lang" onchange="changeLang(this.value)" style="height:28px">
+        			<#list languages as l>
+                        <option value="${l.langCode}" <#if base.getLocale() == l.langCode>selected</#if> >${l.description}</option>
+		            </#list>
+        		</select>
+        	</li>
+        
             <li class="dropdown">
                 <a class="dropdown-toggle" href="javascript:;" data-toggle="dropdown">
                     <i class="fa fa-users"></i>
@@ -693,6 +701,11 @@
             initSize();
             $(window).on("resize", initSize);
             loadMenu();
+        }
+        
+        function changeLang(lang){
+            var urlString= window.location.protocol+"//"+window.location.host+window.location.pathname+"?lang="+lang;
+            window.location.href = urlString;
         }
         
         init();

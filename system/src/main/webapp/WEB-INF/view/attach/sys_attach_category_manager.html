@@ -1,0 +1,237 @@
+<#--
+ * description: 附件分类管理页面
+ * 
+-->
+<#include "../include/header.html">
+<style>
+.breadcrumb>li+li:before {
+    content: "/ " !important;
+}
+#category_Breadcrumb a{
+	font-size: 15px;
+	color: #337ab7;
+    text-decoration: none;
+}
+#category_Breadcrumb a:hover{
+    text-decoration: underline;
+}
+#category_Breadcrumb .active {
+    color: #777;
+    font-size: 15px;
+}
+</style>
+<body >
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+       model:{},
+       queryResource: function(e) {
+           $('#grid').data('kendoGrid').dataSource.page(1);
+       }
+    });
+</script> 
+ <div id="content-container"> 
+     <div id="page-content">
+     	<div>
+         	<ul id="category_Breadcrumb" class="breadcrumb">
+        <li><a href="sys_attach_category_manager.html">Home</a></li>
+        <#if breadCrumb??>
+            <#list breadCrumb as c>
+                <li >
+                <#if c_has_next>
+                    <a   href="${base.contextPath}/attach/sys_attach_category_manager.html?parentCategoryId=${c.categoryId}">${c.categoryName}
+                             </a>
+                <#else>
+                	 <span class="active">${c.categoryName}</span>
+                </#if>
+                </li>
+            </#list>
+        </#if>
+        
+    </ul> 
+     	</div>
+
+         <div id="grid-contrain">
+             <div id="grid" style="clear:both" class="table"></div>
+         </div>
+         
+     </div>
+ </div>
+<!-- 自定义的 编辑/新建 弹框 使用该 window  -->
+<div id="editWin"></div>   
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+	   //向后台进行数据交互
+        var BaseUrl = "${base.contextPath}/sys/attachcategory/",
+        dataSource = new kendo.data.DataSource({
+            transport: {
+                read:  {
+                    url: BaseUrl + "query?parentCategoryId=${RequestParameters.parentCategoryId!}",
+                    type : "POST",
+                    dataType: "json"
+                },
+                update: {
+                    url: BaseUrl + "submit",
+                    type : "POST" ,
+                    contentType: "application/json"
+                },
+                destroy: {
+                    url: BaseUrl + "remove",
+                    type : "POST" ,
+                    contentType: "application/json"
+                },
+                create: {
+                    url: BaseUrl + "submit",
+                    type : "POST" ,
+                    contentType: "application/json"
+                },
+                //这是将前台的状态类型，转换为后台的状态类型
+                parameterMap: function(options, type) {
+                    if (type !== "read" && options.models) {
+                        var datas = options.models
+                        if(type =='create' || type =='update'){
+                            datas = options.models.map(function(data){
+                                data['__status'] = (type =='create' ? 'add' : 'update');
+                                return data;
+                            }) 
+                        }
+                        return kendo.stringify(datas);
+                    } else if (type === "read") {
+                    	 var map = viewModel.model.toJSON();
+                         map.page = options.page;
+                         map.pagesize = options.pageSize;
+                         for (var k in map) {
+                             if (map[k] === '' || map[k] === null || map[k] === undefined)
+                                 delete map[k]
+                         }
+                         return map;
+                    }  
+                }
+            },
+            
+            batch: true,
+            serverPaging : true,
+            
+            schema: {
+                data:'rows',
+                total:'total',
+                model: {
+                	id: "categoryId", 
+                    fields: {
+                    	isUnique:{defaultValue: 'Y',type: 'boolean',checkedValue:'Y',uncheckedValue:'N'},
+                    	categoryName: {  validation: { required: true  } },
+                    	categoryPath: { validation: { required: false } },
+                    	allowedFileSize: { type: "number", validation: {min: 0 } },
+                    	sourceType: { editable: false, validation: { required: false } },
+                    	status: { editable: false, validation: { required: false } },
+                    }
+                }
+            }
+        });
+        
+        //新建时调用的界面
+        window.editData = function(parentCategoryId){
+	    	 var url = 'sys_attach_category_edit_kendoui.html?parentCategoryId='+parentCategoryId;
+	    	
+	         var editWin =  $("#editWin").kendoWindow({
+             	actions: [ "Maximize", "Minimize", "Close"],
+                 width: 800,
+                 height: 400,
+                 title: '<@spring.message "hap.edit"/>', 
+                 content: url,                  
+                 iframe:  true,
+                 visible: false,
+                 modal:true,
+                 close: function() {
+                	 //window 关闭  刷新 本页面的  grid 
+                	 $('#grid').data('kendoGrid').dataSource.page(1);
+                 }
+             }).data("kendoWindow");
+             editWin.center().open();
+	    };
+
+        $("#grid").kendoGrid({
+        	dataSource: dataSource,
+            navigatable: false,
+            resizable: true,
+            scrollable: true,
+            toolbar: [
+                { 
+                    name:"create", 
+                    template : '<span class="btn btn-primary k-grid-mycreate"><i class="fa fa-plus-square" style="margin-right:3px;"></i><@spring.message "hap.new"/></span>'
+                },{
+                    name: "save",
+                    template : '<span class="btn btn-success k-grid-save-changes"><i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>'
+                }
+            ],
+            columns: [
+                { 
+                	field: "categoryName", 
+                	title: '<@spring.message "attachcategory.categoryname"/>',
+                	width: 120,
+                	template: function(item){
+                        var encodeCategoryName = Hap.escapeHtml(item.categoryName)
+                        return '<a style="text-decoration: underline;" href="${base.contextPath}/attach/sys_attach_category_manager.html?parentCategoryId='+item.categoryId+'">'+encodeCategoryName + '</a>';
+                    }
+                }, { 
+                	field: "categoryPath", 
+                	title: '<@spring.message "attachcategory.categorypath"/>',
+                	width: 150 
+                },{ 
+                	field: "description", 
+                	title: '<@spring.message "attachcategory.description"/>',
+                	width: 120 
+                },{ 
+                	field: "allowedFileType", 
+                	title: '<@spring.message "attachcategory.allowedfiletype"/>',
+                	width: 120 
+                },{ 
+                	field: "allowedFileSize", 
+                	title: '<@spring.message "attachcategory.allowedfilesize"/>',
+                	width: 90 
+                },{ 
+                	field: "sourceType", 
+                	title: '<@spring.message "attachcategory.sourcetype"/>',
+                	width: 120 
+                },{
+                	field:"isUnique",
+                    title           : '<@spring.message "attachcategory.isunique"/>', 
+                    width: 60,
+                    headerAttributes: {style: "text-align:center"},
+                    attributes      : {style: "text-align:center"}
+                },{ 
+                	field: "status", 
+                	title: '<@spring.message "attachcategory.statusname"/>',
+                	width: 60 ,
+                	headerAttributes: {style: "text-align:center"},
+                    attributes      : {style: "text-align:center"},
+                    template: function(item){
+                    	if(item.status == '1'){
+                            return '<@spring.message "attachcategory.statusname.normal" />';
+                        }else if(item.status == '2'){
+                            return '<@spring.message "attachcategory.statusname.archived" />';
+                        }else{
+                            return '';
+                        }
+                    }
+                }
+                ],
+                editable: true
+        });
+        
+      	//该对象的新建有一些字段需要处理  此处选择使用 弹框来实现新增   
+        $(".k-grid-mycreate").click(function(e){
+            e.preventDefault();
+            editData("${RequestParameters.parentCategoryId!}");
+        });
+        
+    });
+
+
+	//自动根据当前屏幕大小调整表格
+	Hap.autoResizeGrid("#grid"); 
+	
+</script>
+</body>
+</html>

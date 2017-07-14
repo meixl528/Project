@@ -1,0 +1,207 @@
+<#--
+ * description: 附件管理页面
+ * version: 1.0
+ * author: shuo.han@hand-china.com
+ * #{copyright}#.
+-->
+<#include "../../include/header.html">
+<head>
+	<meta charset="UTF-8">
+	<title>文件上传demo</title>
+</head>
+<body>
+	
+	<div id="uploader_content">
+
+		<form method="POST">
+			<!-- 因为做得是Demo，所以上传的时候，设置传参必须的隐藏属性 -->
+			<input type="hidden" id="sourceType" name="sourceType" value="IMG2">
+			<input type="hidden" id="sourceKey" name="sourceKey" value="1">
+			<input type="hidden" id="id" name="id" value="WU_FILE_0">
+			<input type="hidden" id="name" name="name">
+			<input type="hidden" id="type" name="type">
+			<input type="hidden" id="uploadDate" name="uploadDate">
+			<input type="hidden" id="size" name="size">
+			<input type="hidden" id="fileId" name="fileId">
+			<input type="file" name="files" id="files"/>
+		</form>
+		<!-- 显示文件列表的div -->
+		<div>
+			<h4 style="margin-left: 6px;margin-top: 6px">历史操作文件列表</h4>
+			<div id="file_view_list"></div>
+		</div>
+	</div>
+
+	<script>
+
+		$(document).ready(function(){
+
+			//定义一个数据源
+			var dataSource = new kendo.data.DataSource({
+                batch       : true,
+                serverPaging: true,
+                pageSize    : 10,
+                schema      : {
+                    data  : 'rows',
+                    total : 'total',
+                    model : {
+                        id    : "fileId"
+                    }
+                }
+            });
+            //定义一个Grid
+            $("#file_view_list").kendoGrid({
+		        dataSource: dataSource,
+		        navigatable: true,
+            	height:'100%',
+		        //width:500,
+		        resizable : true,
+		        scrollable: true,
+		        pageable  : {
+		            pageSizes  : [5, 10, 20, 50],
+		            refresh    : true,
+		            buttonCount: 5
+		        },
+		        columns   : [
+		        	{
+		            	field    : "token", 
+		            	hidden   : true, 
+		            },
+		            {
+		            	field    : "fileId", 
+		            	title    : '上传编号'
+		            },
+		            {
+		            	field    : "fileName", 
+		            	title    : '附件名字'
+		            },
+		            {
+		            	field    : "fileSize", 
+		            	title    : '附件大小'
+		            },
+		            {
+		            	field    : "fileType", 
+		            	title    : '附件类型'
+		            },
+		            {
+		            	field    : "uploadDate", 
+		            	title    : '上传日期'
+		            },
+		            {
+		            	title     : '操作',
+		            	attributes: {style: "text-align:center;padding:0px"}, 
+		            	command   : [{
+			                text  : '<@spring.message "hap.delete"/>',
+			                click : function (e) {
+			                    e.preventDefault();
+			                    var data = this.dataItem($(e.target).closest("tr"));
+			                    this.dataSource.remove(data)
+			                }
+		          		}],
+		            	width     : 70
+		            }
+		        ],
+		        editable  : false
+		    });
+			//设置Grid自适应
+			Hap.autoResizeGrid("#file_view_list");
+
+			//定义文件上传
+			$("#files").kendoUpload({
+		        async        : {
+		            saveUrl: "${base.contextPath}/sys/attach/upload",
+		            removeUrl: "${base.contextPath}/sys/attach/remove"
+		        },
+		        showFileList : true,
+		        upload       : onUpload,
+		        success      : onSuccess,
+		        remove       : onRemove
+		    });
+
+			function onRemove(e){
+				var data = dataSource.data();
+				var files = e.files;
+				$.each(files,function(){
+					var fileName = this.name;
+					for(var i = 0;i < data.length; i ++){
+						if(data[i].fileName == fileName){
+							e.data = {
+								fileId : data[i].fileId,
+								token : data[i].token
+							}
+						}
+					} 
+				})		
+			}
+			var countNumber = 1;
+		    //回调函数
+		    function onSuccess(e) {
+		    	//状态为成功
+		    	if(e.response.message == "UPLOAD_SUCCESS"){
+		    		//写数据源
+		    		dataSource.add({
+		    			token   : e.response.file._token,
+			        	fileId   : e.response.file.fileId,
+			        	fileName : e.response.file.fileName,
+			        	fileSize : e.response.file.fileSize,
+			        	fileType : e.response.file.fileType,
+			        	uploadDate : e.response.file.uploadDate
+			        });
+		    	}else if(e.response.message == "success"){
+		    		//删除成功
+		    		var data = dataSource.data();
+					var files = e.files;
+					$.each(files,function(){
+						var fileName = this.name;
+						for(var i = 0;i < data.length; i ++){
+							if(data[i].fileName == fileName){
+								e.data = {
+									fileId : data[i].fileId,
+									token : data[i].token
+								}
+								dataSource.remove(data[i]);
+							}
+						} 
+					})
+		    	}
+		        kendo.ui.showInfoDialog({
+                    title    : '提示信息',
+                    message  : e.response.message
+                })
+		    }
+
+		    //校验上传文件的格式是否正确
+		    function onUpload(e){
+		    	var files = e.files;
+		        $.each(files, function () {
+		        	lowerCase = this.extension.toLowerCase();
+		            if (lowerCase != ".png" && lowerCase != ".jpg") {
+		                kendo.ui.showInfoDialog({
+		                    title:'提示信息',
+		                    message:'文件的格式必须是png或jpg！'
+		                })
+		                e.preventDefault();
+		                return;
+		            }else{
+				        $("#size").val(this.size);
+				        $("#uploadDate").val(this.rawFile.lastModifiedDate);
+				        $("type").val(this.rawFile.type);
+				        $("#name").val(this.name);
+		            }
+		        });
+		        e.data = {
+		    		sourceType : $("#sourceType").val(),
+		    		sourceKey  : $("#sourceKey").val(),
+		    		id         : $("#id").val(),
+		    		name       : $("#name").val(),
+		    		type       : $("type").val(),
+		    		lastModifiedDate : $("#uploadDate").val(),
+		    		size       : $("#size").val()
+		    	}
+		    } 
+
+		});
+
+	</script>
+
+</body>

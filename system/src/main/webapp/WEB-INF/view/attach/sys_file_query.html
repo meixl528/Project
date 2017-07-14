@@ -1,0 +1,16 @@
+<#include "../include/header.html">
+<html>
+<head>
+<meta charset="utf-8" />
+<title>显示附件下的文件</title>
+</head>
+
+<body>
+	<div style="">
+		<!--${attachmentProvider.getAttachListHtml("IMG2","1",base.locale, base.contextPath)}-->
+		${attachmentProvider.getAttachHtml("IMG2","1",base.locale,
+				base.contextPath,false,false)}
+
+	</div>
+</body>
+</html>

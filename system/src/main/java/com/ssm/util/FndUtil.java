@@ -237,8 +237,6 @@ public class FndUtil {
 	
 	/**
 	 * 从IRequest对象中获得Locale对象
-	 * 2017年5月12日
-	 * 
 	 * @param request
 	 * @return
 	 */
@@ -253,4 +251,18 @@ public class FndUtil {
 		return locale;
 	}
 
+	/**
+	 * 根据语言字符串获得Locale对象
+	 * @param localeStr zh_CN / en_GB
+	 */
+	public static Locale getLocale(String localeStr){
+		String[] localeInfo = localeStr.split("_");
+		Locale locale = null;
+		if(localeInfo.length == 1){
+			locale = new Locale(localeInfo[0]);
+		}else{
+			locale = new Locale(localeInfo[0], localeInfo[1]);
+		}
+		return locale;
+	}
 }

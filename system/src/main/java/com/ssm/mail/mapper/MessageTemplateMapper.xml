@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.mail.mapper.MessageTemplateMapper" >
+  <resultMap id="BaseResultMap" type="com.ssm.mail.dto.MessageTemplate" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
+    <id column="TEMPLATE_ID" property="templateId" jdbcType="DECIMAL" />
+    <result column="ACCOUNT_ID" property="accountId" jdbcType="DECIMAL" />
+    <result column="TEMPLATE_CODE" property="templateCode" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    <result column="TEMPLATE_TYPE" property="templateType" jdbcType="VARCHAR" />
+    <result column="PRIORITY_LEVEL" property="priorityLevel" jdbcType="VARCHAR" />
+    <result column="SUBJECT" property="subject" jdbcType="CLOB" />
+    <result column="CONTENT" property="content" jdbcType="CLOB" />
+  </resultMap>
+  <select id="selectMessageTemplates" resultMap="BaseResultMap" parameterType="com.ssm.mail.dto.MessageTemplate">
+       select
+	   tem.*
+       from Tb_MESSAGE_TEMPLATE tem
+       <where>
+          <if test="templateId != null">
+              and tem.TEMPLATE_ID = #{templateId,jdbcType=DECIMAL}
+          </if>
+          <if test="templateCode != null">
+              and tem.TEMPLATE_CODE like concat('%',concat(#{templateCode,jdbcType=VARCHAR},'%'))
+          </if>
+          <if test="templateType != null">
+              and tem.TEMPLATE_TYPE = #{templateType,jdbcType=VARCHAR}
+          </if>
+          <if test="description != null">
+              and tem.DESCRIPTION like concat('%',concat(#{description,jdbcType=VARCHAR},'%'))
+          </if>
+       </where>
+  </select>
+
+  <select id="selectByCode" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select *
+    from Tb_MESSAGE_TEMPLATE
+    where TEMPLATE_CODE = #{templateCode,jdbcType=VARCHAR}
+  </select>
+  <select id="getMsgTemByCode" resultMap="BaseResultMap">
+		select 
+		*
+		FROM Tb_MESSAGE_TEMPLATE tem
+		<where>
+			<if test="templateCode != null">
+				tem.TEMPLATE_CODE = #{templateCode,jdbcType=VARCHAR}
+			</if>
+			<if test="templateId != null">
+				AND tem.TEMPLATE_ID != #{templateId, jdbcType=DECIMAL}
+			</if>
+		</where>
+	</select>
+</mapper>

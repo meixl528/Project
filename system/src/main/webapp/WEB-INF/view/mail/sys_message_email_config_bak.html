@@ -1,0 +1,103 @@
+<#-- 
+ * description: sms账号页面
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 10px;">
+	<form id="dataForm"></form>
+	<div id="dataGrid"></div>
+	
+	<script type="text/javascript">
+	$(function() {
+	    window.editData = function(id){
+	    	var url = 'sys_message_email_config_edit.html';
+	    	if(id){
+	    		url = url + '?isedit=1&id=' + id;
+	    	}
+	        window.popWin = $.ligerDialog.open({
+	            width : 900,
+	            height : 650,
+	            url : url
+	        });
+	    };
+	    /* dataForm表单提交 */
+	    window['dataForm'] = $("#dataForm").ligerForm({
+	        fields : [ {
+	            type : 'text',
+	            label : '<@spring.message "messageemailconfig.configCode"/>',
+	            name : 'configCode',
+	            newline : true
+	        }, {
+	            type : 'text',
+	            label : '<@spring.message "messageemailconfig.introduction"/>',
+	            name : 'description',
+	            newline : false
+	        } ],
+	        buttons : [ {
+	            text : '<@spring.message "hap.query"/>',
+	            disabled : false,
+	            width : 60,
+	            click : function() {
+	                Hap.gridQuery({
+	                    form : dataForm,
+	                    grid : dataGrid
+	                })
+	            }
+	        } ]
+	    });
+
+	    /* dataGrid表格提交 */
+	    window['dataGrid'] = $("#dataGrid").ligerGrid({
+	        columns : [
+				{display:'<@spring.message "messageemailconfig.configCode"/>', name:"configCode", align:"left", width:100},
+				{display:'<@spring.message "messageemailconfig.introduction"/>', name:"description", align:"left", width:180},
+				{display:'<@spring.message "messageemailconfig.host"/>', name:"host", align:"left", width:140},
+				{display:'<@spring.message "messageemailconfig.port"/>', name:"port", align:"right", width:60},
+				{display:'<@spring.message "messageemailconfig.tryTimes"/>', name:"tryTimes", align:"right", width:100},
+				{display:'<@spring.message "messageemailconfig.useWhiteList"/>', name:"useWhiteList", align:"center", width:100},
+				{display : '<@spring.message "hap.action"/>', width : 60, align : 'center',
+	                render : function(rowdata) {
+	                    return '<a href="#" onclick="editData('+rowdata.configId+')"><@spring.message "hap.edit"/></a>'
+	                }
+	            }
+			],
+	        url : '${base.contextPath}/sys/messageEmailConfig/query',
+	        toolbar : {
+	            items : [
+		            { text: '<@spring.message "hap.new"/>', icon: 'add', click: function(){
+		            	/* Mclin修改，邮箱配置只能有一条 */
+		            	$.ajax({
+		            		url: '${base.contextPath}/sys/messageEmailConfig/queryMsgConfigQuanties',
+		            		success: function(redata){
+		            			if(redata.success){
+		            				var row = redata.rows[0];
+		            				if(row.msgConfigAmount >= 1){
+		            					// 邮箱配置已经超过数量，不允许创建了
+		            					 $.ligerDialog.warn('<@spring.message "msg.warning.messages.message_config_can_only_have_one"/>', null, null);
+		            				}else{
+		            					editData();
+		            				}
+		            			}
+		            		}, 
+		            		error: function(){
+		            			
+		            		}
+		            	});
+	                }},
+	                { line: true },
+	                { text: '<@spring.message "hap.delete"/>', icon: 'delete', click: function(){
+	                	Hap.gridDelete({
+                            grid : dataGrid,
+                            url : '${base.contextPath}/sys/messageEmailConfig/remove'
+                        })
+	                }}
+	            ]
+	        },
+	        width : '99%',
+	        height : '98%',
+	        checkbox : true
+	    })
+	})
+	</script>
+</body>
+</html>

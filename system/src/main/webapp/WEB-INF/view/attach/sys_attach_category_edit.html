@@ -1,0 +1,139 @@
+<#-- 
+ * description: 附件目录创建页面
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 15px">
+	<form id="mainform" method="post" enctype="application/json;charset=UTF-8">
+	</form>
+	<div id="attach_category_edit_grid" style="margin-left: 2px; margin-top: 2px;"></div>
+	<script type="text/javascript">
+	//保存提交
+        function f_save() {
+					$("#leafFlag").attr("value","1");
+					<#if RequestParameters.parentCategoryId??> 
+							<#if RequestParameters.parentCategoryId == ""> 
+								$("#parentCategoryId").attr("value","-1");
+							<#else> 
+								$("#parentCategoryId").attr("value","${RequestParameters.parentCategoryId!}");
+							</#if>
+					<#else> 
+						$("#parentCategoryId").attr("value","-1");
+					</#if>
+            Hap.submitForm({
+                form:attach_category_form,
+                url:'${base.contextPath}/sys/attachcategory/submit',
+                success:function(json,opt){
+                    $.ligerDialog.success("<@spring.message "hap.tip.success"/>", '<@spring.message "hap.tip.info"/>', function(){
+                        parent.attachcategory_grid.reload();
+                        f_cancel();
+                    });
+                    
+                }
+            });
+        }
+	//取消
+        function f_cancel() {
+            var dialog = frameElement.dialog;
+            dialog.close();
+        }
+	
+        //表单底部按钮 
+        Hap.setFormDefaultBtn(f_cancel, f_save);
+    
+        //表单
+        var mainform = $("#mainform");
+        var attach_category_form  = mainform.ligerForm({
+            inputWidth : 280,
+            fields : [{
+                name:'leafFlag',
+                type:'hidden'
+            },{
+                name:'parentCategoryId',
+                type:'hidden'
+            },{
+                display : '<@spring.message "attachcategory.categoryname"/>',
+                name : "categoryName",
+                type : "tl",
+                options: {
+                    idField: 'categoryId',
+                    dto: 'AttachCategory'
+                },
+                newline:true,
+                validate : {
+                    required : true,
+                    minlength : 2 ,
+                    maxlength:50
+                }
+            },{
+                display : '<@spring.message "attachcategory.categorypath"/>',
+                name : "categoryPath",
+                type : "text",
+                newline:true,
+                validate : {
+                    minlength : 3 ,
+                    maxlength:50
+                }
+            }, {
+                display : '<@spring.message "attachcategory.allowedFileType"/>',
+                name : "allowedFileType",
+                type : "text",
+                newline:true,
+                validate : {
+                    maxlength:50
+                }
+            },{
+                display : '<@spring.message "attachcategory.allowedFileSize"/>',
+                name : "allowedFileSize",
+                type : "digits",
+                newline:true,
+                validate : {
+                	 minlength : 1,
+                 maxlength:50
+                }
+            },{
+                display : '<@spring.message "code.description"/>',
+                name : "description",
+                type : "tl",
+                options: {
+                    idField: 'categoryId',
+                    dto: 'AttachCategory'
+                },
+                newline:true,
+                validate : {
+                	required : true,
+                   maxlength:50
+                }
+            },{
+                display : '<@spring.message "attachcategory.sourcetype"/>',
+                name : "sourceType",
+                type : "text",
+                newline:true,
+                validate : {
+                    minlength : 3 ,
+                    maxlength:50
+                }
+            },{
+                display : '<@spring.message "attachcategory.isunique"/>',
+                name : "isUnique",
+                newline:true,
+                type : "select",
+                options : {
+                    readonly:false,
+                    valueFieldID : "isUniqueId",
+                    valueField : 'unique',
+                    textField : 'name',
+                    data : [ {
+                        'unique' : 'Y',
+                        'name' : 'Y'
+                    }, {
+                        'unique' : 'N',
+                        'name' : 'N'
+                    } ]
+                }
+            }  ]
+        });
+   mainform.attr("action", "${base.contextPath}/sys/attachcategory/submit");
+    </script>
+</body>
+</html>

@@ -19,7 +19,7 @@ public class UserRole extends BaseDTO {
     @Id
     @Column
     @GeneratedValue(generator = GENERATOR_TYPE)
-    private Long surId;
+    private Long urId;
 
     @Column
     private Long userId;
@@ -29,37 +29,48 @@ public class UserRole extends BaseDTO {
 
     @Column
     private String defaultFlag;
+    
+    @Column
+    private String enableFlag;
 
-    public Long getRoleId() {
-        return roleId;
-    }
+	public Long getUrId() {
+		return urId;
+	}
 
-    public Long getSurId() {
-        return surId;
-    }
+	public void setUrId(Long urId) {
+		this.urId = urId;
+	}
 
-    public Long getUserId() {
-        return userId;
-    }
+	public Long getUserId() {
+		return userId;
+	}
 
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
-    }
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 
-    public void setSurId(Long surId) {
-        this.surId = surId;
-    }
+	public Long getRoleId() {
+		return roleId;
+	}
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
+	}
 
-    public String getDefaultFlag() {
-        return defaultFlag;
-    }
+	public String getDefaultFlag() {
+		return defaultFlag;
+	}
 
-    public void setDefaultFlag(String defaultFlag) {
-        this.defaultFlag = defaultFlag;
-    }
+	public void setDefaultFlag(String defaultFlag) {
+		this.defaultFlag = defaultFlag;
+	}
+
+	public String getEnableFlag() {
+		return enableFlag;
+	}
+
+	public void setEnableFlag(String enableFlag) {
+		this.enableFlag = enableFlag;
+	}
 	
 }

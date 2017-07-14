@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ssm.account.dto.User;
 import com.ssm.adaptor.ISaveIpAddressListener;
@@ -23,6 +24,7 @@ import com.ssm.sys.mapper.UserLoginDetailMapper;
  * @author meixl	2017年4月10日上午10:19:22
  */
 @Component
+@Transactional
 public class SaveIpAddressImpl implements ISaveIpAddressListener {
 
 	//@Autowired

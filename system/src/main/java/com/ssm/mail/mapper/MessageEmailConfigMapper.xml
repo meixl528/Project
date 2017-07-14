@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.mail.mapper.MessageEmailConfigMapper" >
+  <resultMap id="BaseResultMap" type="com.ssm.mail.dto.MessageEmailConfig" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
+    <id column="CONFIG_ID" property="configId" jdbcType="DECIMAL" />
+    <result column="CONFIG_CODE" property="configCode" jdbcType="VARCHAR" />
+    <result column="HOST" property="host" jdbcType="VARCHAR" />
+    <result column="PORT" property="port" jdbcType="VARCHAR" />
+    <result column="TRY_TIMES" property="tryTimes" jdbcType="DECIMAL" />
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+    <result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    <result column="USE_WHITE_LIST" property="useWhiteList" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="selectMessageEmailConfigs" resultMap="BaseResultMap" parameterType="com.ssm.mail.dto.MessageEmailConfig">
+       select
+       *
+       from Tb_MESSAGE_EMAIL_CONFIG
+       <where>
+          <if test="configId != null">
+              and CONFIG_ID = #{configId,jdbcType=DECIMAL}
+          </if>
+          <if test="configCode != null">
+              and CONFIG_CODE like concat('%',concat(#{configCode,jdbcType=VARCHAR},'%'))
+          </if>
+          <if test="description != null">
+              and DESCRIPTION like concat('%',concat(#{description,jdbcType=VARCHAR},'%'))
+          </if>
+       </where>
+      order by CONFIG_ID
+  </select>
+
+	<!-- Mclin添加查询邮箱配置数量 -->
+	<select id="queryMsgConfigQuanties" resultType="java.lang.Integer">
+		select count(*) from Tb_MESSAGE_EMAIL_CONFIG
+	</select>
+</mapper>

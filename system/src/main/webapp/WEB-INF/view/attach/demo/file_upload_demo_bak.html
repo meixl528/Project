@@ -1,0 +1,151 @@
+<#--
+ * description: 附件管理页面
+ * version: 1.0
+ * author: hua.xiao@hand-china.com
+ * #{copyright}#.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>文件上传demo</title>
+<script type="text/javascript" src="${base.contextPath}/resources/js/attach/jquery-1.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+/* function addFileToList(file){
+	var fileHtml="";
+	fileHtml='<tr id="'+file.fileId+'">';
+	fileHtml+='<td>'+file.fileName+'</td>';
+	fileHtml+=' <td>'+file.fileSize+'</td>';
+	fileHtml+=' <td>'+file.uploadDate+'</td>';
+	fileHtml+='<td><span><a  target="_blank"  href="'+$("#contextPath").val()+'/sys/attach/file/view?fileId='+file.fileId+'">查看</a>'
+//删除调用rmfile('fileId'); fileId 为数据库里的id
+	fileHtml+='</span>|<span><a href="javascript:void(0)" onclick="rmfile(\''+file.fileId+'\')"> 删除</a></span></td>';
+	fileHtml+='</tr>';
+	$("#attach_list_body").append(fileHtml);
+} */
+
+$(document).ready(function(){
+	$("#file_upload_sourceType").val("IMG2");
+	$("#file_upload_sourceKey").val("64");
+});
+
+function addFileToViewList(file){//添加到html
+	var fileHtml="";
+	fileHtml='<tr id="'+file.fileId+'">';
+	fileHtml+='<td>'+file.fileName+'</td>';
+	fileHtml+=' <td>'+file.fileSize+'</td>';
+	fileHtml+=' <td><img width="100" height="100" src="'+$("#contextPath").val()+'/sys/attach/file/view?fileId='+file.fileId+'" alt="附件上传" /></td>';
+	fileHtml+='<td><span><a  target="_blank"  href="'+$("#contextPath").val()+'/sys/attach/file/view?fileId='+file.fileId+'">查看</a>'
+//删除调用rmfile('fileId'); fileId 为数据库里的id
+	fileHtml+='</span>|<span><a href="javascript:void(0)" onclick="rmfile(\''+file.fileId+'\')"> 删除</a></span></td>';
+	fileHtml+='</tr>';
+	$("#attach_view_body").append(fileHtml);
+}
+
+/* 文件status
+	inited 初始状态
+	queued 已经进入队列, 等待上传
+	progress 上传中
+	complete 上传完成。
+	error 上传出错，可重试
+	interrupt 上传中断，可续传。
+	invalid 文件不合格，不能重试上传。会自动从队列中移除。
+	cancelled 文件被移除。
+	UPLOAD_SUCCESS  服务端成功
+	
+	
+	file对象是uploader的对象
+	服务端返回的文件对象是response
+	resposne{
+	message:
+	info:
+}
+	resposne{
+	message:
+	file:{
+		fileId
+	}
+}
+	*/
+
+	function uploadComplete(status, file, response) {
+	var info = $("#info");
+	if(status == 'UPLOAD_SUCCESS'){
+		//addFileToList(response.file);
+		addFileToViewList(response.file);
+		//不删除
+		return false;
+	}
+	info.text(status);
+	info.css("display","block");
+	//删除
+	return true;
+	}
+
+	/*
+	 当添加文件validate不通过时，会以派送错误事件的形式通知调用者。
+	 目前有以下错误会在特定的情况下派送错来。
+	 Q_EXCEED_NUM_LIMIT 在设置了fileNumLimit且尝试给uploader添加的文件数量超出这个值时派送。
+	 Q_EXCEED_SIZE_LIMIT 在设置了Q_EXCEED_SIZE_LIMIT且尝试给uploader添加的文件总大小超出这个值时派送。
+	 Q_TYPE_DENIED 当文件类型不满足时触发。。
+	 */
+	function validateError(code) {
+		var info = $("#info");
+		if(code == 'Q_EXCEED_NUM_LIMIT'){
+			info.text("一次性只能上传1个文件");
+		}else if(code == 'Q_EXCEED_SIZE_LIMIT'){
+			info.text("一次性只能上传16M");
+		}else if(code == 'Q_TYPE_DENIED'){
+			info.text("不能上传这个类型的文件");
+		}else if(code == 'F_DUPLICATE'){
+			info.text("文件重复上传！");
+		}
+		info.css("display","block");
+	}
+	
+</script>
+
+<div id="uploader_content">
+<!-- 一个页面中只能包含一次 -->
+<div style="width: 200px;height: 100px;">
+<!-- 添加uploader所需的隐藏表单 -->
+		<input type="hidden" id="file_upload_sourceType" name="file_upload_sourceType" value="${sourceType!""}">
+		<input type="hidden" id="file_upload_sourceKey" name="file_upload_sourceType" value="${sourceKey!""}">
+	<#include "../include/include_upload.html">
+	
+</div>
+<div id="info" style="color: red;display: none"></div>
+<div id="attach_view_list" >
+    <table class="table">
+        <thead>
+        <tr>
+            <th>附件名字</th>
+            <th>文件大小</th>
+             <th>显示图片</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="attach_view_body">
+        </tbody>
+    </table>
+</div>
+	<!-- <div id="attach_list" >
+    <table class="table">
+        <thead>
+        <tr>
+            <th>附件名字</th>
+            <th>文件大小</th>
+             <th>上传日期</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="attach_list_body">
+        </tbody>
+    </table>
+</div> -->
+</div>
+
+</body>
+</html>

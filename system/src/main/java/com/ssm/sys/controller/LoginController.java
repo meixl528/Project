@@ -49,7 +49,7 @@ public class LoginController extends BaseController{
      * @param role 角色对象
      * @throws RoleException 
      */
-    @RequestMapping(value = {"/selectedRole.html","/selectedRole"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"/selectedRole.html","/selectedRole"})
     public ModelAndView selectRole(final Long roleId, final HttpServletRequest request,final HttpServletResponse response) throws RoleException{
         return loginAdaptor.doSelectRole(roleId, request, response);
     }

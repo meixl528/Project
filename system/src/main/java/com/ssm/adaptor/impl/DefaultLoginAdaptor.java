@@ -25,10 +25,10 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.WebUtils;
 
 import com.ssm.account.dto.Role;
+import com.ssm.account.dto.RoleExt;
 import com.ssm.account.dto.User;
 import com.ssm.account.exception.RoleException;
 import com.ssm.account.exception.UserException;
-import com.ssm.account.service.IRole;
 import com.ssm.account.service.IRoleService;
 import com.ssm.account.service.IUserService;
 import com.ssm.adaptor.ILoginAdaptor;
@@ -37,9 +37,11 @@ import com.ssm.adaptor.UrlUtil;
 import com.ssm.adaptor.dto.CSRF;
 import com.ssm.captcha.service.ICaptchaManager;
 import com.ssm.core.BaseConstants;
+import com.ssm.core.ILanguageProvider;
 import com.ssm.core.request.IRequest;
 import com.ssm.core.request.impl.RequestHelper;
 import com.ssm.core.util.TimeZoneUtil;
+import com.ssm.sys.dto.Language;
 import com.ssm.sys.responceFactory.ResponseData;
 import com.ssm.util.StringUtil;
 
@@ -55,8 +57,8 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
     @Autowired
     private ICaptchaManager captchaManager;
 
-    //@Autowired
-    //private ILanguageProvider languageProvider;
+    @Autowired
+    private ILanguageProvider languageProvider;
 
     @Autowired
     private MessageSource messageSource;
@@ -244,7 +246,11 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
             if (sessionRoleId == null) {
                 return new ModelAndView(UrlUtil.REDIRECT + UrlUtil.VIEW_ROLE_SELECT);
             }
-            return new ModelAndView(UrlUtil.VIEW_WELCOME);
+            // 返回支持的语言
+            List<Language> list = languageProvider.getSupportedLanguages();
+            ModelAndView view = new ModelAndView(UrlUtil.VIEW_WELCOME);
+            view.addObject("languages",list);
+            return view;
         }
         return new ModelAndView(UrlUtil.REDIRECT + UrlUtil.VIEW_LOGIN);
     }
@@ -260,13 +266,19 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
     		CSRF _csrf = new CSRF("_csrf",UUID_CSRF());
     		session.setAttribute("_csrf", _csrf);
     	}
+    	Locale locale = RequestContextUtils.getLocale(request);
     	
         ModelAndView view = new ModelAndView(UrlUtil.VIEW_LOGIN);
         boolean exist = false;
         User sessionUser = (User)session.getAttribute(User.FIELD_SESSION_USER);
         String code = "";
-        if(sessionUser==null){
+        if(sessionUser !=null && sessionUser.getUserId()!=null){
+        	exist = true;
+        }else{ 
         	if(StringUtil.isNull(user.getUserName()) && StringUtil.isNull(user.getPassword())){
+        		// 返回支持的语言
+                List<Language> list = languageProvider.getSupportedLanguages();
+                view.addObject("languages",list);
         		return view;
         	}
         	try {
@@ -276,10 +288,8 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
 				exist = false;
 				code = e.getCode();
 			}
-        }else{ 
-            exist = true;
         }
-        Locale locale = RequestContextUtils.getLocale(request);
+        
         if (!exist) {
             String msg = messageSource.getMessage(code, null, locale);
             view.addObject("msg", msg);
@@ -299,6 +309,9 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
         	session.setAttribute(IRequest.FIELD_LOCALE, locale);
         	return new ModelAndView(UrlUtil.REDIRECT +UrlUtil.VIEW_ROLE_SELECT);
         }
+        // 返回支持的语言
+        List<Language> list = languageProvider.getSupportedLanguages();
+        view.addObject("languages",list);
         return view;
     }
 
@@ -314,7 +327,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
                 user.setUserId(userId);
                 session.setAttribute(User.FIELD_USER_ID, userId);
                 addCookie(User.FIELD_USER_ID, userId.toString(), request, response);
-                List<IRole> roles = roleService.selectRolesByUser(RequestHelper.createServiceRequest(request), user);
+                List<RoleExt> roles = roleService.selectRolesByUser(RequestHelper.createServiceRequest(request), user);
                 if(roles == null || roles.isEmpty()){
                 	cleanSession(request,response);
                 	String msg = messageSource.getMessage(RoleException.MSG_INVALID_USER_ROLE, null, RequestContextUtils.getLocale(request));

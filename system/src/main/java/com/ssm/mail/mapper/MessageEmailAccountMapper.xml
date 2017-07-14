@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.mail.mapper.MessageEmailAccountMapper" >
+  <resultMap id="BaseResultMap" type="com.ssm.mail.dto.MessageEmailAccount" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
+    <id column="ACCOUNT_ID" property="accountId" jdbcType="DECIMAL" />
+    <result column="ACCOUNT_CODE" property="accountCode" jdbcType="VARCHAR" />
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+    <result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    <result column="CONFIG_ID" property="configId" jdbcType="DECIMAL" />
+  </resultMap>
+  <resultMap id="FormatResultMap" type="com.ssm.mail.dto.MessageEmailAccountVo" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
+    <id column="ACCOUNT_ID" property="accountId" jdbcType="DECIMAL" />
+    <result column="ACCOUNT_CODE" property="accountCode" jdbcType="VARCHAR" />
+    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+    <result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    <result column="CONFIG_ID" property="configId" jdbcType="DECIMAL" />
+  </resultMap>
+
+  <!-- 故意不显示password -->
+  <select id="selectMessageEmailAccounts" resultMap="FormatResultMap" parameterType="com.ssm.mail.dto.MessageEmailAccount">
+       select
+        account.*
+       from Tb_MESSAGE_EMAIL_ACCOUNT account
+       <where>
+       	  <if test="accountId != null">
+              and account.ACCOUNT_ID = #{accountId,jdbcType=DECIMAL}
+          </if>
+          <if test="configId != null">
+              and account.CONFIG_ID = #{configId,jdbcType=DECIMAL}
+          </if>
+          <if test="accountCode != null">
+              and account.ACCOUNT_CODE like concat('%',concat(#{accountCode,jdbcType=VARCHAR},'%'))
+          </if>
+          <if test="description != null">
+              and account.DESCRIPTION like concat('%',concat(#{description,jdbcType=VARCHAR},'%'))
+          </if>
+       </where>
+      order by account.account_Id
+  </select>
+  <select id="selectMessageEmailAccountPassword" resultMap="BaseResultMap" parameterType="com.ssm.mail.dto.MessageEmailAccount">
+       select
+        *
+       from Tb_MESSAGE_EMAIL_ACCOUNT
+       <where>
+       	  <if test="accountId != null">
+              ACCOUNT_ID = #{accountId,jdbcType=DECIMAL}
+          </if>
+       </where>
+  </select>
+
+  <select id="selectByAccountCode" resultMap="BaseResultMap" >
+       select
+        *
+       from Tb_MESSAGE_EMAIL_ACCOUNT
+       <where>
+       	  <if test="value != null">
+              ACCOUNT_CODE = #{value,jdbcType=VARCHAR}
+          </if>
+       </where>
+  </select>
+
+  <delete id="deleteByConfigId" parameterType="java.lang.Long" >
+    delete from Tb_MESSAGE_EMAIL_ACCOUNT
+    where CONFIG_ID = #{configId,jdbcType=DECIMAL}
+  </delete>
+
+  <select id="getMsgEmailAccountByCode" resultMap="BaseResultMap">
+		select 
+		*
+		FROM Tb_MESSAGE_EMAIL_ACCOUNT acc
+		<where>
+			<if test="accountCode != null">
+				acc.ACCOUNT_CODE = #{accountCode,jdbcType=VARCHAR}
+			</if>
+			<if test="accountId != null">
+				AND acc.ACCOUNT_ID != #{accountId, jdbcType=DECIMAL}
+			</if>
+		</where>
+	</select>
+</mapper>

@@ -36,6 +36,7 @@
         <!-- <property name="defaultDestination" ref="destination" /> -->
         <!-- 队列模式 -->  
         <property name="pubSubDomain" value="false" />  
+        <property name="receiveTimeout" value="0" />
     </bean>
 
     <!-- JmsTemplate Definition -->
@@ -52,8 +53,8 @@
     <bean id="QueueMessageReceiver" class="com.ssm.activeMQ.service.impl.QueueMessageReceiver"/>
     
     <!-- 测试mq  位置TestRestController-->
-    <bean id="testMqQueue" class="com.ssm.interfaces.mq.TestMqQueue"/>
-    <bean id="testMqTopic" class="com.ssm.interfaces.mq.TestMqTopic"/>
+    <!-- <bean id="testMqQueue" class="com.ssm.interfaces.mq.TestMqQueue"/>
+    <bean id="testMqTopic" class="com.ssm.interfaces.mq.TestMqTopic"/> -->
     
     <!-- <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
         <property name="connectionFactory" ref="connectionFactory" />

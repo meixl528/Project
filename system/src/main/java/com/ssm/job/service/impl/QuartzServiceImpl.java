@@ -43,6 +43,13 @@ public class QuartzServiceImpl implements IQuartzService{
 	private final Logger logger = LoggerFactory.getLogger(QuartzServiceImpl.class);
 	@Autowired
 	private Scheduler quartzScheduler;
+	
+	
+	// 1) 为Quartz的重要组件类提供更具Bean风格的扩展类；
+	// 2) 提供创建Scheduler的BeanFactory类，方便在Spring环境下创建对应的组件对象，并结合Spring容器生命周期进行启动和停止的动作。
+	/*@Autowired
+	private SchedulerFactoryBean schedulerFactory;
+	private Scheduler scheduler = schedulerFactory.getScheduler();*/
 	/**
 	 * 创建job
 	 */
@@ -186,7 +193,12 @@ public class QuartzServiceImpl implements IQuartzService{
 			logger.info("测试spring scheduler 运行 -> com.ssm.job.service.impl.QuartzServiceImpl :" +new DateTime().toString("yyyy-MM-dd hh:mm:ss SSS"));
 			//testMonitorService.onQueueMessage("userCache", "queue:cache:reload");
 		}
-		messageSender.sendTopic("topic测试","test.soap.topic","test.soap.topic2");
+		messageSender.sendQueue("queue测试 "+new org.joda.time.DateTime().toString("yyyy-MM-dd HH:mm:ss"),"rest:queue:test");
+		messageSender.sendTopic("topic测试  "+new org.joda.time.DateTime().toString("yyyy-MM-dd HH:mm:ss"),"soap:topic:test","soap:topic:test2");
+		
 	}
+	
+	
+	
 	
 }

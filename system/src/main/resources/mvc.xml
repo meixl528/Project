@@ -143,16 +143,31 @@
         <property name="allowSessionOverride" value="true"/>
     </bean> 
 	
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+	    <property name="defaultLocale" value="zh_CN"/>
+		<property name="cookieName" value="myAppLocaleCookie"/>
+		<property name="cookieMaxAge" value="2592000"/>
+	</bean>
+	
 	<!-- 拦截器的配置 -->
 	<mvc:interceptors>
+	    <!-- 语言切换拦截器  -->
+		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+			<property name="paramName" value="lang" />
+		</bean>
+		<!-- 主题样式拦截器  -->
+		<bean class="org.springframework.web.servlet.theme.ThemeChangeInterceptor">
+			<property name="paramName" value="theme" />
+		</bean>
+	
 		<bean class="com.ssm.sys.interceptor.UserLoginInterceptor">
 			<property name="allowedUrl">
 				<list>
-					<!-- <value>/home.html</value>
-					<value>/login.html</value> -->
+					<value>/home.html</value>
+					<value>/login.html</value>
 				</list>
 			</property>
-		</bean>
+		</bean> 
 	</mvc:interceptors>
 	
 </beans>

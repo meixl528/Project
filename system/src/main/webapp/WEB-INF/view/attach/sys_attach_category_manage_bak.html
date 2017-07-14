@@ -1,0 +1,187 @@
+<#--
+ * description: 附件分类管理页面
+-->
+<#include "../include/head.html">
+<body  style="padding: 10px;">
+    <style>
+    #category_Breadcrumb {
+        list-style:none;
+        display:block; 
+        height:35px; 
+        line-height:35px;
+    }
+    #category_Breadcrumb li{
+        float:left;
+        margin-left:3px; 
+        font-size:14px;
+    } 
+    #category_Breadcrumb li a{
+        text-decoration:none;
+        color:#06c;
+    }
+    </style>
+    <ul id="category_Breadcrumb">
+        <li><a href="sys_attach_category_manage.html">/</a></li>
+        <#if breadCrumb??>
+            <#list breadCrumb as c>
+                <li>&gt;</li>
+                
+                <li>
+                <#if c_has_next>
+                    <a href="${base.contextPath}/attach/sys_attach_category_manage.html?parentCategoryId=${c.categoryId}">${c.categoryName}</a>
+                <#else>
+                    ${c.categoryName}
+                </#if>
+                </li>
+            </#list>
+        </#if>
+        
+    </ul> 
+    <div id="attachcategory_grid" style="margin:0; padding:0"></div> 
+    <script type="text/javascript">
+        function newCategory(parentCategoryId){
+            window.popWin = $.ligerDialog.open({
+                width : 600,
+                height : 550,
+                url : '${base.contextPath}/attach/sys_attach_category_edit.html?parentCategoryId='+parentCategoryId
+            });
+        }
+        
+        window['attachcategory_grid'] = $("#attachcategory_grid").ligerGrid({
+                columns: [{ 
+                    display: '<@spring.message "attachcategory.categoryname"/>',
+                    name: 'categoryName', 
+                    align: 'left', 
+                    width: 250,
+                    editor : {
+                      type: 'tl',
+                      idField: 'categoryId',
+                      dto: 'com.hand.hap.attachment.dto.AttachCategory'
+                    } ,
+                    render:function(item){
+                        return '<a href="${base.contextPath}/attach/sys_attach_category_manage.html?parentCategoryId='+item.categoryId+'">'+item.categoryName + '</a>';
+                    }
+                  }, { 
+                    display: '<@spring.message "attachcategory.categorypath"/>',
+                    name: 'categoryPath', 
+                    align: 'left',
+                    width: 250,
+                    editor : {
+                        type : 'text'
+                    }
+                  },{ 
+                      display: '<@spring.message "attachcategory.description"/>',
+                      name: 'description', 
+                      align: 'left', 
+                      width: '18%',
+                      editor : {
+                          type: 'tl',
+                          idField: 'categoryId',
+                          dto: 'com.hand.hap.attachment.dto.AttachCategory'
+                      }
+                  },{ 
+                    display: '<@spring.message "attachcategory.allowedfiletype"/>',
+                    name: 'allowedFileType', 
+                    align: 'left', 
+                    width: '12%',
+                    type : 'int',
+                    editor : {
+                        type : 'text'
+                      }
+                  }, { 
+                    display: '<@spring.message "attachcategory.allowedfilesize"/>',
+                    name: 'allowedFileSize',
+                    align: 'left', 
+                    width: '10%',
+                    editor : {
+                        type : 'int'
+                                    }
+                  },  { 
+                    display: '<@spring.message "attachcategory.sourcetype"/>',
+                    name: 'sourceType', align: 'left', width: 150
+                  },{ 
+                    display: '<@spring.message "attachcategory.isunique"/>',
+                    name: 'isUnique', align: 'center', width: 80  
+                  }, { 
+                    display: '<@spring.message "attachcategory.statusname"/>',
+                    name: 'status', align: 'center', width: 80,
+                    render:function(item){
+                        if(item.status == '1'){
+                            return '<@spring.message "attachcategory.statusname.normal" />';
+                        }else if(item.status == '2'){
+                            return '<@spring.message "attachcategory.statusname.archived" />';
+                        }else{
+                            return '';
+                        }
+                    } 
+                  }/* , { 
+                      display: '<@spring.message "attachcategory.categoryassgin"/>',
+                      name: '', width: 150,
+                      render : function(e) {
+                          var html = "<a href='#' onClick='assgin(" + e.categoryId + ")'><@spring.message 'attachcategory.categoryassgin'/></a>";
+                          return html; 
+                      }
+                    } */],
+                    url : '${base.contextPath}/sys/attachcategory/query?parentCategoryId=${RequestParameters.parentCategoryId!}',
+                    toolbar : {
+                        items : [
+                                {
+                                    text : '<@spring.message "hap.new"/>',
+                                    icon : 'add',
+                                    click: function(){
+                                        newCategory("${RequestParameters.parentCategoryId!}");
+                                    }
+                            },
+                            {
+                                line : true
+                            },
+                            {
+                                text : '<@spring.message "hap.save"/>',click : function() {
+                                Hap.gridSave({
+                                grid:attachcategory_grid,
+                                url:'${base.contextPath}/sys/attachcategory/submit'
+                            })
+                            } ,
+                                icon : 'save'
+                            },{
+                                line : true
+                            },{
+                                text : '<@spring.message "attachcategory.archive" />',click : function() {
+                                     var rows = attachcategory_grid.getSelectedRows();
+                                     if(rows.length==1){
+                                         if(rows[0].leafFlag != 1){
+                                             $.ligerDialog.question(rows[0].categoryName+'<@spring.message "msg.hand.warning.upload.cannot_archived"/>');
+                                             return;
+                                         }else{
+                                             Hap.ajax({
+                                                 url:"${base.contextPath}/sys/attachcategory/remove",
+                                                 data:rows[0],
+                                                 callback:function(json){
+                                                     attachcategory_grid.reload();
+                                                 }
+                                             });
+                                         }
+                                     }//end rows.length
+                                }    
+                            }]
+                    },
+                    
+                    enabledEdit : true,
+                    usePager:false,
+                    width : '99%',
+                    height : '100%', 
+                    isSingleCheck:true,
+                    checkbox : true
+                });
+        
+        /* window.assgin = function(categoryId) {
+            window.popWin = $.ligerDialog.open({
+                load : false,
+                width : 700,
+                height : 550,
+                url : 'sys_attach_assgin.html?flag=CATEG&Id=' + categoryId
+            });
+        } */
+    </script>
+</body>
+</html>

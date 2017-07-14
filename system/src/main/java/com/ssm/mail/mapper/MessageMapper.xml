@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.mail.mapper.MessageMapper">
+    <resultMap id="BaseResultMap" type="com.ssm.mail.dto.Message" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
+        <id column="MESSAGE_ID" property="messageId" jdbcType="DECIMAL"/>
+        <result column="MESSAGE_TYPE" property="messageType" jdbcType="VARCHAR"/>
+        <result column="MESSAGE_HOST" property="messageHost" jdbcType="VARCHAR"/>
+        <result column="MESSAGE_FROM" property="messageFrom" jdbcType="VARCHAR"/>
+        <result column="SUBJECT" property="subject" jdbcType="VARCHAR"/>
+        <result column="PRIORITY_LEVEL" property="priorityLevel" jdbcType="VARCHAR"/>
+        <result column="SEND_FLAG" property="sendFlag" jdbcType="VARCHAR"/>
+        <result column="MESSAGE_SOURCE" property="messageSource" jdbcType="VARCHAR"/>
+        <result column="CONTENT" property="content" jdbcType="CLOB"/>
+        <result column="CREATION_DATE" property="creationDate" jdbcType="TIMESTAMP"/>
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 发送邮件 -->
+    <select id="selectEmailToSend" resultMap="BaseResultMap">
+    select 
+    msg.*
+    from Tb_MESSAGE msg
+    where msg.MESSAGE_TYPE = 'EMAIL'
+    and (msg.PRIORITY_LEVEL is null or msg.PRIORITY_LEVEL = 'NORMAL')
+    and msg.SEND_FLAG not in ('Y','F','P')
+    order by msg.message_id
+  </select>
+    <!-- 发送邮件,VIP队列 -->
+    <select id="selectVipEmailToSend" resultMap="BaseResultMap">
+    select 
+    msg.*
+    from Tb_MESSAGE msg
+    where msg.MESSAGE_TYPE = 'EMAIL'
+    and msg.PRIORITY_LEVEL = 'VIP'
+    and msg.SEND_FLAG not in ('Y','F','P')
+    order by msg.message_id
+  </select>
+    <!-- 发送站内信 -->
+    <select id="selectSiteToSend" resultMap="BaseResultMap">
+    select 
+    msg.*
+    from Tb_MESSAGE msg
+    where msg.MESSAGE_TYPE = 'SITE'
+    and (msg.PRIORITY_LEVEL is null or msg.PRIORITY_LEVEL = 'NORMAL')
+    and msg.SEND_FLAG not in ('Y','F','P')
+    order by msg.message_id
+  </select>
+    <!-- 发送邮件,VIP队列 -->
+    <select id="selectVipSiteToSend" resultMap="BaseResultMap">
+    select 
+    msg.*
+    from Tb_MESSAGE msg
+    where msg.MESSAGE_TYPE = 'SITE'
+    and msg.PRIORITY_LEVEL = 'VIP'
+    and msg.SEND_FLAG not in ('Y','F','P')
+    order by msg.message_id
+  </select>
+
+    <select id="selectMessagesBySubject" resultMap="BaseResultMap" parameterType="com.ssm.mail.dto.Message">
+        select distinct sm.MESSAGE_ID,
+        sm.MESSAGE_TYPE,
+        sm.MESSAGE_HOST,
+        sm.MESSAGE_FROM,
+        sm.SUBJECT,
+        sm.CONTENT,
+        sm.PRIORITY_LEVEL,
+        sm.SEND_FLAG,
+        sm.CREATION_DATE,
+        sm.LAST_UPDATE_DATE
+        from Tb_MESSAGE sm
+        <where>
+            <if test="subject != null">
+                and sm.SUBJECT like concat('%',concat(#{subject,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="messageFrom != null">
+                and sm.MESSAGE_FROM like concat('%',concat(#{messageFrom,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="subject != null">
+                and sm.SUBJECT like concat('%',concat(#{subject,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="sendFlag != null">
+                and sm.SEND_FLAG =#{sendFlag}
+            </if>
+        </where>
+        ORDER BY sm.MESSAGE_ID desc 
+    </select>
+</mapper>

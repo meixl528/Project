@@ -1,0 +1,109 @@
+<#-- 
+ * description: 修改消息账号页面
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 15px">
+	<script src="${base.contextPath}/common/code?messageTypeData=SYS.MESSAGE_TYPE" type="text/javascript"></script>
+	<form id="mainForm" method="post" enctype="application/json;charset=UTF-8"></form>
+	<script type="text/javascript">
+	  <#assign isedit = (RequestParameters.isedit!'0')/>
+	  //保存提交
+      function saveDialog() {
+          Hap.submitForm({
+              form: dataForm,
+              wrapArray: false,
+              <#if isedit == '1'>
+          	  url: '${base.contextPath}/sys/messageAccount/update',
+          	  <#else>
+          	  url: '${base.contextPath}/sys/messageAccount/add',
+              </#if>
+              success:function(json, opt){
+                  $.ligerDialog.success("<@spring.message "hap.tip.success"/>", '<@spring.message "hap.tip.info"/>', function(){
+                      parent.dataGrid.reload();
+                      cancelDialog();
+                  });
+              }
+          });
+      }
+	  //取消
+      function cancelDialog() {
+          var dialog = frameElement.dialog;
+          dialog.close();
+      }
+      //表单底部按钮 
+      Hap.setFormDefaultBtn(cancelDialog, saveDialog);
+	  //-------------------------------------------------------------
+      
+        //表单
+        var mainForm = $("#mainForm");
+        var dataForm  = mainForm.ligerForm({
+            inputWidth: 280,
+            fields: [{
+                name: "userId",
+                type: "hidden"
+            },{
+                display: '<@spring.message "messageaccount.accountCode"/>',
+                name: "accountCode",
+                type: "text",
+                newline: true,
+                validate: {
+                    required: true
+                }
+            },{
+	            type : 'combobox',
+	            label : '<@spring.message "messageaccount.accountType"/>',
+	            name : 'accountType',
+	            options : {
+	                valueField : 'value',
+	                textField : 'meaning',
+	                data : messageTypeData
+	            },
+	            newline : true,
+	            validate: {
+                    required: true
+                }
+	        },{
+                display: '<@spring.message "messageaccount.name"/>',
+                name: "description",
+                type: "text",
+                newline: true,
+                validate: {
+                    required: true
+                }
+            },{
+                display: '<@spring.message "messageaccount.organization"/>',
+                name: "organization",
+                type: "text",
+                newline: true,
+                validate: {
+                    required: true
+                }
+            },{
+                display: '<@spring.message "messageaccount.userName"/>',
+                name: "userName",
+                type: "text",
+                newline: true,
+                validate: {
+                	required: true
+                }
+            }
+            <#if isedit != '1'>
+	            ,{
+	                display: '<@spring.message "messageaccount.password"/>',
+	                name: "password",
+	                type: "text",
+	                newline: true,
+	                validate: {
+	                	required: true
+	                }
+	            }
+            </#if>
+            ]
+        });
+     <#if isedit == '1'>
+     Hap.loadForm({form: dataForm, url:'${base.contextPath}/sys/messageAccount/queryAccount',para:{userId:${RequestParameters.id}}})
+     </#if>
+    </script>
+</body>
+</html>

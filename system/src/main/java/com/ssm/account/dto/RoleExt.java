@@ -8,19 +8,19 @@ public class RoleExt extends Role {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private Long surId;
+	private Long urId;
 
     private Long userId;
+ 
+    public Long getUrId() {
+		return urId;
+	}
 
-    public Long getSurId() {
-        return surId;
-    }
+	public void setUrId(Long urId) {
+		this.urId = urId;
+	}
 
-    public void setSurId(Long surId) {
-        this.surId = surId;
-    }
-
-    public Long getUserId() {
+	public Long getUserId() {
         return userId;
     }
 

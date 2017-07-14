@@ -1,0 +1,104 @@
+<#-- 
+ * description: 消息账号页面
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 10px;">
+	<script src="${base.contextPath}/common/code?messageTypeData=SYS.MESSAGE_TYPE" type="text/javascript"></script>
+	<form id="dataForm"></form>
+	<div id="dataGrid"></div>
+	
+	<script type="text/javascript">
+	$(function() {
+	    window.editData = function(id){
+	    	var url = 'sys_message_account_edit.html';
+	    	if(id){
+	    		url = url + '?isedit=1&id=' + id;
+	    	}
+	        window.popWin = $.ligerDialog.open({
+	            width : 900,
+	            height : 550,
+	            url : url
+	        });
+	    };
+	    window.editPasswordData = function(id){
+	    	var url = 'sys_message_account_edit_password.html' + '?isedit=1&id=' + id;
+	        window.popWin = $.ligerDialog.open({
+	            width : 900,
+	            height : 550,
+	            url : url
+	        });
+	    };
+	    /* dataForm表单提交 */
+	    window['dataForm'] = $("#dataForm").ligerForm({
+	        fields : [ {
+	            type : 'text',
+	            label : '<@spring.message "messageaccount.accountCode"/>',
+	            name : 'accountCode',
+	            newline : true
+	        }, {
+	            type : 'combobox',
+	            label : '<@spring.message "messageaccount.accountType"/>',
+	            name : 'accountType',
+	            options : {
+	                valueField : 'value',
+	                textField : 'meaning',
+	                data : messageTypeData
+	            },
+	            newline : false
+	        }, {
+	            type : 'text',
+	            label : '<@spring.message "messageaccount.name"/>',
+	            name : 'description',
+	            newline : true
+	        } ],
+	        buttons : [ {
+	            text : '<@spring.message "hap.query"/>',
+	            disabled : false,
+	            width : 60,
+	            click : function() {
+	                Hap.gridQuery({
+	                    form : dataForm,
+	                    grid : dataGrid
+	                })
+	            }
+	        } ]
+	    });
+
+	    /* dataGrid表格提交 */
+	    window['dataGrid'] = $("#dataGrid").ligerGrid({
+	        columns : [
+				{display:'<@spring.message "messageaccount.accountCode"/>', name:"accountCode", align:"left", width:130},
+				{display:'<@spring.message "messageaccount.accountType"/>', name:"accountType", align:"center", width:140},
+				{display:'<@spring.message "messageaccount.userName"/>', name:"userName", align:"left", width:180},
+				{display:'<@spring.message "messageaccount.name"/>', name:"description", align:"center", width:180},
+				{display:'<@spring.message "messageaccount.organization"/>', name:"organization", align:"center", width:180},
+				{display : '<@spring.message "hap.action"/>', width : 120, align : 'center',
+	                render : function(rowdata) {
+	                    return '<a href="#" onclick="editData('+rowdata.userId+')"><@spring.message "hap.edit"/></a>&nbsp;&nbsp;&nbsp;<a href="#" onclick="editPasswordData('+rowdata.userId+')"><@spring.message "hap.edit_password"/></a>'
+	                }
+	            }
+			],
+	        url : '${base.contextPath}/sys/messageAccount/query',
+	        toolbar : {
+	            items : [
+		            { text: '<@spring.message "hap.create"/>', icon: 'add', click: function(){
+		            	editData();
+	                }},
+	                { line: true },
+	                { text: '<@spring.message "hap.delete"/>', icon: 'delete', click: function(){
+	                	Hap.gridDelete({
+                            grid : dataGrid,
+                            url : '${base.contextPath}/sys/messageAccount/remove'
+                        })
+	                }}
+	            ]
+	        },
+	        width : '99%',
+	        height : '98%',
+	        checkbox : true
+	    })
+	})
+	</script>
+</body>
+</html>

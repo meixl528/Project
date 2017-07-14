@@ -6,7 +6,7 @@
 
 <body>
 <!-- 定义一个数据源，如果这边不添加这个script的话。下面初始化数据源的时候，会undefine -->
-<!-- <script src="${base.contextPath}/common/code?resourceTypeData=SYS.RESOURCE_TYPE&codeYesNo=SYS.YES_NO" type="text/javascript"></script> -->
+<script src="${base.contextPath}/common/code?resourceTypeData=SYS.RESOURCE_TYPE&codeYesNo=SYS.YES_NO" type="text/javascript"></script>
 <script type="text/javascript">
     //创建一个viewModel模型
     //id等于user.html页面传过来的id
@@ -14,10 +14,9 @@
     var viewModel = kendo.observable({
         model: {
             userId: userId
-
         },
-/*         resourceTypeData: resourceTypeData,
-        loginRequireData: codeYesNo, */
+        resourceTypeData: resourceTypeData,
+        loginRequireData: codeYesNo, 
         cancelFunction: function (e) {
             $('#panel_button').data('kendoGrid').cancelChanges();
         },
@@ -59,7 +58,6 @@
         <span onclick="deleteData()" class="btn btn-danger" style="float:left;"><i class="fa fa-trash-o" style="margin-right:3px;"></i><@spring.message "hap.delete"/></span>
         <!-- <span  class="btn btn-default k-grid-cancel-changes" data-bind="click:cancelFunction" style="float:left;" ><i class="fa fa-undo" style="margin-right:3px;"></i><@spring.message "hap.cancel"/></span>    -->
     </div>
-
 
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div style="clear:both">
@@ -106,8 +104,11 @@
         $("#dialog").data("kendoWindow").close();
         //userGrid.dataSource.page(1);
     }
-
+    
     function deleteData() {
+    	/* Hap.deleteGridSelection({
+	         grid: $('#panel_button')
+	     }); */
         var checked = grid.selectedDataItems();
         if (grid.selectedDataItems().length) {
             kendo.ui.showConfirmDialog({
@@ -122,11 +123,9 @@
                 }
             })
         }
-
+    	
     }
     $(document).ready(function () {
-
-
         //我的理解是，这个viewModel的作用域
         //kendo.bind($('#panel_button'),viewModel)
         //创建一个远程数据源
@@ -151,7 +150,7 @@
                     type: "POST"
                 },
                 destroy: {
-                    url: crudServiceBaseUrl + "/submit",
+                    url: crudServiceBaseUrl + "/remove",
                     contentType: "application/json",
                     type: "POST"
                 },
@@ -172,12 +171,8 @@
                 total: 'total',
                 model: {
                     //标记信息状态的属性，必加,加了这个属性之后，kendoui才会知道每条数据的状态，如add，update之类的，这边不能以每条属性都有且不一样的为依据，必须以一个都一样的主键为model的id
-                    id: 'surId',
+                    id: 'urId',
                     fields: {
-                        loginRequire: {defaultValue: 'Y'},
-                        accessCheck: {defaultValue: 'Y'},
-                        type: {defaultValue: 'HTML'},
-                        url: {validation: {required: true}}
                     }
                 }
             }
@@ -203,7 +198,6 @@
                 //表格的列
                 {
                     field: "roleCode",
-
                     title: '<@spring.message "role.rolecode"/>',
                     width: 120,
                 },
@@ -213,7 +207,7 @@
                     width: 180,
                 },
                 {
-                    field: "description",
+                    field: "roleDescription",
                     title: '<@spring.message "role.roledescription"/>',
                     width: 200,
                 },
@@ -323,12 +317,12 @@
                     {
                         field: "roleName",
                         title: '<@spring.message "role.rolename"/>',
-                        width: 200,
+                        width: 200
                     },
                     {
-                        field: "description",
+                        field: "roleDescription",
                         title: '<@spring.message "role.roledescription"/>',
-                        width: 200,
+                        width: 200
                     },
 
                 ],

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.attachment.mapper.SysFileMapper">
+    <resultMap id="BaseResultMap" type="com.ssm.attachment.dto.SysFile" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
+        <id column="FILE_ID" property="fileId" jdbcType="DECIMAL"/>
+        <result column="ATTACHMENT_ID" property="attachmentId" jdbcType="DECIMAL"/>
+        <result column="FILE_NAME" property="fileName" jdbcType="VARCHAR"/>
+        <result column="FILE_PATH" property="filePath" jdbcType="VARCHAR"/>
+        <result column="FILE_SIZE" property="fileSize" jdbcType="DECIMAL"/>
+        <result column="FILE_TYPE" property="fileType" jdbcType="VARCHAR"/>
+        <result column="UPLOAD_DATE" property="uploadDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+
+    <!-- 根据参数查询列表 -->
+    <select id="selectSysFiles" resultMap="BaseResultMap" parameterType="com.ssm.attachment.dto.SysFile">
+        select
+        *
+        from tb_FILE
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            1 = 1
+            <if test="attachmentId != null">
+                and ATTACHMENT_ID = #{attachmentId,jdbcType=DECIMAL}
+            </if>
+            <if test="fileId != null">
+                AND FILE_ID = #{fileId,jdbcType=DECIMAL}
+            </if>
+        </trim>
+    </select>
+    <!-- 根据attachmentIds查找到列表   -->
+    <select id="selectFilesByAttachIds" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select
+        *
+        from tb_FILE
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            1 = 1
+            <if test="attachmentIds != null">
+                and ATTACHMENT_ID in
+                <foreach item="item" index="index" collection="attachmentIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </trim>
+    </select>
+
+    <select id="selectFilesByIds" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select
+        *
+        from tb_FILE
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            1 = 1
+            <if test="fileIds != null">
+                and FILE_ID in
+                <foreach item="item" index="index" collection="fileIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </trim>
+    </select>
+
+    <!-- 根据sourceType和sourceKey查询附件下的文件 -->
+    <select id="queryfiles" resultMap="BaseResultMap">
+        SELECT
+        f.*
+        FROM
+        tb_FILE f
+        WHERE
+        f.ATTACHMENT_ID = (
+        SELECT
+        a.ATTACHMENT_ID
+        FROM
+        tb_attachment a
+        WHERE
+        a.SOURCE_TYPE =#{sourceType,jdbcType=VARCHAR,javaType=java.lang.String}
+        AND a.SOURCE_KEY=#{sourceKey,jdbcType=VARCHAR,javaType=java.lang.String}
+        )
+    </select>
+</mapper>

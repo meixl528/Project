@@ -10,9 +10,10 @@
         <result column="ROLE_CODE" property="roleCode" jdbcType="VARCHAR"/>
         <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR"/>
         <result column="ROLE_DESCRIPTION" property="roleDescription" jdbcType="VARCHAR"/>
+        <result column="enable_Flag" property="enableFlag" jdbcType="VARCHAR"/>
     </resultMap>
     <resultMap id="BaseResultMapExt" type="com.ssm.account.dto.RoleExt" extends="BaseResultMap">
-        <result column="SUR_ID" property="surId" jdbcType="DECIMAL"/>
+        <result column="ur_id" property="urId" jdbcType="DECIMAL"/>
         <result column="END_ACTIVE_DATE" property="endActiveDate"/>
         <result column="enable_Flag" property="enableFlag" jdbcType="VARCHAR"/>
     </resultMap>
@@ -21,7 +22,8 @@
     </sql>
 
     <select id="selectRoleNotUserRoles" parameterType="com.ssm.account.dto.RoleExt" resultMap="BaseResultMap">
-        select b.role_id, b.role_code, tl.role_name, tl.ROLE_DESCRIPTION
+        select 
+        b.role_id, b.role_code, tl.role_name, tl.ROLE_DESCRIPTION
         from tb_role_tl tl, tb_role_b b
          where
             b.role_id not in (select role_id from tb_user_role where user_id = #{userId,jdbcType=DECIMAL,javaType=java.lang.Long})
@@ -40,7 +42,7 @@
     </select>
     <select id="selectUserRoles" parameterType="java.lang.Long" resultMap="BaseResultMapExt">
         SELECT
-            ur.sur_id ,
+            ur.ur_id ,
             ur.USER_ID ,
             r.role_id,
             r.role_code,
@@ -71,18 +73,24 @@
     </select>
 
 
-    <select id="selectByUser" resultMap="BaseResultMap" parameterType="com.ssm.account.dto.User" >
-        SELECT sur.role_id, sr_tl.role_name
-          FROM tb_user_role sur
-          LEFT OUTER JOIN tb_role_tl sr_tl
-            on (sur.role_id = sr_tl.role_id AND
-                 sr_tl.lang = #{request.locale,jdbcType=VARCHAR})
-          left join tb_role_b b on(b.role_id=sur.role_id)
-           WHERE sur.user_id = #{userId, jdbcType = DECIMAL}
-            and (b.END_ACTIVE_DATE IS NULL OR b.END_ACTIVE_DATE>current_timestamp)
-            and (b.start_active_date is  null or CURRENT_TIMESTAMP>b.start_active_date )
-            and b.enable_flag='Y'
-           order by sur.role_id
+    <select id="selectByUser" resultMap="BaseResultMapExt" parameterType="com.ssm.account.dto.UserRole" >
+        SELECT 
+         sur.ur_id,
+         sur.role_id,
+         sr_tl.role_name,
+         sur.enable_flag,
+         sr_tl.ROLE_DESCRIPTION,
+         b.role_code
+        
+         FROM tb_user_role sur
+         LEFT OUTER JOIN tb_role_tl sr_tl on (sur.role_id = sr_tl.role_id AND sr_tl.lang = #{request.locale,jdbcType=VARCHAR})
+         left join tb_role_b b on(b.role_id=sur.role_id)
+         WHERE 
+           sur.user_id = #{userId, jdbcType = DECIMAL}
+           and (b.END_ACTIVE_DATE IS NULL OR b.END_ACTIVE_DATE>current_timestamp)
+           and (b.start_active_date is  null or CURRENT_TIMESTAMP>b.start_active_date )
+           and b.enable_flag='Y'
+         order by sur.role_id
     </select>
 
     <select id="selectRolesByUserWithoutLang" resultMap="BaseResultMap" parameterType="com.ssm.account.dto.User" >

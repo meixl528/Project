@@ -3,6 +3,7 @@ package com.ssm.account.service;
 import java.util.List;
 
 import com.ssm.account.dto.Role;
+import com.ssm.account.dto.RoleExt;
 import com.ssm.account.dto.User;
 import com.ssm.account.exception.RoleException;
 import com.ssm.core.annotation.StdWho;
@@ -12,7 +13,7 @@ import com.ssm.sys.service.IBaseService;
 
 public interface IRoleService extends IBaseService<Role>, ProxySelf<IRoleService>{
 
-	List<IRole> selectRolesByUser(IRequest requestContext, User user);
+	List<RoleExt> selectRolesByUser(IRequest requestContext, User user);
 
 	Role checkUserRoleExists(String locale,Long userId, Long roleId) throws RoleException;
 	

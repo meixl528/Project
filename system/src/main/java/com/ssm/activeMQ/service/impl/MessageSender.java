@@ -1,5 +1,8 @@
 package com.ssm.activeMQ.service.impl;
 
+import java.util.Map;
+import java.util.stream.Stream;
+
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
@@ -39,11 +42,11 @@ public class MessageSender implements IMessageSender{
     @Override
     public void sendQueue(Object message,String queue) {
         try {
-        	logger.debug("发送  消息("+queue+") : " + message);
+        	logger.info("发送  消息("+queue+") : " + message);
         	queueJmsTemplate.convertAndSend(queue, message);
         } catch (Exception e) {
+        	logger.error("Send Queue "+queue+" :"+message+" error!");
             e.printStackTrace();
-            logger.debug("Send Queue "+queue+" :"+message+" error!");
         }
     }
     
@@ -56,30 +59,30 @@ public class MessageSender implements IMessageSender{
 					TextMessage msg = session.createTextMessage();
 					msg.setText((String)message);
 					return msg;
-    	        }else if(message instanceof MapMessage){ //接收键值对消息    
+    	        }else if(message instanceof Map){ //接收键值对消息    
     	        	MapMessage msg = session.createMapMessage();
     	        	msg.setObject("map", message);
     	        	return msg;
-    	        }else if(message instanceof StreamMessage){ //接收流消息     
+    	        }else if(message instanceof Stream){ //接收流消息     
     	        	StreamMessage msg = session.createStreamMessage();
     	        	msg.writeObject(message);
     	        	return msg;
-    	        }else if(message instanceof BytesMessage){ //接收字节消息     
+    	        }else if(message instanceof Byte){ //接收字节消息     
     	        	BytesMessage msg = session.createBytesMessage();
     	        	msg.writeBytes((byte[]) message);
     	        	return msg;
-    	        }else if(message instanceof ObjectMessage){ //接收对象消息     
+    	        }else if(message instanceof Object){ //接收对象消息     
     	        	ObjectMessage msg= session.createObjectMessage();
     	        	msg.setObject(SerializeUtil.serialize(message));
     	        	return msg;
     	        }else{     
-    	        	logger.debug("message :"+ message + " is unclear");  
+    	        	logger.error("message :"+ message + " is unclear");  
 					throw new JMSException("message type is unclear");
     	        }
 			}
 		};
 		for (String top : topic) {
-			logger.debug("发送topic消息("+top+") : " + message);
+			logger.info("发送topic消息("+top+") : " + message);
 			topicJmsTemplate.send(top,ms);
 			//Message msg = topicJmsTemplate.sendAndReceive(new ActiveMQTopic(top), ms);
 		}

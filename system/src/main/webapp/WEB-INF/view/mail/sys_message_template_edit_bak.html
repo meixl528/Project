@@ -1,0 +1,109 @@
+<#-- 
+ * description: 修改消息模板页面
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 15px">
+	<script src="${base.contextPath}/common/code?priorityLevelData=SYS.PRIORITY_LEVEL" type="text/javascript"></script>
+	<form id="mainForm" method="post" enctype="application/json;charset=UTF-8"></form>
+	<script type="text/javascript">
+	  <#assign isedit = (RequestParameters.isedit!'0')/>
+	  //保存提交
+      function saveDialog() {
+          Hap.submitForm({
+              form: dataForm,
+              wrapArray: false,
+              <#if isedit == '1'>
+          	  url: '${base.contextPath}/sys/messageTemplate/update',
+          	  <#else>
+          	  url: '${base.contextPath}/sys/messageTemplate/add',
+              </#if>
+              success:function(json, opt){
+                  $.ligerDialog.success("<@spring.message "hap.tip.success"/>", '<@spring.message "hap.tip.info"/>', function(){
+                      parent.dataGrid.reload();
+                      cancelDialog();
+                  });
+              }
+          });
+      }
+	  //取消
+      function cancelDialog() {
+          var dialog = frameElement.dialog;
+          dialog.close();
+      }
+      //表单底部按钮 
+      Hap.setFormDefaultBtn(cancelDialog, saveDialog);
+	  //-------------------------------------------------------------
+      
+        //表单
+        var mainForm = $("#mainForm");
+        var dataForm  = mainForm.ligerForm({
+            inputWidth: 480,
+            fields: [{
+                name: "templateId",
+                type: "hidden"
+            }, /* {
+                display: '<@spring.message "messagetemplate.templatecode"/>',
+                name: "templateCode",
+                type: "text",
+                newline: true,
+                validate: {
+                    required: true
+                }
+            } */
+            {
+                display: '<@spring.message "messagetemplate.templatecode"/>',
+                name: "templateCode",
+                type:'text',
+                textField: 'meaning',
+                //options:${lovService.getLov(base.contextPath,base.locale, "lov_msg_tem_code")},
+                newline: true,
+                validate: {
+                    required: true
+                }
+            },{
+	            type : 'combobox',
+	            label : '<@spring.message "messagetemplate.prioritylevel"/>',
+	            name : 'priorityLevel',
+	            options : {
+	                valueField : 'value',
+	                textField : 'meaning',
+	                data : priorityLevelData
+	            },
+	            newline : true,
+	            validate: {
+                    required: true
+                }
+	        },{
+                display: '<@spring.message "messagetemplate.name"/>',
+                name: "description",
+                type: "text",
+                newline: true,
+                validate: {
+                    required: true
+                }
+            },{
+                display: '<@spring.message "messagetemplate.subject"/>',
+                name: "subject",
+                type: "text",
+                newline: true,
+                validate: {
+                	required: true
+                }
+            },{
+                display: '<@spring.message "messagetemplate.content"/>',
+                name: "content",
+                type: "textarea",
+                newline:true,
+                validate: {
+                	required: true
+                }
+            }]
+        });
+    
+   	<#if isedit == '1'>
+    Hap.loadForm({form: dataForm, url:'${base.contextPath}/sys/messageTemplate/query',para:{templateId:${RequestParameters.id}}})
+    </#if>
+    </script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<#--
+ * description:  附件目录创建页面
+ * version: 1.0 
+-->
+<#include "../include/header.html">
+<body style="padding: 10px;">
+ <div id="content-container">
+        <div id="page-content">
+            <div class="panel" style="padding:0px;">
+                <form id="mainform"  class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+                    <div class="panel-body">
+                        <div class="row">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label"><@spring.message "attachcategory.categoryname"/></label>
+                                    <div class="col-sm-8">
+                                    	<input type="hidden" name="categoryId"  data-bind="value:model.categoryId" class="k-textbox">
+                                        <input type="hidden" id="leafFlag" name="leafFlag"  data-bind="value:model.leafFlag" class="k-textbox">
+                                        <input type="hidden" id="parentCategoryId" name="parentCategoryId"  data-bind="value:model.parentCategoryId" class="k-textbox">
+                                        <input type="text" required style="width:100%" name="categoryName"  data-bind="value:model.categoryName" class="k-textbox">
+                                    </div>
+                                    <!-- 错误提示标签位置 -->
+	                                <div class="col-sm-2" >  
+	                                     <span data-for="categoryName" class=".k-invalid-msg"></span>
+	                                </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label"><@spring.message "attachcategory.categorypath"/></label>
+                                    <div class="col-sm-8">
+                                        <input type="text" required style="width:100%" name="categoryPath" data-bind="value:model.categoryPath" class="k-textbox">
+                                    </div>
+	                                <div class="col-sm-2" >  
+	                                     <span data-for="categoryPath" class=".k-invalid-msg"></span>
+	                                </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label"><@spring.message "attachcategory.allowedFileType"/></label>
+                                    <div class="col-sm-8">
+                                        <input type="text" required style="width:100%" name="allowedFileType" data-bind="value:model.allowedFileType" class="k-textbox">
+                                    </div>
+                                    <div class="col-sm-2" >  
+	                                     <span data-for="allowedFileType" class=".k-invalid-msg"></span>
+	                                </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label"><@spring.message "attachcategory.allowedFileSize"/></label> 
+                                    <div class="col-sm-8">
+                                        <input type="text" style="width:100%" id="allowedFileSize" name="allowedFileSize" data-bind="value:model.allowedFileSize" >
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label"><@spring.message "code.description"/></label>
+                                    <div class="col-sm-8">
+                                        <input type="text" required style="width:100%" name="description" data-bind="value:model.description" class="k-textbox">
+                                    </div>
+                                    <div class="col-sm-2" >  
+	                                     <span data-for="description" class=".k-invalid-msg"></span>
+	                                </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label"><@spring.message "attachcategory.sourcetype"/></label>
+                                    <div class="col-sm-8">
+                                        <input type="text" style="width:100%" name="sourceType"  data-bind="value:model.sourceType" class="k-textbox">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label"><@spring.message "attachcategory.isunique"/></label>
+                                    <div class="col-sm-8" style="text-align: left">
+                                        <input type="checkbox" class="chkbx" style="margin-top:8px"  name="isUnique" data-bind="checked:model.isUnique" >
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+            		<div class="panel-footer text-right">
+                    	<span class="btn btn-success" data-bind="click:save" type="submit"><@spring.message "hap.save"/></span>
+                    	<span class="btn btn-success" data-bind="click:closeWin" type="button"><@spring.message "hap.cancel"/></span>
+                	</div>
+                </form>
+            </div>
+        </div>     
+ </div>
+ 
+<script type="text/javascript">
+
+	$(document).ready(function () {
+		
+	  	//输入框  添加  kendoUI的 number 类型 限制   并且不能添加 class k-textbox(样式冲突) 
+	  	$("#allowedFileSize").kendoNumericTextBox({
+	  		 min: 0,
+	         step: 1,
+	         format: "0"       
+	    });
+	  	//隐藏字段赋值 
+		$("#leafFlag").attr("value","1");
+		<#if RequestParameters.parentCategoryId??> 
+				<#if RequestParameters.parentCategoryId == ""> 
+					$("#parentCategoryId").attr("value","-1");
+				<#else> 
+					$("#parentCategoryId").attr("value","${RequestParameters.parentCategoryId!}");
+				</#if>
+		<#else> 
+			$("#parentCategoryId").attr("value","-1");
+		</#if>
+	});
+    window.viewModel = kendo.observable({
+        model    : {},
+        save     :function(e){
+            var validator = $("#mainform").data("kendoValidator");
+            if (validator.validate()) {
+            	var data= viewModel.model.toJSON();
+            	if(data.isUnique==true){
+            		data.isUnique ="Y";
+            	}else{
+            		data.isUnique ="N";
+            	}
+            	//加入隐藏字段 
+                data.leafFlag = $("#leafFlag").val();
+                data.parentCategoryId = $("#parentCategoryId").val();
+                $.ajax({
+                    type   : 'POST',
+                    url    : '${base.contextPath}/sys/attachcategory/submit',
+                    dataType : "json",
+                    contentType : "application/json",
+                    data   : kendo.stringify([data]),
+                    success: function (data) {
+                        window.parent.$("#editWin").data("kendoWindow").close();
+                        //window.parent.$('#Grid').data('kendoGrid').dataSource.page(1);
+                    }
+                }); 
+            } 
+        },
+        closeWin :function(e){
+        	//关闭该window   
+        	window.parent.$("#editWin").data("kendoWindow").close()
+        }       
+    });
+    var container = $("#mainform");
+    kendo.init(container);
+    container.kendoValidator({
+    	messages: {
+            required: "required"
+    	}
+    });
+    kendo.bind($('#page-content'), viewModel);
+ 
+ 
+
+</script> 
+
+
+</body>
+</html>

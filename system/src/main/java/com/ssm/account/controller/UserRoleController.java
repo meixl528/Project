@@ -76,4 +76,12 @@ public class UserRoleController extends BaseController{
         return new ResponseData(userRoleService.batchUpdate(requestContext, userRoles));
     }
 	
+    @RequestMapping(value = "/sys/userrole/remove", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData remove(HttpServletRequest request, @RequestBody List<UserRole> userRoles,
+            BindingResult result) throws BaseException {
+        createRequestContext(request);
+        userRoleService.batchDelete(userRoles);
+        return new ResponseData();
+    }
 }

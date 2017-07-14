@@ -1,0 +1,124 @@
+<#-- 
+ * description: 消息界面
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 10px;">
+    <form id="message_form"></form>
+    <div id="message_grid" style="margin: 0; padding: 0"></div>
+    <script type="text/javascript">
+    	$(function() {
+        	window['message_form'] = $("#message_form").ligerForm({
+            	fields : [ 
+            		{
+    		      	  	type: 'text', 
+    		      	  	label: '标题', 
+    		      	  	name: 'subject'
+            		}
+            	],
+            	buttons : [ 
+            		{
+                		text : '<@spring.message "hap.query"/>',
+                		disabled : false,
+                		width : 60,
+                		click : function() {
+                    		Hap.gridQuery({
+                        		form : message_form,
+                        		grid : message_grid
+                    		})
+                		}
+           	 		} 
+            	]
+        	});
+
+        	var message_grid = window['message_grid'] = $("#message_grid").ligerGrid({
+            	columns : [ 
+            		{
+                		display : '标题',
+                		name : 'subject',
+                		align : 'left',
+                		width : 200,
+                		editor : {
+                    		type : 'text'
+                		}
+            		},
+            		{
+                		display : '内容',
+                		name : 'content',
+                		align : 'left',
+                		width : 250,
+                		editor : {
+                    		type : 'text'
+                		}
+            		}, 
+            		{
+		               	display : '消息地址',
+		               	name : 'messageAddress',
+		               	align : 'left',
+		               	isSort : false,
+		               	width : 180,
+		               	editor : {
+		                   	type : 'select',
+		                   	valueField: 'messageAddress',
+		                   	textField: 'messageAddress',
+		                   	cancelable: false,
+		                   	onBeforeOpen:function(){
+		                   		var sf = this;
+		                        sf.setParm("messageId",this.options.host_grid_row.messageId)
+		                        sf.setUrl('${base.contextPath}/sys/message/queryMessageAddresses',function(){
+		                            sf._selectBoxShow();
+		                        })
+		                   	}
+		               	}
+		           	}, 
+		           	{
+		                display : '消息类型',
+		                name : 'messageType',
+		                align : 'left',
+		                width : 100,
+		                editor : {
+		                    type : 'text'
+		                }
+            		}, 
+            		{
+		                display : '消息发出人',
+		                name : 'messageFrom',
+		                align : 'left',
+		                isSort : false,
+		                width : 180,
+		                editor : {
+		                    type : 'text'
+		                }
+            		}, 
+            		{
+		                display : '发送状态',
+		                name : 'transactionStatus',
+		                align : 'left',
+		                isSort : false,
+		                width : 80,
+		                editor : {
+		                    type : 'text'
+		                },
+		                render : function (item) {
+		                    if (item.transactionStatus == 'error') {
+		                        return "<span style='color:red;'>发送失败</span>"
+		                    }
+		                    if (item.transactionStatus == 'success') {
+		                        return "<span style='color:green;'>发送成功</span>"
+		                    }
+		                    if (item.transactionStatus == null) {
+		                        return "<span style='color:orange;'>未发送</span>"
+		                    }
+		                    return item.sendStatus;
+		                }
+		            }
+            	],
+            	url : '${base.contextPath}/sys/message/query',
+            	width : '99%',
+            	enabledEdit: true,
+            	height : '98%'
+        	});
+    	});
+    </script>
+</body>
+</html>

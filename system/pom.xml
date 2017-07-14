@@ -455,6 +455,21 @@
         </dependency>
         <!--end redisson -->
         
+        <!-- websocket  start -->
+        <dependency>
+		    <groupId>javax.websocket</groupId>
+		    <artifactId>javax.websocket-api</artifactId>
+		    <version>1.1</version>
+		</dependency>
+		<!-- end -->
+		
+		<!-- <dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-websocket</artifactId>
+		    <version>4.2.5.RELEASE</version>
+		</dependency> -->
+		        
+        
 	</dependencies>
 
 	<!-- maven install,加上后maven编译1.8版本,不会出现报1.5的错误 -->

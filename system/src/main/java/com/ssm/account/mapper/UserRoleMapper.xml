@@ -6,13 +6,13 @@ PUBLIC "-//mybatis.org//DTDMapper 3.0//EN"
 <mapper namespace="com.ssm.account.mapper.UserRoleMapper">
 	<!-- <cache type="com.ssm.util.LoggingRedisCache"></cache> -->
 	<resultMap id="BaseResultMap" type="com.ssm.account.dto.UserRole" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
-    <id column="SUR_ID" property="surId" jdbcType="DECIMAL" />
+    <id column="ur_id" property="urId" jdbcType="DECIMAL" />
     <result column="USER_ID" property="userId" jdbcType="DECIMAL" />
     <result column="ROLE_ID" property="roleId" jdbcType="DECIMAL" />
     <result column="DEFAULT_FLAG" property="defaultFlag" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    SUR_ID, USER_ID, ROLE_ID, DEFAULT_FLAG
+    ur_id, USER_ID, ROLE_ID, DEFAULT_FLAG
   </sql>
   
   <delete id="deleteByUserId" parameterType="java.lang.Long" >

@@ -7,15 +7,23 @@ import java.util.List;
 import java.util.Map;
 /*import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;*/
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import javax.jms.BytesMessage;
+import javax.jms.MapMessage;
 import javax.jms.Message;
+import javax.jms.ObjectMessage;
+import javax.jms.StreamMessage;
+import javax.jms.TextMessage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.ssm.activeMQ.annotation.Topic;
 import com.ssm.activeMQ.listener.ITopicListener;
@@ -27,14 +35,16 @@ import com.ssm.activeMQ.listener.ITopicListener;
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class TopicMessageReceiver implements InitializingBean {
+	static final Logger logger = LoggerFactory.getLogger(TopicMessageReceiver.class);
 
 	public TopicMessageReceiver() {}
 
 	@Autowired
 	private ApplicationContext applicationContext;
 	
-	@Autowired
-	private ThreadPoolTaskExecutor taskExecutor;
+	/*@Autowired
+	@Qualifier("taskExecutor")
+	private ThreadPoolTaskExecutor taskExecutor;*/
 
 	@Autowired
 	@Qualifier("topicJmsTemplate")
@@ -65,16 +75,16 @@ public class TopicMessageReceiver implements InitializingBean {
 		});
 		if(!beanMap.isEmpty()){
 			Iterator<String> it = beanMap.keySet().iterator();
-			//executorService = Executors.newFixedThreadPool(beanMap.keySet().size());
-			String channel;
-			List<ITopicListener> list;
-			Task task;
+			/**
+			 * 使用spring的线程池  org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor 出现问题, 不执行多个task
+			 */
+			ExecutorService executorService = Executors.newFixedThreadPool(beanMap.keySet().size());
+			String channel;  List<ITopicListener> list;  Task task;
 			while(it.hasNext()){
 				channel = it.next();
 				list = beanMap.get(channel);
 				task = new Task(channel,list);
-				taskExecutor.execute(task);
-				//executorService.execute(task);
+				executorService.execute(task);
 			}
 		}
 		
@@ -91,29 +101,35 @@ public class TopicMessageReceiver implements InitializingBean {
 		@Override
 		public void run() {
 			while(true){
-				Message message = topicJmsTemplate.receive(channel);
-				if(message==null){
-					try {
+				try {
+					Message message = topicJmsTemplate.receive(channel);
+					if(message==null){
 						Thread.sleep(100);
 						continue;
-					} catch (InterruptedException e) {
-						e.printStackTrace();
 					}
+					if (message instanceof TextMessage) {  //文本
+						foreach(((TextMessage)message).getText(), channel);
+					}else if(message instanceof MapMessage || message instanceof ObjectMessage){
+						foreach(((ObjectMessage)message).getObject(), channel);
+					}else if(message instanceof StreamMessage){  //流
+						foreach(((StreamMessage)message).readString(), channel);
+					}else if(message instanceof BytesMessage){ //接收字节消息     
+						foreach(((BytesMessage)message).readByte(), channel);
+	    	        }else{
+	    	        	logger.error("topic receive message error !");
+	    	        }
+				} catch (Throwable thr) {
+					logger.error("exception occurred while get message from topic [" + channel + "]",thr);
 				}
-				for (ITopicListener bean : beans) {
-	            	bean.onTopicMessage(message, channel);
-				}
-				/*if (message instanceof TextMessage) {
-					TextMessage textMessage = (TextMessage) message;
-		            String text = textMessage.getText();
-		            for (ITopicListener bean : beans) {
-		            	bean.onTopicMessage(text, channel);
-					}
-		        }*/
+			}
+		}
+		
+		private void foreach(Object message,String channel){
+			for (ITopicListener bean : beans) {
+            	bean.onTopicMessage(message, channel);
 			}
 		}
 	}
-	
 
 	
 }

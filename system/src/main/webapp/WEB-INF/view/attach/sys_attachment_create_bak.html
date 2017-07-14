@@ -1,0 +1,100 @@
+<#--
+ * description: 附件查询
+ * 
+-->
+<#include "../include/head.html">
+<link href="${base.contextPath}/resources/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="${base.contextPath}/resources/css/attach/webuploader.css"></link> 
+<script type="text/javascript" src="${base.contextPath}/resources/js/attach/webuploader.js"></script>
+<body style="padding: 10px;">
+    <form id="attForm"></form>
+    <style>
+    .webuploader-pick {
+        padding:5px !important; 
+    } 
+    #file_info {
+        display:none; 
+    }
+    #file_info > div {
+        float:left; 
+        line-height:25px;
+        font-size:14px; 
+    }
+    #picker {
+        margin-top:5px; 
+        clear:both;
+    }
+    #info {
+        margin-left:5px; 
+    }
+    </style>
+    <script type="text/javascript">
+        window['attForm'] = $("#attForm").ligerForm({
+            fields : [{ 
+                display:'<@spring.message "attachcategory.sourceType"/>',
+                type:'popup',
+                name:'sourceType',
+                id:'sourceType',
+                textField:'categoryName',
+                newline : false,
+                options : <@lov "ATTACH_SOURCE_TYPE"/>,
+                validate : {
+                    required : true
+                }
+            },{
+                display : " ",  
+                name : "update",
+                type : "html",
+                newline : true,
+                render:function(v){  
+                    return '<div id="file_info"><div class="icon-paperclip"></div><div id="info"></div></div><div style="margin-top:10px;" id="picker"><@spring.message "sysfile.upload"/></div>'
+                }
+            }]
+        });
+
+
+        function closeUploadDialog(){
+            var dialog = frameElement.dialog;
+            dialog.close();
+        }
+        
+        Hap.setFormDefaultBtn(closeUploadDialog, function(){
+            if(Hap.validateForm(attForm)) {
+                uploader.option('formData', {
+                    sourceType: attForm.getData().sourceType,
+                    sourceKey: '1' 
+                });
+                uploader.upload();
+            }
+        });
+        
+        
+        var uploader = WebUploader.create({
+            swf : '${base.contextPath}/js/Uploader.swf',
+            server : '${base.contextPath}/sys/attach/upload',
+            pick : '#picker',
+            auto : false,
+//             accept: {
+//                title: 'Images',
+//                extensions: 'gif,jpg,jpeg,bmp,png',
+//                mimeTypes: 'image/*'
+//            },
+            onFileQueued : function(file){
+                $('#file_info').show();
+                $('#file_info >#info').html(file.name);
+            },
+            onUploadSuccess : function(file, response) {
+                if(response.message=='UPLOAD_SUCCESS'){
+                    var sf = this;
+                    $.ligerDialog.success('<@spring.message "hap.success"/>', $l('hap.tip.info'), function(){
+                        closeUploadDialog();
+                    });
+                }else{ 
+                    alert(response.info)
+                }
+                
+            }
+        });
+    </script>
+</body>
+</html>

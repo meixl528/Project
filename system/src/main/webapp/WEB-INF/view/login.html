@@ -2,8 +2,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>kendo UI Web</title>
-<script src="resources/kendoui/js/jquery.min.js"></script>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>网站</title>
 
 <style type="text/css">
 .alert-error {
@@ -14,12 +14,26 @@
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 </style>
+<script type="text/javascript">
+	function changeLang(lang){
+        var urlString=window.location.protocol+"//"+window.location.host+window.location.pathname+"?lang="+lang;
+        window.location.href = urlString;
+    }
+	
+	/* tab中如果登录失效,顶层页面刷新   */
+	if(window.top!=window.self){
+	    window.top.location="${base.contextPath}/login.html"
+	}
+</script>
 </head>
 <body>
     <div id="page-content">
     	<form id="login-form" style="margin-top:1px" method="post" action="login.html">
-    		<@spring.message "user.username"/>:<input id="userName" name="userName"  placeholder="admin">
-    		<@spring.message "user.password"/>:<input id="password" name="password"  placeholder="admin">
+    		<label class="control-label"><@spring.message "user.username"/>:</label>
+    		<input id="userName" name="userName"  placeholder="admin"/>
+    		
+    		<label class="control-label"><@spring.message "user.password"/>:</label>
+    		<input id="password" name="password"  placeholder="admin"/>
     		<#if msg??>
             	<div class="alert-error">
                 	<span>${msg}</span>
@@ -27,14 +41,20 @@
            	</#if>
 			<button id="login" type="submit"><@spring.message "hap.login"/></button>
         </form>
+        
+        <div style="text-align: center;margin-top:20px">
+        	<!-- <span style="cursor:pointer;" onclick="changeLang('zh_CN')">中文</span>
+        	| 
+        	<span style="cursor:pointer;" onclick="changeLang('en_GB')">English</span> -->
+        	<#list languages as l>
+       			<span style="cursor:pointer;" onclick="changeLang('${l.langCode}')">${l.description}</span>
+                <#if l_has_next>
+                  	|
+	            <#else>
+	                    
+	            </#if>
+		    </#list>
+        </div>
     </div>
 </body>
-
-	<script type="text/javascript">
-	/* tab中如果登录失效,顶层页面刷新   */
-	if(window.top!=window.self){
-	    window.top.location="${base.contextPath}/login.html"
-	}
-	</script>
-
 </html>

@@ -7,7 +7,7 @@ public class NewJob extends AbstractJob{
 
 	@Override
 	public void safeExecute(JobExecutionContext context) throws Exception {
-		System.out.println("NewJob-----------"+context.getRefireCount());
+		System.out.println("NewJob-----------"+context.getNextFireTime());
 	}
 
 	@Override

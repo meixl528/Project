@@ -1,0 +1,256 @@
+<#-- 
+ * description: 邮箱配置界面
+-->
+<#include "../include/head.html">
+<body style="padding: 5px">
+    <form id="mainform" method="post" enctype="application/json;charset=UTF-8">
+    </form>
+    <form id="queryEditor" style="display:none"></form>
+    <div id="emailAccountGrid" style="margin-left: 2px; margin-top: 2px;"></div>
+    <div id="whiteListGrid" style="margin-left: 2px; margin-bottom: 20px;"></div>
+    <script type="text/javascript">
+
+        function save() {
+        	submitForm({
+                form: form,
+                wrapArray: false,
+                grid: [emailAccountGrid, whiteListGrid],
+                gridName: ['emailAccounts', 'whiteLists'],
+                url:'${base.contextPath}/sys/messageEmailConfig/submit',
+                success:function(json,opt){
+                    $.ligerDialog.success("<@spring.message "hap.tip.success"/>", '<@spring.message "hap.tip.info"/>', function(){
+                        parent.dataGrid.reload();
+                        closeDialog();
+                    });
+                }
+            });
+        }
+        
+        //关闭窗口
+        function closeDialog() {
+            var dialog = frameElement.dialog;
+            dialog.close();
+        }
+        
+        <#assign isedit = (RequestParameters.isedit!'0')/>        
+        //表单底部按钮 
+        Hap.setFormDefaultBtn(closeDialog, save);
+    
+        var mainform = $("#mainform");
+        var form  = mainform.ligerForm({
+            inputWidth : 250,
+            fields : [{
+                name:'configId',
+                type:'hidden'
+            },{
+                display : '<@spring.message "messageemailconfig.configCode"/>',
+                name : "configCode",
+                type : "text",
+                newline:true,
+                validate : {
+                    required : true
+                }
+            },{
+                display : '<@spring.message "messageemailconfig.introduction"/>',
+                name : "description",
+                type : "text",
+                newline:false
+            },{
+                display : '<@spring.message "messageemailconfig.host"/>',
+                name : "host",
+                type : "text",
+                newline:true,
+                validate : {
+                    required : true
+                }
+            },{
+                display : '<@spring.message "messageemailconfig.port"/>',
+                name : "port",
+                type : "digits",
+                newline:false,
+                validate : {
+                    required : true
+                }
+            },{
+                display: '<@spring.message "messageemailconfig.userName"/>',
+                name: "userName",
+                type: "text",
+                newline: true,
+                validate: {
+                	required: true
+                }
+            },{
+                display: '<@spring.message "messageemailconfig.password"/>',
+                name: "password",
+                type: "text",
+                newline: false,
+                validate: {
+                	required: true
+                }
+            },{
+                display : '<@spring.message "messageemailconfig.tryTimes"/>',
+                name : "tryTimes",
+                type : "digits",
+                newline:true,
+                validate : {
+                    required : true
+                }
+            },{
+                display: '<@spring.message "messageemailconfig.useWhiteList"/>',
+                type: 'checkbox',  
+                name: 'useWhiteList',
+                space:0,
+                width:40,
+                options:{
+                    checkValue:'Y',
+                    uncheckValue:'N'
+                },
+                newline: false
+            }]
+        });
+    
+        mainform.attr("action", "${base.contextPath}/sys/code/submit");
+        emailAccountGrid = $("#emailAccountGrid").ligerGrid({
+            columns : [
+	            {display:'<@spring.message "messageemailconfig.accountCode"/>', name:"accountCode", align:"left", width:130,
+                    editor : {
+                        type : 'text'
+                    },
+                    validate : {
+                        required : true
+                    }
+            	} ,
+	            {display:'<@spring.message "messageemailconfig.userName"/>', name:"userName", align:"left", width:180,
+                    editor : {
+                        type : 'text'
+                    },
+                    validate : {
+                        required : true
+                    }
+				}
+            	/* ,{display:'<@spring.message "messageemailconfig.password"/>', name:"password", align:"left", width:180,
+                    editor : {
+                        type : 'text'
+                    },
+                    validate : {
+                        required : true
+                    }
+				} */
+			],
+            width : '99%', 
+            height : 200,  
+            usePager : false,
+            enabledEdit : true,
+            checkbox : true,
+            <#if isedit == '1'>
+            url: '${base.contextPath}/sys/messageEmailAccount/query?configId=${RequestParameters.id!}', 
+            </#if>
+            toolbar : {
+                items : [{
+                    text : '<@spring.message "messageemailconfig.account"/>',
+                    disable : true
+                }, {
+                    text : '<@spring.message "hap.new"/>',
+                    disable : false,
+                    click : function() {
+                        emailAccountGrid.addRow({})
+                    },
+                    icon : 'add'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click : function() {
+                        Hap.gridDelete({
+                            grid : emailAccountGrid,
+                            url : '${base.contextPath}/sys/messageEmailAccount/remove'
+                        })
+                    },
+                    icon : 'delete'
+                } ]
+            }
+        });
+        whiteListGrid = $("#whiteListGrid").ligerGrid({
+            columns : [
+            	{display:'<@spring.message "messageemailconfig.address"/>', name:"address", align:"left", width:250,
+                    editor : {
+                        type : 'text'
+                    },
+                    validate : {
+                        required : true
+                    }
+            	}
+			],
+            width : '99%', 
+            height : 200,  
+            usePager : false,
+            enabledEdit : true,
+            checkbox : true,
+            <#if isedit == '1'>
+            url: '${base.contextPath}/sys/messageEmailWhiteList/query?configId=${RequestParameters.id!}', 
+            </#if>
+            toolbar : {
+                items : [{
+                    text : '<@spring.message "messageemailconfig.whitelist"/>',
+                    disable : true,
+                }, {
+                    text : '<@spring.message "hap.new"/>',
+                    disable : false,
+                    click : function() {
+                        whiteListGrid.addRow({})
+                    },
+                    icon : 'add'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click : function() {
+                        Hap.gridDelete({
+                            grid : whiteListGrid,
+                            url : '${base.contextPath}/sys/messageEmailWhiteList/remove'
+                        })
+                    },
+                    icon : 'delete'
+                } ]
+            }
+        });
+        <#if isedit == '1'>
+        Hap.loadForm({form:form,url:'${base.contextPath}/sys/messageEmailConfig/load',para:{configId:${RequestParameters.id}}})
+        </#if>
+        function submitForm(options) {
+            var form = options.form,grids = options.grid ? [].concat(options.grid) : [],gridNames = [].concat(options.gridName),url=options.url,wa = options.wrapArray;
+            if (!form || form.con) return;
+            if(Hap.validateForm(form) && Hap.validateGrid(grids)){
+                var d = form.getData();
+                for ( var key in d) {
+                    if (!d[key]) {
+                        delete d[key]
+                    }
+                }
+                if(grids.length > 0) {
+                    $.each(grids,function(i,grid){
+                        grid.endEdit();
+                        d[gridNames[i]] = grid.getData();
+                    })                    
+                }
+                form.con= $.ajax({
+                    url : url,
+                    type : "POST",
+                    dataType : "json",
+                    contentType : "application/json",
+                    data : JSON2.stringify(wa === false ? d : [d]),
+                    success : function(json) {
+                        options.json = json;
+                        Hap.defaultSuccessHandler(options);
+                        form.con = null;
+                    },
+                    error : function() {
+                        $.ligerDialog.closeWaitting();
+                        form.con = null;
+                    }
+                });
+            }
+        };
+    </script>
+</body>
+</html>

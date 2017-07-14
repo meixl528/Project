@@ -1,0 +1,432 @@
+<#-- * description: 邮件配置界面
+     * version: 1.0 
+-->
+<#include "../include/header.html">
+<body style="padding: 10px;">
+<script src="${base.contextPath}/lib/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+        <div id="content-container">
+            <div id="page-content">
+                <form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><@spring.message
+                                    "messageemailconfig.configCode"/></label>
+                                <div class="col-sm-6">
+                                    <input type="hidden" name="configId" data-bind="value:model.configId"
+                                           class="k-textbox">
+                                    <input required type="text" style="width: 100%" name="configCode"
+                                           data-bind="value:model.configCode" class="k-textbox">
+                                </div>
+                                <!-- 错误提示标签位置 -->
+                                <div class="col-sm-3">
+                                    <span data-for="configCode" class=".k-invalid-msg"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><@spring.message
+                                    "messageemailconfig.introduction"/></label>
+                                <div class="col-sm-6">
+                                    <input type="text" style="width: 100%" name="description"
+                                           data-bind="value:model.description" class="k-textbox">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><@spring.message
+                                    "messageemailconfig.host"/></label>
+                                <div class="col-sm-6">
+                                    <input required type="text" style="width: 100%" name="host"
+                                           data-bind="value:model.host" class="k-textbox">
+                                </div>
+                                <div class="col-sm-3">
+                                    <span data-for="host" class=".k-invalid-msg"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><@spring.message
+                                    "messageemailconfig.port"/></label>
+                                <div class="col-sm-6">
+                                    <input required type="text" id="port" style="width: 100%" name="port"
+                                           data-bind="value:model.port">
+                                </div>
+                                <div class="col-sm-3">
+                                    <span data-for="port" class=".k-invalid-msg"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><@spring.message
+                                    "messageemailconfig.userName"/></label>
+                                <div class="col-sm-6">
+                                    <input required type="text" style="width: 100%" name="userName"
+                                           data-bind="value:model.userName" class="k-textbox">
+                                </div>
+                                <div class="col-sm-3">
+                                    <span data-for="userName" class=".k-invalid-msg"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><@spring.message
+                                    "messageemailconfig.password"/></label>
+                                <div class="col-sm-6">
+                                    <input required type="password" style="width: 100%" name="password"
+                                           data-bind="value:model.password" class="k-textbox">
+                                </div>
+                                <div class="col-sm-3">
+                                    <span data-for="password" class=".k-invalid-msg"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><@spring.message
+                                    "messageemailconfig.tryTimes"/></label>
+                                <div class="col-sm-6">
+                                    <input required type="text" id="tryTimes" style="width: 100%"
+                                           name="tryTimes" data-bind="value:model.tryTimes">
+                                </div>
+                                <div class="col-sm-3">
+                                    <span data-for="tryTimes" class=".k-invalid-msg"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"><@spring.message
+                                    "messageemailconfig.useWhiteList"/></label>
+                                <div class="col-sm-6" style="text-align: left">
+                                    <input id="checkbox" type="checkbox" style="margin-top: 8px" name="useWhiteList" data-bind="checked:model.useWhiteList">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12" style="margin-top: 10px;">
+                        <ul class="nav nav-tabs" id="mytab">
+                            <li class="active"><a href="#maintain" data-toggle="tab"><@spring.message
+                                "messageemailconfig.account"/></a></li>
+                            <li class=""><a href="#minortain" data-toggle="tab"><@spring.message
+                                "messageemailconfig.whitelist"/></a></li>
+                        </ul>
+                        <div id="tabContent" class="tab-content">
+                            <div class="tab-pane fade in active" style="margin-top: 10px;" id="maintain">
+                                <div id="Grid" class="table"></div>
+                            </div>
+                            <div id="minortain" class="tab-pane fade" style="margin-top: 10px;">
+                                <div id="secondGrid" class="table">
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="col-sm-12 text-center">
+                        <span class="btn btn-success" id="mySubmit"><i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+                    </div>
+                </div>
+            </div>
+
+            </form>
+        </div>
+        </div>
+        <script type="text/javascript">
+            var isedit = '${RequestParameters.isedit!0}' == '1';
+            $(document).ready(function () {
+
+                //输入框  添加  kendoUI的 number 类型 限制   并且不能添加 class k-textbox(样式冲突)
+                $("#port").kendoNumericTextBox({
+                    min: 0,
+                    step: 1,
+                    format: "0"
+                });
+                $("#tryTimes").kendoNumericTextBox({
+                    min: 0,
+                    step: 1,
+                    format: "0"
+                });
+                var viewModel = kendo.observable({
+                    model: {"useWhiteList": "N"}
+                });
+
+                if ('${RequestParameters.isedit!0}' == '1') {
+                    $.ajax({
+                        url: "${base.contextPath}/sys/messageEmailConfig/query?configId=${RequestParameters.configId!}",
+                        success: function (args) {
+                            var data = args.rows[0] || {};
+                            for (var key in data) {
+                                //  chkbx  选中 判断
+                                viewModel.model.set(key, data[key]);
+                            }
+                        }
+                    });
+                }
+                var container = $("#mainform");
+                kendo.init(container);
+                container.kendoValidator({
+                    messages: {
+                        required: "required"
+                    }
+                });
+                kendo.bind($('#page-content'), viewModel)
+
+                $("#checkbox").kendoCheckbox({
+                    checkedValue: 'Y',
+                    uncheckedValue: 'N'
+                });
+                kendo.bind($('#checkbox'), viewModel);
+
+
+                var BaseUrl = "${base.contextPath}/sys/messageEmailAccount/";
+                dataSource = new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: BaseUrl + "query?configId=${RequestParameters.configId!0}",
+                            type: "POST",
+                            dataType: "json"
+                        },
+                        destroy: {
+                            url: BaseUrl + "remove",
+                            type: "POST",
+                            contentType: "application/json"
+                        },
+                        parameterMap: function (options, type) {
+                            if (type !== "read" && options.models) {
+                                var datas = options.models
+                                if (type == 'create' || type == 'update') {
+                                    datas = options.models.map(function (data) {
+                                        data['__status'] = (type == 'create' ? 'add' : 'update');
+                                        return data;
+                                    })
+                                }
+                                return kendo.stringify(datas);
+                            }
+                        }
+                    },
+                    batch: true,
+                    serverPaging: true,
+                    pageSize: 5,
+                    schema: {
+                        data: 'rows',
+                        total: 'total',
+                        model: {
+                            id: "accountId",
+                            fields: {
+                                accountCode: {validation: {required: false}},
+                                userName: {validation: {required: true}},
+                            }
+                        },
+                        errors: function (res) {
+                            if (!res.success && res.message) {
+                                return res.message;
+                            }
+                        }
+                    },
+                    error: function (e) {
+                        alert(e.errors)
+                    }
+                });
+                //Grid   显示 emailAccounts
+                $("#Grid").kendoGrid({
+                    dataSource: dataSource,
+                    resizable: true,
+                    scrollable: true,
+                    height: 200,
+                    navigatable: true,
+                    pageable: {
+                        pageSizes: [5, 10, 20, 50],
+                        refresh: true,
+                        buttonCount: 5
+                    },
+                    toolbar: [{
+                        text: '<@spring.message "messageemailconfig.account"/>',
+                        name: "title"
+                    }, {
+                        name: "create",
+                        template: '<span class="btn btn-primary k-grid-add"  ><@spring.message "hap.new"/></span>'
+                    }, {
+                        name: "cancel",
+                        template: '<span  class="btn btn-default k-grid-cancel-changes"><@spring.message "hap.cancel"/></span>'
+                    }],
+                    columns: [
+                        {
+                            field: "accountCode",
+                            title: '<@spring.message "messageemailconfig.accountCode"/>',
+                            width: 120
+                        }, {
+                            field: "userName",
+                            title: '<@spring.message "messageemailconfig.userName"/>',
+                            width: 120
+                        }, {
+                            attributes: {style: "text-align:center"}, command: [{
+                                name: 'remove',
+                                template: '<a class="btn btn-danger k-grid-remove"><@spring.message "hap.delete"/></a>',
+                                click: function (e) {
+                                    e.preventDefault();
+                                    var sf = this;
+                                    var temp = e;
+                                    kendo.ui.showConfirmDialog({
+                                        title: $l('hap.tip.info'),
+                                        message: $l('hap.tip.delete_confirm')
+                                    }).done(function (e) {
+                                        if (e.button == "OK") {
+                                            var data = sf.dataItem($(temp.target).closest("tr"));
+                                            sf.dataSource.remove(data);
+                                            sf.dataSource.sync();
+                                        }
+                                    })
+                                }
+                            }], width: 70
+                        }],
+                    editable: true
+                });
+                //secondGrid  显示whiteLists
+                secondDataSource = new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: '${base.contextPath}/sys/messageEmailWhiteList/query?configId=${RequestParameters.configId!0}',
+                            type: "POST",
+                            dataType: "json"
+                        },
+                        destroy: {
+                            url: "${base.contextPath}/sys/messageEmailWhiteList/remove",
+                            type: "POST",
+                            contentType: "application/json"
+                        },
+                        parameterMap: function (options, type) {
+                            if (type !== "read" && options.models) {
+                                var datas = options.models
+                                if (type == 'create' || type == 'update') {
+                                    datas = options.models.map(function (data) {
+                                        data['__status'] = (type == 'create' ? 'add' : 'update');
+                                        return data;
+                                    })
+                                }
+                                return kendo.stringify(datas);
+                            }
+                        }
+                    },
+                    batch: true,
+                    serverPaging: true,
+                    pageSize: 5,
+                    schema: {
+                        data: 'rows',
+                        model: {
+                            id: "id",
+                            fields: {
+                                address: {validation: {required: false}},
+                            }
+                        },
+                        errors: function (res) {
+                            if (!res.success && res.message) {
+                                return res.message;
+                            }
+                        }
+                    },
+                    error: function (e) {
+                        alert(e.errors)
+                    }
+                });
+
+                $("#secondGrid").kendoGrid({
+                    dataSource: secondDataSource,
+                    resizable: true,
+                    scrollable: true,
+                    height: 200,
+                    navigatable: false,
+                    //此处没有显示分页信息
+                    toolbar: [{
+                        text: '<@spring.message "messageemailconfig.whitelist"/>',
+                        name: "title"
+                    }, {
+                        name: "create",
+                        template: '<span class="btn btn-primary k-grid-add"  ><@spring.message "hap.new"/></span>'
+
+                    }, {
+                        name: "cancel",
+                        template: '<span  class="btn btn-default k-grid-cancel-changes"><@spring.message "hap.cancel"/></span>'
+                    }],
+                    columns: [
+                        {
+                            field: "address",
+                            title: '<@spring.message "messageemailconfig.address"/>',
+                            width: 240
+                        }, {
+                            attributes: {style: "text-align:center;"},
+                            command: [{
+                                name: 'remove',
+                                template: '<a class="btn btn-danger k-grid-remove"><@spring.message "hap.delete"/></a>',
+                                click: function (e) {
+                                    e.preventDefault();
+                                    var sf = this;
+                                    var temp = e;
+                                    kendo.ui.showConfirmDialog({
+                                        title: $l('hap.tip.info'),
+                                        message: $l('hap.tip.delete_confirm')
+                                    }).done(function (e) {
+                                        if (e.button == "OK") {
+                                            var data = sf.dataItem($(temp.target).closest("tr"));
+                                            sf.dataSource.remove(data);
+                                            sf.dataSource.sync();
+                                        }
+                                    })
+                                }
+                            }], width: 70
+                        }],
+                    editable: true
+                });
+
+                //改变  两个  Grid title元素  的 a 属性 href 为  javascript:void(0);  并修改 其原有样式
+                $(".k-grid-title").each(function () {
+                    $(this).attr("href", "javascript:void(0);")
+                            .removeClass("k-button k-button-icontext")
+                            .css("margin-right", "30px");
+                });
+
+                $("#mySubmit").click(function () {
+                    var validator = $("#mainform").data("kendoValidator");
+                    if (validator.validate()) {
+                        viewModel.model.__status = isedit ? 'update' : 'add';
+                        /*
+                         viewModel.model.useWhiteList = viewModel.model.useWhiteList?'Y':'N'
+                         */
+                        Hap.submitForm({
+                            url: '${base.contextPath}/sys/messageEmailConfig/submit',
+                            formModel: viewModel.model,
+                            asArray: false,
+                            //后端代码没有对于两个list的单独保存 ，此处 需要对 两个 Grid 都进行修改 方可成功保存
+                            grid: {
+                                "emailAccounts": $("#Grid"),
+                                "whiteLists": $('#secondGrid')
+                            },
+                            success: function () {
+                                window.parent.$("#editWin").data("kendoWindow").close();
+                            }
+                        });
+                    }
+                });
+                $("#myClose").click(function () {
+                    window.parent.$("#editWin").data("kendoWindow").close();
+                });
+                //Hap.autoResizeGrid("#Grid");
+                //Hap.autoResizeGrid("#secondGrid");
+
+            });
+
+        </script>
+
+        </body>
+        </html>

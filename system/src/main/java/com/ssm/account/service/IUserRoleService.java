@@ -2,6 +2,7 @@ package com.ssm.account.service;
 
 import java.util.List;
 
+import com.ssm.account.dto.RoleExt;
 import com.ssm.account.dto.UserRole;
 import com.ssm.core.proxy.ProxySelf;
 import com.ssm.core.request.IRequest;
@@ -22,6 +23,6 @@ public interface IUserRoleService extends IBaseService<UserRole>,ProxySelf<IUser
 	 * @param example
 	 * @return
 	 */
-	List<IRole> selectUserRoles(IRequest requestContext, UserRole userRole);
+	List<RoleExt> selectUserRoles(IRequest requestContext, UserRole userRole);
 
 }

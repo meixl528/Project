@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.mail.mapper.MessageReceiverMapper" >
+  <resultMap id="BaseResultMap" type="com.ssm.mail.dto.MessageReceiver" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
+    <id column="RECEIVER_ID" property="receiverId" jdbcType="DECIMAL" />
+    <result column="MESSAGE_ID" property="messageId" jdbcType="DECIMAL" />
+    <result column="MESSAGE_TYPE" property="messageType" jdbcType="VARCHAR" />
+    <result column="MESSAGE_ADDRESS" property="messageAddress" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectByMessageId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    *
+    from Tb_MESSAGE_RECEIVER
+    where MESSAGE_ID = #{messageId,jdbcType=DECIMAL}
+    order by MESSAGE_TYPE asc
+  </select>
+  <delete id="deleteByMessageId" parameterType="java.lang.Long" >
+    delete from Tb_MESSAGE_RECEIVER
+    where MESSAGE_ID = #{messageId,jdbcType=DECIMAL}
+  </delete>
+
+  <select id="selectMessageAddressesByMessageId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    smr.RECEIVER_ID, smr.MESSAGE_ID, smr.MESSAGE_TYPE, smr.MESSAGE_ADDRESS
+    from Tb_MESSAGE_RECEIVER smr,Tb_MESSAGE sm
+    where smr.MESSAGE_ID = #{messageId,jdbcType=DECIMAL} and smr.MESSAGE_ID = sm.MESSAGE_ID
+  </select>
+  
+</mapper>
