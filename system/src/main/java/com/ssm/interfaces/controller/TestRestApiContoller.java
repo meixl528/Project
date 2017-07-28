@@ -1,5 +1,6 @@
 package com.ssm.interfaces.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,9 +19,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class TestRestApiContoller extends BaseRestApiController{
 	
 	@RequestMapping(value = "/restapi/test", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String query(@RequestParam String restApiName) throws JsonProcessingException {
+	public String query(@RequestParam String restApiName,@RequestParam String restContent) throws JsonProcessingException {
 		System.out.println("name = "+restApiName);
-		return "ajax调用成功!";
+		return StringUtils.isEmpty(restContent)?"ajax调用成功!":restContent;
 	}
 	
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,11 +28,12 @@ public class TestSoapController extends BaseController{
 	
 	@RequestMapping(value = "/sys/interface/testSoap")
     @ResponseBody
-    public ResponseData testSoap(HttpServletRequest request) throws Exception {
+    public ResponseData testSoap(HttpServletRequest request,String interfaceUrl) throws Exception {
 		IRequest irequest = createRequestContext(request);
 		
-		String interfaceUrl = "http://192.168.10.27:8081/system/ws/helloWord/";
-		
+		if(StringUtils.isEmpty(interfaceUrl)){
+		    interfaceUrl = "http://localhost:8081/system/ws/helloWord/";
+		}
 		//传对象,直接template.process("对象map", writer);
 		/*Map<String,Object> element = new HashMap<>();
 		element.put("userName", "meixl");

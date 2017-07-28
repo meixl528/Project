@@ -1,14 +1,19 @@
 package com.ssm.websocket;
 
-import java.io.IOException;  
-import java.util.concurrent.CopyOnWriteArraySet;  
-  
-import javax.websocket.OnClose;  
-import javax.websocket.OnError;  
-import javax.websocket.OnMessage;  
-import javax.websocket.OnOpen;  
-import javax.websocket.Session;  
-import javax.websocket.server.ServerEndpoint;  
+import java.io.IOException;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.CopyOnWriteArraySet;
+
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.ServerEndpoint;
+
+import org.joda.time.DateTime;  
   
 @ServerEndpoint(value="/websocket")  
 public class MyWebSocket {  
@@ -28,6 +33,11 @@ public class MyWebSocket {
      */  
     @OnOpen  
     public void onOpen(Session session){  
+    	for (MyWebSocket myWebSocket : webSocketSet) {
+    		if(!myWebSocket.session.isOpen()){
+    			webSocketSet.remove(myWebSocket);
+        	}
+		}
         this.session = session;  
         webSocketSet.add(this);     //加入set中  
         addOnlineCount();           //在线数加1  
@@ -52,15 +62,25 @@ public class MyWebSocket {
     @OnMessage  
     public void onMessage(String message, Session session) {  
         System.out.println("来自客户端的消息:" + message);  
-           
+        
         //群发消息  
-        for(MyWebSocket item: webSocketSet){               
-            try {  
-                item.sendMessage(message);  
-            } catch (IOException e) {  
-                e.printStackTrace();  
-                continue;  
-            }  
+        for(MyWebSocket item: webSocketSet){  
+        	 //item.sendMessage(message);  
+        	try {
+        		if(item.session.isOpen()){
+        			item.sendMessage("当前时间: "+ new DateTime().toString("yyyy-MM-dd HH:mm:ss"));  
+        		}
+            	while(true){
+            		if(new Date().getSeconds() % 6 == 0){
+            			if(item.session.isOpen()){
+            				item.sendMessage("当前时间: "+ new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
+            				Thread.sleep(1000);
+            			}
+            		}
+            	}
+			} catch (Exception e) {
+				continue;
+			}
         }  
     }  
        

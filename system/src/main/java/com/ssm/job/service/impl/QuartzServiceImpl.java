@@ -186,7 +186,7 @@ public class QuartzServiceImpl implements IQuartzService{
 	@Autowired
     private transient  MessageSender messageSender;
 	
-	@Scheduled(cron="30 * * * * ?") 
+	// @Scheduled(cron="30 * * * * ?") 
 	@Override
 	public void testScheduler() {
 		if(logger.isInfoEnabled()){

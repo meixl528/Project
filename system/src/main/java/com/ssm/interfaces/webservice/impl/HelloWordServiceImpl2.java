@@ -14,7 +14,7 @@ public class HelloWordServiceImpl2 implements HelloWordService2{
 	@Override
 	public InterfaceResponce<Data> rest(Data da) {
 		logger.debug(this.getClass().getName());
-		System.out.println("获取到rest请求报文参数  data = "+da.toString());
+		System.out.println("获取到rest请求参数  data = "+da.toString());
 		return new InterfaceResponce<Data>(da);
 	}
 	

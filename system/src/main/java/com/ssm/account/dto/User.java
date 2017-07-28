@@ -243,5 +243,11 @@ public class User extends BaseDTO{
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", userName=" + userName + ", email=" + email + ", phone=" + phone
+				+ ", address=" + address + ", status=" + status + "]";
+	}
 	
 }

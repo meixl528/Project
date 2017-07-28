@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Spring Websocket</title>
+</head>
+<body>
+	<button id="button" type="button">websocket测试</button>
+</body>
+<script src="${base.contextPath}/resources/kendoui/js/jquery.min.js"></script>
+<script type="text/javascript" src="http://localhost:8080/Origami/websocket/sockjs-0.3.min.js"></script>
+        <script>
+            var websocket;
+            if ('WebSocket' in window) {
+                websocket = new WebSocket("ws://localhost:8081/Origami/webSocketServer");
+            } else if ('MozWebSocket' in window) {
+                websocket = new MozWebSocket("ws://localhost:8081/Origami/webSocketServer");
+            } else {
+                websocket = new SockJS("http://localhost:8081/Origami/sockjs/webSocketServer");
+            }
+            websocket.onopen = function (evnt) {
+            };
+            websocket.onmessage = function (evnt) {
+                $("#msgcount").html("(<font color='red'>"+evnt.data+"</font>)")
+            };
+            websocket.onerror = function (evnt) {
+            };
+            websocket.onclose = function (evnt) {
+            }
+
+        </script>
+        
+        <script type="text/javascript">
+
+	    	$("#button").click(function(){
+	    		$.ajax({
+	    			url:"testWebSocket.do",
+	    			data:{},
+	    			dataType:"json",
+	    			type:"post",
+	    			cache:false,
+	    			success:function(data){
+	    				alert(data);
+	    			},
+	    			error:function(er){
+	    				alert("error")
+	    			}
+	    		})
+	    	})
+        
+        </script>
+
+</html>

@@ -60,17 +60,19 @@ public class CacheManagerImpl implements CacheManager,ApplicationListener{
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ContextRefreshedEvent) {
             ApplicationContext applicationContext = ((ContextRefreshedEvent) event).getApplicationContext();
-            Map<String, Cache> cacheBeans = applicationContext.getBeansOfType(Cache.class);
-            if (cacheBeans != null) {
-                cacheBeans.forEach((k, v) -> {
-                    if (!caches.contains(v)) {
-                        if (StringUtils.isEmpty(v.getName())) {
-                            throw new RuntimeException(v + " cacheName is empty");
+            if(applicationContext.getParent()==null){
+            	Map<String, Cache> cacheBeans = applicationContext.getBeansOfType(Cache.class);
+                if (cacheBeans != null) {
+                    cacheBeans.forEach((k, v) -> {
+                        if (!caches.contains(v)) {
+                            if (StringUtils.isEmpty(v.getName())) {
+                                throw new RuntimeException(v + " cacheName is empty");
+                            }
+                            addCache(v);
+                            v.init();
                         }
-                        addCache(v);
-                        v.init();
-                    }
-                });
+                    });
+                }
             }
         }
 	}

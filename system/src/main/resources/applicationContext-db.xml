@@ -10,13 +10,46 @@
 		<property name="location" value="classpath:config.properties" />
 	</bean>
 
-	<!-- 配置datasource -->
-	<bean id="dataSource"
+	<!-- 配置datasource  还可以: org.apache.commons.dbcp.BasicDataSource -->
+<!-- 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="${driver}" />
 		<property name="url" value="${url}" />
 		<property name="username" value="${username}" />
 		<property name="password" value="${password}" />
-	</bean>
+	</bean> -->
+	
+	<bean id="dynamicDataSourceAspect" class="com.ssm.core.jndi.db.DynamicDataSourceAspect" />
 		
+	<!-- jndi方式  dataSource-->
+    <!-- 多数据源控制,实现读写分离  -->
+    <!-- <bean id="dataSource" class="com.ssm.core.jndi.db.DynamicDataSource" >
+      <property name="targetDataSources">
+        <map key-type="java.lang.String">
+            <entry value-ref="readWriteDataSource" key="readWriteDataSource"></entry>
+            <entry value-ref="readOnlyDataSource" key="readOnlyDataSource"></entry>
+            
+            <entry value-ref="readOnlyDataSource1" key="readOnlyDataSource1"></entry>
+        </map>
+      </property>
+      <property name="defaultTargetDataSource" ref="readWriteDataSource"></property>
+    </bean> -->
+    <bean id="dataSource" class="com.ssm.core.jndi.db.DynamicDataSource" >
+      <property name="dbs" ref="registerDB"></property>
+      <!--设置默认的dataSource-->
+      <property name="defaultTargetDataSource">
+      	 <bean id="readWriteDataSource" class="com.ssm.core.jndi.JndiObjectFactoryBean">
+	        <property name="jndiName" value="${db.jndiName}"/>
+	    </bean>
+      </property>
+    </bean>
+    
+    <!-- 注册读写数据源bean -->
+    <bean id="registerDB" class="com.ssm.core.jndi.RegisterDB">
+    	<constructor-arg index="0" name="writeDB" value="${db.jndiName}" />
+    	<constructor-arg index="1" name="readDB" value="${db.jndiRead}" /> 
+     </bean>
+    
+   <!-- <jee:jndi-lookup id="dataSource" jndi-name=" java:comp/env/jdbc/bbt"/>         
+	</beans> -->
 </beans>

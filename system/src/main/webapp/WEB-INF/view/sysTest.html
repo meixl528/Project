@@ -6,20 +6,37 @@
 </head>
 <body>
 	<div style="padding:10px;height:350px">
-		姓名:<input type="text" name="name">
+		姓名:<input id="name" type="text" name="name">
 		<button id="button" type="button">restApi测试</button>
 		<br><br>
 		
 		interface:soap
-		<button id="jsonButton" type="button">soap测试</button>
+		<button id="jsonButton" type="button">soap测试</button><span>http://localhost:8081/system/ws/helloWord/</span>
 		<br><br>
 		
 		interface:rest
-		<button id="jsonButton2" type="button">rest测试</button>
+		<button id="jsonButton2" type="button">rest测试</button><span>http://localhost:8081/system/ws/helloWord2/rest/json</span>
 		<br><br>
 		
 		job:quartz
 		<button id="jsonButton3" type="button">quartz测试</button>
+		<br><br>
+		
+		DataSource:writeDS
+		<button id="writeButton" type="button">读写库测试</button>
+		<br><br>
+		
+		DataSource:readDS
+		<button id="readButton" type="button">只读库测试</button>
+		
+		<br><br>
+		
+		websocket:spring websocket
+		<button id="websocket" type="button">websocket单个用户测试</button>
+		<br><br>
+		websocket:spring websocket
+		<button id="websocketAll" type="button">websocket全部用户测试</button>
+		
 	</div>
 	<div id="tips" style="font-size:30px;text-align: center">
 	</div>
@@ -32,11 +49,11 @@
 	$("#button").click(function(){
 		var data = JSON.stringify({"restApiName" :"meixl","restApiPass" :"meixl"});
 		$.ajax({
-			url:"http://192.168.10.27:8081/system/restapi/test?restApiName=meixl&restApiPass=meixl",
-			//url:"http://192.168.10.27:8081/system/restapi/test",
+			url:"http://localhost:8081/system/restapi/test?restApiName=meixl&restApiPass=meixl",
+			//url:"http://localhost:8081/system/restapi/test",
 			//contentType:'application/json',
+			data:{restContent : $("#name").text()},
 			type:"Post",
-			//data: data,
 			dataType:"text",  
 	        async:false,  
 	        cache:false, 
@@ -53,7 +70,7 @@
 	$("#jsonButton").click(function(){
 		$.ajax({
 			url:"${base.contextPath}/sys/interface/testSoap",
-			data:{},
+			data: {interfaceUrl: "http://localhost:8081/system/ws/helloWord/"},
 			dataType:"json",
 			type:"post",
 			cache:false,
@@ -76,7 +93,7 @@
 	$("#jsonButton2").click(function(){
 		$.ajax({
 			url:"${base.contextPath}/sys/interface/testRest",
-			data:{},
+			data: {interfaceUrl: "http://localhost:8081/system/ws/helloWord2/rest/json"},
 			dataType:"json",
 			type:"post",
 			cache:false,
@@ -98,7 +115,7 @@
 	// 测试  定时任务job
 	$("#jsonButton3").click(function(){
 		$.ajax({
-			url:"${base.contextPath}/quartz/create/test",
+			url:"${base.contextPath}/db/test/write",
 			data:{},
 			dataType:"json",
 			type:"post",
@@ -111,5 +128,83 @@
 			}
 		})
 	})
+	
+	//读写库
+	$("#writeButton").click(function(){
+		$.ajax({
+			url:"${base.contextPath}/db/test/write",
+			data:{},
+			dataType:"json",
+			type:"post",
+			cache:false,
+			success:function(data){
+				$("#tips").text("write ok");
+				var rows = data.rows;
+				var text = "";
+				for(var i in rows){
+					text += "userName = "+ rows[i].userName+ ", phone = " + rows[i].phone +" | <br>";
+				}
+				$("#content").html(text);
+			},
+			error:function(er){
+				alert("error")
+			}
+		})
+	})
+	
+	//只读库
+	$("#readButton").click(function(){
+		$.ajax({
+			url:"${base.contextPath}/db/test/read",
+			data:{},
+			dataType:"json",
+			type:"post",
+			cache:false,
+			success:function(data){
+				$("#tips").text("read ok");
+				var rows = data.rows;
+				var text = "";
+				for(var i in rows){
+					text += "userName = "+ rows[i].userName+ ", phone = " + rows[i].phone +" | <br>";
+				}
+				$("#content").html(text);
+			},
+			error:function(er){
+				alert("error")
+			}
+		})
+	})
+	
+	$("#websocket").click(function(){
+   		$.ajax({
+   			url:"${base.contextPath}/testWebSocket/sendToUser",
+   			data:{},
+   			dataType:"json",
+   			type:"post",
+   			cache:false,
+   			success:function(data){
+   				alert(data);
+   			},
+   			error:function(er){
+   				alert("error")
+   			}
+   		})
+	  })
+	  
+	  $("#websocketAll").click(function(){
+   		$.ajax({
+   			url:"${base.contextPath}/testWebSocket/sendToAll",
+   			data:{},
+   			dataType:"json",
+   			type:"post",
+   			cache:false,
+   			success:function(data){
+   				alert(data);
+   			},
+   			error:function(er){
+   				alert("error")
+   			}
+   		})
+	  })
 </script>
 </html>

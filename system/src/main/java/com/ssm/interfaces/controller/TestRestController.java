@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,11 +33,13 @@ public class TestRestController extends BaseController{
 
 	@RequestMapping(value = "/sys/interface/testRest")
     @ResponseBody
-    public ResponseData testRest(HttpServletRequest request) throws Exception {
+    public ResponseData testRest(HttpServletRequest request,String interfaceUrl) throws Exception {
 		//Configuration freeMarkerConfig = new Configuration(Configuration.VERSION_2_3_21);
 		IRequest iRequest = createRequestContext(request);
 		
-		String interfaceUrl = "http://192.168.10.27:8081/system/ws/helloWord2/rest/json";
+		if(StringUtils.isEmpty(interfaceUrl)){
+			interfaceUrl = "http://localhost:8081/system/ws/helloWord2/rest/json";
+		}
 		
 		Map<String,Object> map = new HashMap<>();
 		map.put("userName", "测试");

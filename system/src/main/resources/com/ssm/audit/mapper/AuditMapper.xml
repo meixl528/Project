@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.audit.mapper.AuditMapper">
+       <update id="auditInsert" parameterType="java.util.Map">
+              INSERT INTO ${_auditTableName}
+               (audit_transaction_type,audit_timestamp,audit_session_id,
+               <foreach collection="_cols" index="i" item="value" separator=",">
+                   ${value}
+               </foreach>
+               )
+              SELECT #{_auditType},CURRENT_TIMESTAMP,#{_auditSessionId},
+               <foreach collection="_cols" index="i" item="value" separator=",">
+                   b.${value}
+               </foreach>
+              FROM ${_baseTableName} b
+              <where>
+                  ${WHERE_CLAUSE}
+              </where>
+       </update>
+
+       <select id="selectAuditHistory" resultType="org.apache.commons.collections.map.CaseInsensitiveMap"
+               parameterType="java.util.Map">
+              select * from ${_auditTableName} a
+              <where>
+                     <foreach collection="_pks" index="key" item="value" separator="AND">
+                            a.${key} = #{value}
+                     </foreach>
+              </where>
+              order by a.audit_id desc
+       </select>
+
+
+       <update id="saveAuditEntity" parameterType="com.ssm.audit.dto.Audit">
+              update SYS_AUDIT_ENTITY sae
+              <set >
+                     <if test="entityCode != null" >
+                            SAE.ENTITY_CODE = #{entityCode,jdbcType=VARCHAR},
+                     </if>
+                     <if test="description != null" >
+                            SAE.DESCRIPTION = #{description,jdbcType=VARCHAR},
+                     </if>
+                     <if test="auditFlag != null" >
+                            SAE.AUDIT_FLAG = #{auditFlag,jdbcType=VARCHAR}
+                     </if>
+              </set>
+              where SAE.ENTITY_ID = #{entityId,jdbcType=DECIMAL}
+       </update>
+</mapper>

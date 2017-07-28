@@ -16,6 +16,11 @@
     <bean id="connectionFactory"
         class="org.springframework.jms.connection.CachingConnectionFactory">
         <constructor-arg ref="activeMQConnectionFactory" />
+        
+        <property name="reconnectOnException" value="true"/>
+        <property name="cacheConsumers" value="false"/>
+        <property name="cacheProducers" value="false"/>
+        <property name="sessionCacheSize" value="50"/>
     </bean>
 
     <!-- Default Destination Queue Definition -->

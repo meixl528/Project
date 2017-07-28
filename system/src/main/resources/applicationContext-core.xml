@@ -17,6 +17,9 @@
        http://www.springframework.org/schema/context 
        http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
+	<!-- 新增AOP自动代理  @Aspect风格的切面声明能支持 -->
+    <aop:aspectj-autoproxy />
+
     <!-- task任务扫描注解 -->
 	<task:annotation-driven />
 	
@@ -149,4 +152,7 @@
     <bean id="distributeLockTemplate" class="com.ssm.lock.impl.DistributedLockFactoryBean">
         <property name="mode" value="MULTIPLE"/>
     </bean>
+    
+    <bean id="validator"
+    class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
 </beans>
