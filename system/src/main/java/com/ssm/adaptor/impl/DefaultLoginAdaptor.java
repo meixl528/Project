@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -16,14 +17,18 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.WebUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssm.account.dto.Role;
 import com.ssm.account.dto.RoleExt;
 import com.ssm.account.dto.User;
@@ -43,6 +48,7 @@ import com.ssm.core.request.impl.RequestHelper;
 import com.ssm.core.util.TimeZoneUtil;
 import com.ssm.sys.dto.Language;
 import com.ssm.sys.responceFactory.ResponseData;
+import com.ssm.util.CookieUtils;
 import com.ssm.util.StringUtil;
 
 /**
@@ -53,6 +59,11 @@ import com.ssm.util.StringUtil;
 public class DefaultLoginAdaptor implements ILoginAdaptor {
 	@Autowired
 	private ApplicationContext applicationContext;
+	@Autowired
+	private RedisTemplate<String, Object> redisTemplate;
+	@Autowired
+	@Qualifier(value="objectMapper")
+	private ObjectMapper objectMapper;
 
     @Autowired
     private ICaptchaManager captchaManager;
@@ -76,7 +87,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
         view.setViewName(UrlUtil.VIEW_LOGIN);
         try {
             beforeLogin(view, user, request, response);
-            checkCaptcha(view, user, request, response);
+            checkCaptcha(request, response);
             user = userService.login(user);
             HttpSession session = request.getSession(true);
             session.setAttribute(User.FIELD_USER_ID, user.getUserId());
@@ -140,26 +151,16 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
 
     /**
      * 校验验证码是否正确.
-     *
-     * @param view
-     *            视图
-     * @param user
-     *            账号
-     * @param request
-     *            请求
-     * @param response
-     *            响应
-     * @throws UserException
-     *             异常
+     * @param request 请求
+     * @param response 响应
+     * @throws UserException  异常
      */
-    private void checkCaptcha(ModelAndView view, User user, HttpServletRequest request, HttpServletResponse response)
+    private void checkCaptcha(HttpServletRequest request, HttpServletResponse response)
             throws UserException {
         if (UrlUtil.VALIDATE_CAPTCHA) {
             Cookie cookie = WebUtils.getCookie(request, captchaManager.getCaptchaKeyName());
             String captchaCode = request.getParameter(UrlUtil.KEY_VERIFICODE);
-            if (cookie == null || StringUtils.isEmpty(captchaCode)
-                    || !captchaManager.checkCaptcha(cookie.getValue(), captchaCode)) {
-                // view.addObject("_password", user.getPassword());
+            if (cookie == null || StringUtils.isEmpty(captchaCode) || !captchaManager.checkCaptcha(cookie.getValue(), captchaCode)) {
                 throw new UserException(UserException.ERROR_INVALID_CAPTCHA, UserException.ERROR_INVALID_CAPTCHA,null);
             }
         }
@@ -260,7 +261,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
     }
     
     @Override
-    public ModelAndView loginView(User user,HttpServletRequest request, HttpServletResponse response){
+    public ModelAndView loginView(User user,HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException{
     	HttpSession session = request.getSession(true);
     	if(session.getAttribute("_csrf")==null || StringUtils.isEmpty(session.getAttribute("_csrf").toString())){
     		CSRF _csrf = new CSRF("_csrf",UUID_CSRF());
@@ -269,50 +270,42 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
     	Locale locale = RequestContextUtils.getLocale(request);
     	
         ModelAndView view = new ModelAndView(UrlUtil.VIEW_LOGIN);
-        boolean exist = false;
         User sessionUser = (User)session.getAttribute(User.FIELD_SESSION_USER);
-        String code = "";
-        if(sessionUser !=null && sessionUser.getUserId()!=null){
-        	exist = true;
-        }else{ 
+        if(sessionUser ==null || sessionUser.getUserId()==null){
+        	// 返回支持的语言
+            List<Language> list = languageProvider.getSupportedLanguages();
+            view.addObject("languages",list);
         	if(StringUtil.isNull(user.getUserName()) && StringUtil.isNull(user.getPassword())){
-        		// 返回支持的语言
-                List<Language> list = languageProvider.getSupportedLanguages();
-                view.addObject("languages",list);
         		return view;
         	}
         	try {
+        		checkCaptcha(request, response);
         		user = userService.login(user);
-        		exist = true;
 			} catch (UserException e) {
-				exist = false;
-				code = e.getCode();
+	            view.addObject("msg", messageSource.getMessage(e.getCode(), null, locale));
+	            return view;
 			}
         }
-        
-        if (!exist) {
-            String msg = messageSource.getMessage(code, null, locale);
-            view.addObject("msg", msg);
-        }else{
-        	if(StringUtil.isNotNull(user.getUserName()) && StringUtil.isNotNull(user.getPassword())){
-        		session.setAttribute(User.FIELD_SESSION_USER, user);
-            	session.setAttribute(User.FIELD_USER_ID, user.getUserId());
-                session.setAttribute(User.FIELD_USER_NAME, user.getUserName());
-                session.setMaxInactiveInterval(60*60);
-                
-                //存储 登录用户 ip等信息
-                Map<String, ISaveIpAddressListener> listeners = applicationContext.getBeansOfType(ISaveIpAddressListener.class);
-                listeners.forEach((k,v) -> {
-                	v.onSaveIpAdress(request, response);
-                });
-        	}
-        	session.setAttribute(IRequest.FIELD_LOCALE, locale);
-        	return new ModelAndView(UrlUtil.REDIRECT +UrlUtil.VIEW_ROLE_SELECT);
-        }
-        // 返回支持的语言
-        List<Language> list = languageProvider.getSupportedLanguages();
-        view.addObject("languages",list);
-        return view;
+    	if(StringUtil.isNotNull(user.getUserName()) && StringUtil.isNotNull(user.getPassword())){
+    		user.setPassword(null);
+    		session.setAttribute(User.FIELD_SESSION_USER, user);
+        	session.setAttribute(User.FIELD_USER_ID, user.getUserId());
+            session.setAttribute(User.FIELD_USER_NAME, user.getUserName());
+            session.setMaxInactiveInterval(60*60);
+            
+            //存储 登录用户 ip等信息
+            Map<String, ISaveIpAddressListener> listeners = applicationContext.getBeansOfType(ISaveIpAddressListener.class);
+            listeners.forEach((k,v) -> {
+            	v.onSaveIpAdress(request, response);
+            });
+    	}
+    	session.setAttribute(IRequest.FIELD_LOCALE, locale);
+    	String token = UUID.randomUUID().toString();
+    	redisTemplate.opsForValue().set("sso:session:tokenKey:"+token,objectMapper.writeValueAsString(user));
+    	redisTemplate.expire("sso:session:tokenKey:"+token, 30*60, TimeUnit.SECONDS);
+    	//放置token到浏览器cookie
+    	CookieUtils.setCookie(request, response, "LOGIN_TOKEN", token);
+    	return new ModelAndView(UrlUtil.REDIRECT +UrlUtil.VIEW_ROLE_SELECT);
     }
 
     @Override

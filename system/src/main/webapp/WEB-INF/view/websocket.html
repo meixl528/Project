@@ -5,18 +5,25 @@
 <title>Spring Websocket</title>
 </head>
 <body>
-	<button id="button" type="button">websocket测试</button>
+	<div id="msgcount"></div>
+
+	websocket:spring websocket
+	<button id="websocket" type="button">websocket单个用户测试</button>
+	<br><br>
+	websocket:spring websocket
+	<button id="websocketAll" type="button">websocket全部用户测试</button>
 </body>
 <script src="${base.contextPath}/resources/kendoui/js/jquery.min.js"></script>
-<script type="text/javascript" src="http://localhost:8080/Origami/websocket/sockjs-0.3.min.js"></script>
-        <script>
+<script type="text/javascript" src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js"></script>
+       <!--  <script>
             var websocket;
             if ('WebSocket' in window) {
-                websocket = new WebSocket("ws://localhost:8081/Origami/webSocketServer");
+                websocket = new WebSocket("ws://localhost:8081/system/webSocketServer");
             } else if ('MozWebSocket' in window) {
-                websocket = new MozWebSocket("ws://localhost:8081/Origami/webSocketServer");
+                websocket = new MozWebSocket("ws://localhost:8081/system/webSocketServer");
             } else {
-                websocket = new SockJS("http://localhost:8081/Origami/sockjs/webSocketServer");
+                websocket = new SockJS("http://localhost:8081/system/sockjs/webSocketServer");
             }
             websocket.onopen = function (evnt) {
             };
@@ -28,13 +35,29 @@
             websocket.onclose = function (evnt) {
             }
 
-        </script>
+        </script> -->
         
         <script type="text/javascript">
 
-	    	$("#button").click(function(){
+	    	$("#websocket").click(function(){
 	    		$.ajax({
-	    			url:"testWebSocket.do",
+	    			url:"${base.contextPath}/testWebSocket/sendToUser",
+	    			data:{},
+	    			dataType:"json",
+	    			type:"post",
+	    			cache:false,
+	    			success:function(data){
+	    				alert(data);
+	    			},
+	    			error:function(er){
+	    				alert("error")
+	    			}
+	    		})
+	    	})
+	    	
+	    	$("#websocketAll").click(function(){
+	    		$.ajax({
+	    			url:"${base.contextPath}/testWebSocket/sendToAll",
 	    			data:{},
 	    			dataType:"json",
 	    			type:"post",

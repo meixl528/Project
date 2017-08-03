@@ -1,0 +1,27 @@
+
+
+<script type="text/javascript" src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script type="text/javascript">
+	var websocket;
+	if ('WebSocket' in window) {
+		websocket = new WebSocket("ws://localhost:8081/system/webSocketServer?flag=message");
+	} else if ('MozWebSocket' in window) {
+		websocket = new MozWebSocket("ws://localhost:8081/system/webSocketServer?flag=message");
+	} else {
+		websocket = new SockJS("http://localhost:8081/system/sockjs/webSocketServer?flag=message");
+	}
+	websocket.onopen = function(evnt) {
+	};
+	websocket.onmessage = function(evnt) {
+		if(parseFloat(evnt.data) > 0){
+			$("#msgcount").html("消息(<font color='red'>"+ evnt.data +"</font>)");
+		}else{
+			$("#msgcount").html("消息");
+		}
+	};
+	websocket.onerror = function(evnt) {
+	};
+	websocket.onclose = function(evnt) {
+	}
+</script>

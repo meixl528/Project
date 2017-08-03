@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ssm.account.dto.User;
 import com.ssm.account.exception.RoleException;
 import com.ssm.account.exception.UserException;
@@ -71,8 +72,9 @@ public interface ILoginAdaptor {
      *            HttpServletResponse
      * @return view
      * @throws UserException 
+     * @throws JsonProcessingException 
      */
-    ModelAndView loginView(User user,HttpServletRequest request, HttpServletResponse response) throws UserException;
+    ModelAndView loginView(User user,HttpServletRequest request, HttpServletResponse response) throws UserException, JsonProcessingException;
 
     /**
      * 显示角色选择界面.

@@ -10,6 +10,8 @@ import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.ssm.core.annotation.MultiLanguage;
+import com.ssm.core.annotation.MultiLanguageField;
 import com.ssm.mybatis.annotation.Condition;
 import com.ssm.sys.dto.BaseDTO;
 
@@ -17,7 +19,7 @@ import com.ssm.sys.dto.BaseDTO;
  * 资源DTO.
  * @author meixl
  */
-//@MultiLanguage
+@MultiLanguage
 @Table(name = "tb_resource_b")
 public class Resource extends BaseDTO {
 
@@ -31,7 +33,7 @@ public class Resource extends BaseDTO {
     @NotEmpty
     private String accessCheck;
 
-//    @MultiLanguageField
+    @MultiLanguageField
     @Column
     @Condition(operator = LIKE)
     private String description;
@@ -39,7 +41,7 @@ public class Resource extends BaseDTO {
     @NotEmpty
     private String loginRequire;
 
-//    @MultiLanguageField
+    @MultiLanguageField
     @Column
     @NotEmpty
     @Condition(operator = LIKE)

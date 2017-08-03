@@ -2,7 +2,7 @@ package com.ssm.adaptor;
 
 public interface UrlUtil {
 
-	// TODO:验证码改成可配置
+	// 验证码改成可配置, 验证码打开
     static final boolean VALIDATE_CAPTCHA = true;
 
     // 跳转

@@ -15,10 +15,11 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketConfig extends WebMvcConfigurerAdapter implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(systemWebSocketHandler(),"/webSocketServer").addInterceptors(new WebSocketHandshakeInterceptor());
-
-        registry.addHandler(systemWebSocketHandler(), "/sockjs/webSocketServer").addInterceptors(new WebSocketHandshakeInterceptor())
-                .withSockJS();
+        registry.addHandler(systemWebSocketHandler(),"/webSocketServer","/webSocketServer2")
+        					.addInterceptors(new WebSocketHandshakeInterceptor());
+        
+        registry.addHandler(systemWebSocketHandler(), "/sockjs/webSocketServer","/sockjs/webSocketServer2")
+        					.addInterceptors(new WebSocketHandshakeInterceptor()).withSockJS();
     }
 
     @Bean

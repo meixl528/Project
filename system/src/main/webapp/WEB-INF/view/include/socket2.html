@@ -1,0 +1,30 @@
+
+<script type="text/javascript">
+	var websocket2;
+	if ('WebSocket' in window) {
+		websocket2 = new WebSocket("ws://localhost:8081/system/webSocketServer2?flag=mail");
+	} else if ('MozWebSocket' in window) {
+		websocket2 = new MozWebSocket("ws://localhost:8081/system/webSocketServer2?flag=mail");
+	} else {
+		websocket2 = new SockJS("http://localhost:8081/system/sockjs/webSocketServer2?flag=mail");
+	}
+	websocket2.onopen = function(event) {
+		send()
+	};
+	websocket2.onmessage = function(event) {
+		if(parseFloat(event.data) > 0){
+			$("#msgmail").html("邮件(<font color='red'>"+ event.data +"</font>)");
+		}else{
+			$("#msgmail").html("邮件");
+		}
+	};
+	websocket2.onerror = function(event) {
+	};
+	websocket2.onclose = function(event) {
+	}
+	
+	function send(){
+		websocket2.send("555");
+	}
+	
+</script>

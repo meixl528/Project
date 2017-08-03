@@ -1,4 +1,6 @@
 <#include "./include/header.html">
+<#include "./include/socket.html">
+<#include "./include/socket2.html">
 <script src="${base.contextPath}/resources/bootstrap-3.3.7/js/bootstrap.min.js"></script>
     <style type="text/css">
         /* #page-main-content {
@@ -415,12 +417,18 @@
     <div id="navbar-container">
         <div id="navbar-logo">
             <img class="navbar-logo-img" height="28"  src="${base.contextPath}/resources/upload/logo.png" />
-            <div class="navbar-logo-title">${SYS_TITLE!'Application Platform'}</div>
+            <div class="navbar-logo-title">${SYS_TITLE!'卧槽'}</div>
         </div>
         <form id="langForm" action="" style="display: inline-block" method="GET" autocomplete="off">
             <input type="hidden" name="lang"/>
         </form>
         <ul class="navbar-links navbar-right">
+            <li style="margin-top: 15px; ">
+        		<span id="msgmail" style="font-size:15px;border:1px solid #999999;padding:4px;cursor: pointer;">邮件</span>
+        	</li>
+        	<li style="margin-top: 15px; ">
+        		<span id="msgcount" style="font-size:15px;border:1px solid #999999;padding:4px;cursor: pointer;">消息</span>
+        	</li>
         	<li style="margin-top: 11px; ">
         		<select name="lang" onchange="changeLang(this.value)" style="height:28px">
         			<#list languages as l>
@@ -461,7 +469,7 @@
                 </a>
             </li>
             <li style="margin-top: 11px; ">
-                <input id="search-fld" style="width: 200px;" type="text" name="param" placeholder='<@spring.message "hap.quicknavigation"/>'>
+                <input id="search-fld" style="width: 200px;" type="text" name="param" placeholder="搜索">
             </li>
             
             <li class="tgl-menu-btn">
@@ -639,11 +647,15 @@
             });
             return arr;
         }
+         
+         $("#search-fld").blur(function(){
+        	 $(".k-animation-container").hide();
+         }) 
 
         //自动匹配查找
         var searchAutoComplete =  $("#search-fld").kendoAutoComplete({
             
-            template: '<table  border="0"> <tr><td style="padding:5px;"><span class="#=icon#"></span></td><td><strong>#= text #</strong></td></tr>    <tr><td></td><td><span style="color:rgb(158,158,158)">#= functionCode #</span></td></tr></table>',
+            template: '<table border="0"> <tr><td style="padding:5px;"><span class="#=icon#"></span></td><td><strong>#= text #</strong></td></tr>    <tr><td></td><td><span style="color:rgb(158,158,158)">#= functionCode #</span></td></tr></table>',
             highlightFirst: true,        
             dataTextField: "codeAndText",
             filter: "contains",
@@ -708,7 +720,13 @@
             window.location.href = urlString;
         }
         
+        $("#msgcount").click(function(){
+        	console.log("点击消息");
+        });
+        
         init();
+        
+        console.log("LOGIN_TOKEN :"+ $.cookie("LOGIN_TOKEN"));
     </script>
     <form id="logoutForm" method="post" target="_self" action="${base.contextPath}/logout.html" style="display: none;">
         <input type="submit"/>

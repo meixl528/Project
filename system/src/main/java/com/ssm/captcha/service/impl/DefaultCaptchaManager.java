@@ -1,6 +1,3 @@
-/*
- * #{copyright}#
- */
 package com.ssm.captcha.service.impl;
 
 import java.awt.Color;
@@ -29,12 +26,12 @@ import com.ssm.captcha.service.ICaptchaManager;
 @Service
 public class DefaultCaptchaManager implements ICaptchaManager {
 
-    private static final int CAPTCHA_WIDTH = 90;
-    private static final int CAPTCHA_HEIGHT = 34;
+    private static final int CAPTCHA_WIDTH = 85;
+    private static final int CAPTCHA_HEIGHT = 30;
     private static final int CAPTCHA_CODE_COUNT = 4;
     private static final int CAPTCHA_CODE_X = 19;// 15
     private static final int CAPTCHA_CODE_Y = 26;
-    private static final int CAPTCHA_FONT_HEIGHT = 28;
+    private static final int CAPTCHA_FONT_HEIGHT = 25;
     private static final int CAPTCHA_EXPIRE = 60 * 5;
 
     private static final int LINE_COUNT = 20;// 40
@@ -140,7 +137,7 @@ public class DefaultCaptchaManager implements ICaptchaManager {
         gd.fillRect(0, 0, CAPTCHA_WIDTH, CAPTCHA_HEIGHT);
 
         // 创建字体，字体的大小应该根据图片的高度来定。
-        Font font = new Font("Fixedsys", Font.BOLD, CAPTCHA_FONT_HEIGHT);
+        Font font = new Font("Fixedsys", Font.ITALIC, CAPTCHA_FONT_HEIGHT);
         // 设置字体。
         gd.setFont(font);
 

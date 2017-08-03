@@ -165,6 +165,7 @@
 				<list>
 					<value>/home.html</value>
 					<value>/login.html</value>
+					<value>/verifiCode</value>
 				</list>
 			</property>
 		</bean> 

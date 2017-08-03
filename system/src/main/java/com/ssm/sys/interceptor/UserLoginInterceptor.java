@@ -71,6 +71,9 @@ public class UserLoginInterceptor implements HandlerInterceptor {
 	@Override
 	public void postHandle(HttpServletRequest req, HttpServletResponse resp, Object obj, ModelAndView mv)
 			throws Exception {
+		if(mv!=null && mv.getViewName().indexOf(UrlUtil.VIEW_LOGIN)!=-1){
+			mv.addObject("ENABLE_CAPTCHA",UrlUtil.VALIDATE_CAPTCHA);
+		}
 	}
 
 	// 在DispatCherServlet 处理之后执行 ----清理工作
