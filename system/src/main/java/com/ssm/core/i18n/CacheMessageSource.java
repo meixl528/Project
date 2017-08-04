@@ -1,7 +1,7 @@
 /*
  * #{copyright}#
  */
-package com.ssm.i18n;
+package com.ssm.core.i18n;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -43,7 +43,8 @@ public class CacheMessageSource extends AbstractMessageSource {
         String code2 = StringUtils.lowerCase(code);
         String pmt = promptCache.getValue(code2 + "." + locale);
         if (pmt == null) {
-            return StringUtils.substringAfterLast(code, ".");
+        	String value = StringUtils.substringAfterLast(code, ".");
+            return StringUtils.isBlank(value)?code:value;
         }
         return replaceQuote(pmt);
     }

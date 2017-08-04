@@ -82,9 +82,10 @@ public class SysFileServiceImpl implements ISysFileService {
     @Transactional(propagation = Propagation.SUPPORTS)
     public List<SysFile> selectFiles(IRequest requestContext, SysFile file, int page, int pagesize) {
         if (pagesize > NO_PAGE) {
-            PageHelper.offsetPage(page, pagesize);
+            PageHelper.startPage(page, pagesize);
         }
-        return sysFileMapper.select(file);
+        List<SysFile> list = sysFileMapper.select(file);
+        return list;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -235,10 +236,9 @@ public class SysFileServiceImpl implements ISysFileService {
     }
 
     /* 删除上传的文件*/
-
-    public void deletefiles(IRequest requestContext, SysFile file) {
-
-        self().delete(requestContext, file);
+    @Override
+    public void deletefile(SysFile file) {
+    	sysFileMapper.deleteByPrimaryKey(file);
     };
 
 }

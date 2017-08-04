@@ -29,6 +29,9 @@ public class SysFile extends BaseDTO {
      */
     @Column
     private Long attachmentId;
+    
+    @Column
+    private String fileCode;
 
     /**
      * 文件名称.
@@ -61,10 +64,6 @@ public class SysFile extends BaseDTO {
     @Column
     private Date uploadDate;
 
-    public SysFile() {
-        super();
-    }
-
     public Long getFileId() {
         return fileId;
     }
@@ -73,7 +72,15 @@ public class SysFile extends BaseDTO {
         this.fileId = fileId;
     }
 
-    public String getFileName() {
+    public String getFileCode() {
+		return fileCode;
+	}
+
+	public void setFileCode(String fileCode) {
+		this.fileCode = fileCode;
+	}
+
+	public String getFileName() {
         return fileName;
     }
 

@@ -5,7 +5,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 	   http://www.springframework.org/schema/beans/spring-beans-4.0.xsd ">
 
-	<bean id="messageSource" class="com.ssm.i18n.CacheMessageSource"/>
 	<bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
 	
 	<!-- 读取数据库连接属性文件 -->

@@ -1,6 +1,8 @@
 package com.ssm.fnd.service;
 
+import com.ssm.core.annotation.StdWho;
 import com.ssm.core.proxy.ProxySelf;
+import com.ssm.core.request.IRequest;
 import com.ssm.fnd.dto.Sequence;
 import com.ssm.sys.service.IBaseService;
 

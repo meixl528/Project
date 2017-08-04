@@ -162,7 +162,7 @@ public interface ISysFileService extends ProxySelf<ISysFileService> {
     SysFile deleteImage(IRequest requestContext, SysFile file);
 
     /* 删除上传文件*/
-    void deletefiles(IRequest requestContext, SysFile file);
+    void deletefile(SysFile file);
     /* 通过sourcetyp和sourcekey查询数据 */
     List<SysFile> queryFilesByTypeAndKey(IRequest requestContext, String sourceType, String sourceKey);
 }

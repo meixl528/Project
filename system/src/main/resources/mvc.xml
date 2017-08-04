@@ -143,6 +143,8 @@
         <property name="allowSessionOverride" value="true"/>
     </bean> 
 	
+	<bean id="messageSource" class="com.ssm.core.i18n.CacheMessageSource"/>
+	
 	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
 	    <property name="defaultLocale" value="zh_CN"/>
 		<property name="cookieName" value="myAppLocaleCookie"/>

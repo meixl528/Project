@@ -93,7 +93,7 @@ public class SysFileController extends BaseController {
     public ResponseData deleteFile(HttpServletRequest request, @RequestBody SysFile file) throws TokenException {
         //checkToken(request, file);
         IRequest requestContext = createRequestContext(request);
-        sysFileService.deletefiles(requestContext, file);
+        sysFileService.delete(requestContext, file);
 
         return new ResponseData(Arrays.asList(file));
 

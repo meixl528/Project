@@ -27,14 +27,9 @@ public class SequenceServiceImpl extends BaseServiceImpl<Sequence> implements IS
 	private SequenceCache sequenceCache;
 
 	@Override
-	public Sequence insertSelective(IRequest request, Sequence sequence) {
-		return super.insertSelective(request, sequence);
-	}
-
-	@Override
 	public Sequence createSequence(Sequence sequence) {
 		// 设置Incr编码
-		sequence.setIncrCode(sequence.getSequenceCode() + (sequence.getDateFormat() == null ? null
+		sequence.setIncrCode(sequence.getSequenceCode() + (sequence.getDateFormat() == null ? ""
 				: DateFormatUtils.format(new Date(), sequence.getDateFormat())));
 		sequenceMapper.insertSelective(sequence);
 		sequenceCache.setValue(sequence.getSequenceCode(), sequence);
@@ -43,7 +38,7 @@ public class SequenceServiceImpl extends BaseServiceImpl<Sequence> implements IS
 
 	@Override
 	public Sequence updateSequence(Sequence sequence) {
-		sequenceMapper.updateByPrimaryKey(sequence);
+		sequenceMapper.updateByPrimaryKeySelective(sequence);
 		sequenceCache.remove(sequence.getSequenceCode());
 		sequenceCache.reload(sequence.getSequenceId());
 		return sequence;
@@ -52,10 +47,13 @@ public class SequenceServiceImpl extends BaseServiceImpl<Sequence> implements IS
 	@Override
 	public List<Sequence> batchUpdate(IRequest request, List<Sequence> sequences) {
 		for (Sequence sequence : sequences) {
+			if (sequence.getDateFormat()==null) {
+				sequence.setDateFormat("");
+			}
 			if (sequence.getSequenceId() == null) {
-				self().createSequence(sequence);
+				this.createSequence(sequence);
 			} else if (sequence.getSequenceId() != null) {
-				self().updateSequence(sequence);
+				this.updateSequence(sequence);
 			}
 		}
 		return sequences;
@@ -89,14 +87,14 @@ public class SequenceServiceImpl extends BaseServiceImpl<Sequence> implements IS
 			// 删除序列
 			sequenceCache.decr(sequenceCache.getCategory() + ":" + sequenceCache.getName() + ":" + sequence.getIncrCode());
 			sequence.setIncrCode(currentIncrCode);
-			this.updateSequence(sequence);
+			self().updateSequence(sequence);
 		}
 		// 获取流水号
 		Long seq = sequenceCache.incr(sequenceCache.getCategory() + ":" + sequenceCache.getName() + ":" + currentIncrCode);
 		// 更新当前序列值
 		if (seq != null && (seq % SequenceCache.INCR_NUMBER) == 0) {
 			sequence.setSerialNumber(seq);
-			this.updateSequence(sequence);
+			self().updateSequence(sequence);
 		} // 新增序列并组装编码，格式为 前缀 + 时间代码 + 流水号
 		String sequenceStr = sequence.getSequencePrefix() + (dateCode == null ? "" : dateCode)
 				+ FndUtil.numberFormat(seq, Integer.parseInt(sequence.getSeqLength()));

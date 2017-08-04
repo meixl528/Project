@@ -1,0 +1,81 @@
+<#include "../../include/header.html">
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+        model: {}
+    });
+</script>
+<html>
+<body>
+<div id = "dialog"></div>
+<div id="page-content">
+    <div style="clear: both;"></div>
+    <div class="panel" style="padding: 0px">
+        <form class="form-horizontal" id="query-form" style="margin-top: 1px;">
+            <div class="panel-body">
+                <div class="row" style="padding-bottom:10px">
+                	<div class="col-xs-3" style="width:45%">
+                        <div class="form-group">
+                            <label class="control-label" style="width: 37%;float: left;"><@spring.message '文件上传'/>：</label>
+                            <div  style="width: 63%;float: left;padding-left: 5px;">
+                                <input id="file" name="file" type="file" style="width:200px;margin-right:5px;">
+                            </div>
+                            <script>
+                               
+                            </script>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xs-3" style="width:45%">
+                        <div class="form-group">
+                            <label class="control-label" style="width: 37%;float: left;"><@spring.message '文件路径'/>：</label>
+                            <div style="width: 63%;float: left;padding-left: 5px;">
+                                <input type="text" style="width:200px;" 
+                                       id="filePath"
+                                       name="filePath"
+                                       validationMessage="<@spring.message 'wg.notempty'/>" >
+                            </div>
+                            <script>
+                               
+                             </script>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </form>
+        <script>kendo.bind($('#query-form'), viewModel);</script>
+    </div>
+
+	<div style="clear:both"></div>
+	<div class="pull-right" id="query-forms" style="padding-bottom:10px;">
+       <span class="btn btn-primary" style="float:left;width:70px;margin-right:5px;"
+          onClick="upload()" type="submit"><i class="fa fa-plus-square"
+                                                       style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+      <span class="btn btn-default" style="float:left;width:70px;margin-right:5px;"
+          onClick="closeWindow()" type="button"><i class="fa fa-undo" style="margin-right:3px;"></i><@spring.message "hap.cancel"/></span>
+       
+      <div style="clear:both"></div>
+    </div>
+	<script>kendo.bind($('#query-forms'), viewModel)</script>
+	
+	<script type="text/javascript">
+		function upload() {
+			//获取file对象
+			var file = document.getElementById("file").files[0];
+			// FormData 对象
+			var form = new FormData();
+			form.append("file", file); // 文件对象
+			form.append("folder", $("#filePath").val()); // 文件对象
+			// XMLHttpRequest 对象
+			var xhr = new XMLHttpRequest();
+			xhr.open("post", "${base.contextPath}/fnd/ftp/upload", true);
+			xhr.send(form);
+			xhr.onload = function() {
+				if(xhr.readyState == 4 && xhr.status == 200){    
+					var b = xhr.responseText;  
+					alert(b)
+				};
+			};
+		};
+	</script>
+	
+</div>

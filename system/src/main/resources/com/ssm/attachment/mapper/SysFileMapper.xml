@@ -5,6 +5,7 @@
     <resultMap id="BaseResultMap" type="com.ssm.attachment.dto.SysFile" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
         <id column="FILE_ID" property="fileId" jdbcType="DECIMAL"/>
         <result column="ATTACHMENT_ID" property="attachmentId" jdbcType="DECIMAL"/>
+        <result column="FILE_CODE" property="fileCode" jdbcType="VARCHAR"/>
         <result column="FILE_NAME" property="fileName" jdbcType="VARCHAR"/>
         <result column="FILE_PATH" property="filePath" jdbcType="VARCHAR"/>
         <result column="FILE_SIZE" property="fileSize" jdbcType="DECIMAL"/>
