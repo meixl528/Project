@@ -1,16 +1,7 @@
-/*
- * #{copyright}#
- */
 package com.ssm.job.dto;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-/**
- *
- * @author liyan.shi@hand-china.com
- */
 public class JobInfoDetailDto extends JobDetailDto {
     
     //@JsonFormat(pattern = BaseConstants.DATE_TIME_FORMAT)

@@ -38,8 +38,9 @@ import com.ssm.account.service.IRoleService;
 import com.ssm.account.service.IUserService;
 import com.ssm.adaptor.ILoginAdaptor;
 import com.ssm.adaptor.ISaveIpAddressListener;
-import com.ssm.adaptor.UrlUtil;
+import com.ssm.adaptor.UrlConfig;
 import com.ssm.adaptor.dto.CSRF;
+import com.ssm.captcha.service.CaptchaConfig;
 import com.ssm.captcha.service.ICaptchaManager;
 import com.ssm.core.BaseConstants;
 import com.ssm.core.ILanguageProvider;
@@ -56,7 +57,7 @@ import com.ssm.util.StringUtil;
  * @author URL和页面分开
  */
 @Component
-public class DefaultLoginAdaptor implements ILoginAdaptor {
+public class DefaultLoginAdaptor implements ILoginAdaptor{
 	@Autowired
 	private ApplicationContext applicationContext;
 	@Autowired
@@ -84,7 +85,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
         ModelAndView view = new ModelAndView();
         Locale locale = RequestContextUtils.getLocale(request);
 
-        view.setViewName(UrlUtil.VIEW_LOGIN);
+        view.setViewName(UrlConfig.VIEW_LOGIN);
         try {
             beforeLogin(view, user, request, response);
             checkCaptcha(request, response);
@@ -157,9 +158,9 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
      */
     private void checkCaptcha(HttpServletRequest request, HttpServletResponse response)
             throws UserException {
-        if (UrlUtil.VALIDATE_CAPTCHA) {
+        if (CaptchaConfig.VALIDATE_CAPTCHA) {
             Cookie cookie = WebUtils.getCookie(request, captchaManager.getCaptchaKeyName());
-            String captchaCode = request.getParameter(UrlUtil.KEY_VERIFICODE);
+            String captchaCode = request.getParameter(UrlConfig.KEY_VERIFICODE);
             if (cookie == null || StringUtils.isEmpty(captchaCode) || !captchaManager.checkCaptcha(cookie.getValue(), captchaCode)) {
                 throw new UserException(UserException.ERROR_INVALID_CAPTCHA, UserException.ERROR_INVALID_CAPTCHA,null);
             }
@@ -182,7 +183,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
      */
     protected void afterLogin(ModelAndView view, User user, HttpServletRequest request, HttpServletResponse response)
             throws UserException {
-        view.setViewName(UrlUtil.REDIRECT + UrlUtil.VIEW_ROLE_SELECT);
+        view.setViewName(UrlConfig.REDIRECT + UrlConfig.VIEW_ROLE_SELECT);
         Cookie cookie = new Cookie(User.FIELD_USER_NAME, user.getUserName());
         cookie.setPath(StringUtils.defaultIfEmpty(request.getContextPath(), "/"));
         cookie.setMaxAge(-1);
@@ -203,10 +204,10 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
         		Role role =  roleService.checkUserRoleExists(request.getLocale().toString(),userId, roleId);
                 session.setAttribute(Role.FIELD_ROLE_ID, role.getRoleId());
                 session.setAttribute(Role.FIELD_ROLE_NAME, role.getRoleName());
-                result.setViewName(UrlUtil.REDIRECT + UrlUtil.VIEW_WELCOME);
+                result.setViewName(UrlConfig.REDIRECT + UrlConfig.VIEW_WELCOME);
         	}
         } else {
-            result.setViewName(UrlUtil.REDIRECT + UrlUtil.VIEW_LOGIN);
+            result.setViewName(UrlConfig.REDIRECT + UrlConfig.VIEW_LOGIN);
         }
         return result;
     }
@@ -241,19 +242,19 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
         if (session != null) {
         	Long sessionUserId = (Long) session.getAttribute(User.FIELD_USER_ID);
         	if (sessionUserId == null) {
-                return new ModelAndView(UrlUtil.REDIRECT + UrlUtil.VIEW_LOGIN);
+                return new ModelAndView(UrlConfig.REDIRECT + UrlConfig.VIEW_LOGIN);
             }
             Long sessionRoleId = (Long) session.getAttribute(Role.FIELD_ROLE_ID);
             if (sessionRoleId == null) {
-                return new ModelAndView(UrlUtil.REDIRECT + UrlUtil.VIEW_ROLE_SELECT);
+                return new ModelAndView(UrlConfig.REDIRECT + UrlConfig.VIEW_ROLE_SELECT);
             }
             // 返回支持的语言
             List<Language> list = languageProvider.getSupportedLanguages();
-            ModelAndView view = new ModelAndView(UrlUtil.VIEW_WELCOME);
+            ModelAndView view = new ModelAndView(UrlConfig.VIEW_WELCOME);
             view.addObject("languages",list);
             return view;
         }
-        return new ModelAndView(UrlUtil.REDIRECT + UrlUtil.VIEW_LOGIN);
+        return new ModelAndView(UrlConfig.REDIRECT + UrlConfig.VIEW_LOGIN);
     }
     
     private String UUID_CSRF(){
@@ -269,7 +270,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
     	}
     	Locale locale = RequestContextUtils.getLocale(request);
     	
-        ModelAndView view = new ModelAndView(UrlUtil.VIEW_LOGIN);
+        ModelAndView view = new ModelAndView(UrlConfig.VIEW_LOGIN);
         User sessionUser = (User)session.getAttribute(User.FIELD_SESSION_USER);
         if(sessionUser ==null || sessionUser.getUserId()==null){
         	// 返回支持的语言
@@ -305,12 +306,12 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
     	redisTemplate.expire("sso:session:tokenKey:"+token, 30*60, TimeUnit.SECONDS);
     	//放置token到浏览器cookie
     	CookieUtils.setCookie(request, response, "LOGIN_TOKEN", token);
-    	return new ModelAndView(UrlUtil.REDIRECT +UrlUtil.VIEW_ROLE_SELECT);
+    	return new ModelAndView(UrlConfig.REDIRECT +UrlConfig.VIEW_ROLE_SELECT);
     }
 
     @Override
     public ModelAndView roleView(HttpServletRequest request, HttpServletResponse response) {
-        ModelAndView mv = new ModelAndView(UrlUtil.VIEW_ROLE_SELECT);
+        ModelAndView mv = new ModelAndView(UrlConfig.VIEW_ROLE_SELECT);
         HttpSession session = request.getSession(false);
         if (session != null) {
             // 获取user
@@ -325,12 +326,12 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
                 	cleanSession(request,response);
                 	String msg = messageSource.getMessage(RoleException.MSG_INVALID_USER_ROLE, null, RequestContextUtils.getLocale(request));
                 	mv.addObject("msg",msg);
-                	mv.setViewName(UrlUtil.VIEW_LOGIN);
+                	mv.setViewName(UrlConfig.VIEW_LOGIN);
                 	return mv;
                 }
                 if(roles.size()==1){
                 	session.setAttribute(Role.FIELD_ROLE_ID, roles.get(0).getRoleId());
-                	mv.setViewName(UrlUtil.REDIRECT +UrlUtil.ROLE_SELECT_ED);
+                	mv.setViewName(UrlConfig.REDIRECT +UrlConfig.ROLE_SELECT_ED);
                 	return mv;
                 }
                 mv.addObject("roles", roles);
@@ -374,7 +375,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor {
     @Override
     public ModelAndView logout(HttpServletRequest request, HttpServletResponse response){
     	cleanSession(request,response);
-		ModelAndView view = new ModelAndView(UrlUtil.REDIRECT + UrlUtil.VIEW_LOGIN);
+		ModelAndView view = new ModelAndView(UrlConfig.REDIRECT + UrlConfig.VIEW_LOGIN);
 		return view;
     }
     

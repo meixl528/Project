@@ -58,7 +58,8 @@ public class SequenceController extends BaseController {
 	@RequestMapping(value = "/fnd/sequence/getSequence")
 	@ResponseBody
 	public String getSequence(HttpServletRequest request, @RequestParam String sequenceCode) {
-		return service.getSequence(sequenceCode);
+		IRequest requestContext = createRequestContext(request);
+		return service.getSequence(requestContext,sequenceCode);
 	}
 	
 }

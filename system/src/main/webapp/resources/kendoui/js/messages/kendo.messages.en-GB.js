@@ -1008,7 +1008,7 @@
 									});
 				}
 
-				/* TabStrip messages *///add by njq.niu@hand-china.com
+				/* TabStrip messages */ 
 				if (kendo.ui.TabStrip) {
 					kendo.ui.TabStrip.prototype.options.messages = $.extend(
 							true, kendo.ui.TabStrip.prototype.options.messages,
@@ -1020,7 +1020,7 @@
 							});
 				}
 
-				/* TabStrip messages  *///add by njq.niu@hand-china.com
+				/* TabStrip messages  */ 
 				if (kendo.ui.Dialog) {
 					kendo.ui.Dialog.prototype.options.messages = $.extend(true,
 							kendo.ui.Dialog.prototype.options.messages, {
@@ -1031,7 +1031,7 @@
 							});
 				}
 
-				/* Widget messages *///add by njq.niu@hand-china.com
+				/* Widget messages */ 
 				if (kendo.ui.Widget) {
 					kendo.ui.Widget.prototype.options.messages = $.extend(true,
 							kendo.ui.Widget.prototype.options.messages, {
@@ -1040,7 +1040,7 @@
 							});
 				}
 
-				/* TLEdit messages *///add by njq.niu@hand-china.com
+				/* TLEdit messages */ 
 				if (kendo.ui.TLEdit) {
 					kendo.ui.TLEdit.prototype.options.messages = $.extend(true,
 							kendo.ui.TLEdit.prototype.options.messages, {
@@ -1048,7 +1048,7 @@
 							});
 				}
 
-				/* QueryPanel messages *///add by njq.niu@hand-china.com
+				/* QueryPanel messages */ 
 				if (kendo.ui.QueryPanel) {
 					kendo.ui.QueryPanel.prototype.options.messages = $.extend(
 							true,

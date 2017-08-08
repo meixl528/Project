@@ -1,6 +1,3 @@
-/*
- * #{copyright}#
- */
 package com.ssm.attachment.mapper;
 
 import java.util.Map;
@@ -8,10 +5,6 @@ import java.util.Map;
 import com.ssm.attachment.dto.Attachment;
 import com.ssm.mybatis.common.Mapper;
 
-/**
- * Created by xiaohua on 16/2/1.
- * @author hua.xiao@hand-china.com
- */
 public interface  AttachmentMapper extends Mapper<Attachment> {
 
 

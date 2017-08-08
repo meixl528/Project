@@ -27,7 +27,7 @@ public class SequenceServiceImpl extends BaseServiceImpl<Sequence> implements IS
 	private SequenceCache sequenceCache;
 
 	@Override
-	public Sequence createSequence(Sequence sequence) {
+	public Sequence createSequence(IRequest request,Sequence sequence) {
 		// 设置Incr编码
 		sequence.setIncrCode(sequence.getSequenceCode() + (sequence.getDateFormat() == null ? ""
 				: DateFormatUtils.format(new Date(), sequence.getDateFormat())));
@@ -37,7 +37,7 @@ public class SequenceServiceImpl extends BaseServiceImpl<Sequence> implements IS
 	}
 
 	@Override
-	public Sequence updateSequence(Sequence sequence) {
+	public Sequence updateSequence(IRequest request,Sequence sequence) {
 		sequenceMapper.updateByPrimaryKeySelective(sequence);
 		sequenceCache.remove(sequence.getSequenceCode());
 		sequenceCache.reload(sequence.getSequenceId());
@@ -45,15 +45,15 @@ public class SequenceServiceImpl extends BaseServiceImpl<Sequence> implements IS
 	}
 
 	@Override
-	public List<Sequence> batchUpdate(IRequest request, List<Sequence> sequences) {
+	public List<Sequence> submit(IRequest request, List<Sequence> sequences) {
 		for (Sequence sequence : sequences) {
 			if (sequence.getDateFormat()==null) {
 				sequence.setDateFormat("");
 			}
 			if (sequence.getSequenceId() == null) {
-				this.createSequence(sequence);
+				self().createSequence(request,sequence);
 			} else if (sequence.getSequenceId() != null) {
-				this.updateSequence(sequence);
+				self().updateSequence(request,sequence);
 			}
 		}
 		return sequences;
@@ -73,7 +73,7 @@ public class SequenceServiceImpl extends BaseServiceImpl<Sequence> implements IS
 	 * @param sequenceCode
 	 * @return
 	 */
-	private String createSequenceNum(String sequenceCode) {
+	private String createSequenceNum(IRequest request,String sequenceCode) {
 		// 获取定义
 		Sequence sequence = sequenceCache.getValue(sequenceCode);
 		if (null == sequence) {
@@ -87,14 +87,14 @@ public class SequenceServiceImpl extends BaseServiceImpl<Sequence> implements IS
 			// 删除序列
 			sequenceCache.decr(sequenceCache.getCategory() + ":" + sequenceCache.getName() + ":" + sequence.getIncrCode());
 			sequence.setIncrCode(currentIncrCode);
-			self().updateSequence(sequence);
+			self().updateSequence(request,sequence);
 		}
 		// 获取流水号
 		Long seq = sequenceCache.incr(sequenceCache.getCategory() + ":" + sequenceCache.getName() + ":" + currentIncrCode);
 		// 更新当前序列值
 		if (seq != null && (seq % SequenceCache.INCR_NUMBER) == 0) {
 			sequence.setSerialNumber(seq);
-			self().updateSequence(sequence);
+			self().updateSequence(request,sequence);
 		} // 新增序列并组装编码，格式为 前缀 + 时间代码 + 流水号
 		String sequenceStr = sequence.getSequencePrefix() + (dateCode == null ? "" : dateCode)
 				+ FndUtil.numberFormat(seq, Integer.parseInt(sequence.getSeqLength()));
@@ -106,16 +106,16 @@ public class SequenceServiceImpl extends BaseServiceImpl<Sequence> implements IS
 	 * 通过序列序列编码获取序列号
 	 */
 	@Override
-	public String getSequence(String sequenceCode) {
-		return createSequenceNum(sequenceCode);
+	public String getSequence(IRequest request,String sequenceCode) {
+		return createSequenceNum(request,sequenceCode);
 	}
 	
 	/**
 	 * 通过序列编码获取序列号,可自定义前缀
 	 */
 	@Override
-	public String getSequence(String sequenceCode,String sequencePrefix) {
-		return sequencePrefix + createSequenceNum(sequenceCode);
+	public String getSequence(IRequest request,String sequenceCode,String sequencePrefix) {
+		return sequencePrefix + createSequenceNum(request,sequenceCode);
 	}
 	
 	/**

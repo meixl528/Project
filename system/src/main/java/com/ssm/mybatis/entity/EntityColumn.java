@@ -203,14 +203,14 @@ public class EntityColumn {
 
     // add by jessen
     public String getColumnLikeHolder(String entityName) {
-        return this.column + " LIKE concat('%',concat(" + getColumnHolder(entityName) + ",'%'))";
+        return this.column + " LIKE concat('%'," + getColumnHolder(entityName) + ",'%')";
     }
 
     // add by jessen
     public String getColumnHolderWithOperator(String operator, boolean autoWrap) {
         if ("LIKE".equalsIgnoreCase(operator)) {
             if (autoWrap) {
-                return this.column + " LIKE concat('%',concat(" + getColumnHolder(null) + ",'%'))";
+                return this.column + " LIKE concat('%'," + getColumnHolder(null) + ",'%')";
             }
             return this.column + " LIKE " + getColumnHolder(null);
         }

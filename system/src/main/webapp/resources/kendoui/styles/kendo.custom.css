@@ -4555,8 +4555,7 @@ blockquote {
     margin: 0
 }
 
-/* njq.niu@hand-china.com
-
+/* 
 .panel-body>.row>[class^="col-"]:first-child, .panel-body>[class^="form-"]>.row>[class^="col-"]:first-child
     {
     padding-left: 0 !important
@@ -5355,9 +5354,7 @@ a.disabled-link, a.disabled-link:visited, a.disabled-link:active, a.disabled-lin
 
 
 
-
-
-/** ------------------- add by njq.niu@hand-china.com -------------------  **/
+/** --------------------------------------  **/
 .btn i.fa {
   margin-right:3px;
 }

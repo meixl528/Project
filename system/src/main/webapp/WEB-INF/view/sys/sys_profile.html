@@ -44,7 +44,7 @@
     $("#mywindow").kendoWindow({
            actions: [ "Maximize", "Minimize", "Close"],
            width: 800,
-           height: 400,
+           height: 500,
            title: '<@spring.message "hap.edit"/>', 
            visible: false,
            iframe: true,
@@ -139,14 +139,14 @@
                 { 
                 	field: "profileName", 
                 	title: '<@spring.message "profile.profilename"/>',
-                	width: 120 
+                	width: 100 
                 }, { 
                 	field: "description", 
                 	title: '<@spring.message "profile.description"/>',
-                	width: 120 
+                	width: 380 
                 }, { title:'<@spring.message "hap.edit"/>',
                     attributes: {style: "text-align:center"},
-                    width : 320,
+                    width : 70,
                     template : function (rowdata) {
                         if (!!rowdata.profileId) {
                             return '<a href="javascript:void(0)" onclick="editProfile(' + rowdata.profileId + ')"><@spring.message "hap.edit"/></a>'

@@ -11,9 +11,6 @@ import com.ssm.generator.service.IHapGeneratorService;
 import com.ssm.sys.controller.BaseController;
 import com.ssm.sys.responceFactory.ResponseData;
 
-/**
- * Created by jialong.zuo@hand-china.com on 2016/10/24.
- */
 @Controller
 @RequestMapping(value = "/generator")
 public class HapGeneratorController extends BaseController {

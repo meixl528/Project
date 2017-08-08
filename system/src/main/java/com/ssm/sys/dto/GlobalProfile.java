@@ -1,10 +1,17 @@
 package com.ssm.sys.dto;
+
+import java.io.Serializable;
+
 /**
  * 用来表示一个全局的配置文件值.
  */
-public class GlobalProfile {
+public class GlobalProfile implements Serializable{
 
-    private String profileName;
+    /**
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private String profileName;
 
     private String profileValue;
 

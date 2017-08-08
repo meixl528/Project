@@ -4,6 +4,7 @@
         model: {}
     });
 </script>
+<link href="${base.contextPath}/resources/css/file_menu.css" rel="stylesheet" type="text/css"/>
 <html>
 <body>
 <div id = "dialog"></div>
@@ -29,7 +30,7 @@
                         <div class="form-group">
                             <label class="control-label" style="width: 37%;float: left;"><@spring.message '文件路径'/>：</label>
                             <div style="width: 63%;float: left;padding-left: 5px;">
-                                <input type="text" style="width:200px;" 
+                                <input type="text" style="width:200px;" value="/"
                                        id="filePath"
                                        name="filePath"
                                        validationMessage="<@spring.message 'wg.notempty'/>" >
@@ -57,25 +58,163 @@
     </div>
 	<script>kendo.bind($('#query-forms'), viewModel)</script>
 	
+	<table style="width:100%;height:400px;table-layout:fixed" id="main" cellSpacing="0" cellPadding="0" border="0">
+        <tbody>
+            <tr>
+                <td id="page-sidebar-file" class="s-loading" valign="top">
+                    <ul id="page-sidebar-menu">
+                        <div style="text-align:center; height:33px; background-color: #E6E6E6; border:1px solid #E6E6E6;">
+                            <a style="line-height:33px; width: 100%; background-color: #E6E6E6" href="javascript:menuToggle();" id="sidebar-toggler">
+                                <i style="transform: rotate(90deg); line-height: 33px; font-size:15px;background-color: #E6E6E6" id="page-sidebar-switch" class="fa fa-bars"></i>
+                            </a>
+                        </div>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+	
 	<script type="text/javascript">
 		function upload() {
 			//获取file对象
 			var file = document.getElementById("file").files[0];
+			if(!file){
+				kendo.ui.showInfoDialog({
+                    title: $l('hap.tip.info'),
+                    message: '选择上传文件!'
+                });
+				return;
+			}
+			var filePath = $("#filePath").val();
+			filePath = filePath.replace(/\s/g,"")
+			$("#filePath").val(filePath);
+			
+			if(!filePath){ 
+				filePath = "/"; 
+			}else{
+				var dir = filePath.split("/");
+				for (var i = 0; i < dir.length; i++) {
+					if(dir[i] && !isNaN(dir[i])){
+						kendo.ui.showInfoDialog({
+		                    title: $l('hap.tip.info'),
+		                    message: '目录不能是纯数字:'+ dir[i]
+		                });
+						return;
+					}
+				}
+			}
+			
 			// FormData 对象
 			var form = new FormData();
 			form.append("file", file); // 文件对象
-			form.append("folder", $("#filePath").val()); // 文件对象
+			form.append("folder", filePath); // 文件对象
 			// XMLHttpRequest 对象
 			var xhr = new XMLHttpRequest();
 			xhr.open("post", "${base.contextPath}/fnd/ftp/upload", true);
 			xhr.send(form);
 			xhr.onload = function() {
 				if(xhr.readyState == 4 && xhr.status == 200){    
-					var b = xhr.responseText;  
-					alert(b)
+					var data = eval("("+xhr.responseText+")");  
+					if(data.success==true){
+						kendo.ui.showInfoDialog({
+		                    title: $l('hap.tip.info'),
+		                    message: '上传成功!'
+		                });
+						window.parent.$('#Grid').data('kendoGrid').dataSource.page(1);
+		                window.parent.$("#dialog").data("kendoWindow").close();
+					}
 				};
 			};
 		};
+		
+		var $WIN = jQuery(window), $PAGE_SIDEBAR = jQuery('#page-sidebar-menu');
+		
+		function init(){
+            initSize();
+            $(window).on("resize", initSize);
+            loadMenu();
+        }
+		
+		function initSize(){
+            $PAGE_SIDEBAR.outerHeight($WIN.height() - 49);
+        }
+		
+		function loadMenu(){
+            $.ajax({
+                type: 'GET',
+                url: '${base.contextPath}/fnd/ftp/getServerFolderMenu',
+                contentType: "application/json; charset=utf-8",
+                success: function (datas) {
+                    var html=[];
+                    var menus = [].concat(datas.rows);
+                    createMenu(html,menus);
+                    $("#page-sidebar-menu").append(html.join(''));
+                }
+            });
+        }
+		
+		function createMenu(html,menus){
+    	    for(var i=0;i<menus.length;i++){
+    	        var data = menus[i];
+                html.push('<li>');
+                
+                html.push('<a href="javascript:;">');
+                html.push('<i class="'+(data.icon||'fa fa-cube')+'"></i>');
+                if(!data.parentForlder){
+                	html.push('<span class="menu-item-parent" baseFolder="'+data.baseFolder+'">' + data.folderName + '</span>');
+                }else {
+                	html.push('<span class="menu-item-parent" baseFolder="'+data.baseFolder+'" parentForlder="'+data.parentForlder+'">' + data.folderName + '</span>');
+                }
+                if(data.childrenFolder && data.childrenFolder.length>0){
+	                html.push('<b class="collapse-sign"><em class="fa fa-angle-left"></em></b></a><ul>');
+                	createMenu(html,data.childrenFolder);
+                }else{
+                	html.push('<b class="collapse-sign"></b></a><ul>');
+                }
+                html.push('</ul>')
+                html.push('</li>')
+            }
+    	}
+		
+		$('#page-sidebar-menu').on('click', 'li > a', function (e) {
+			$("#filePath").val($(this).find('span').attr("baseFolder")||'');
+            if ($(this).next().is('ul') == false || !$(this).find('b.collapse-sign').is(":visible") || !$(this).next()[0].innerHTML) {
+                return;
+            }
+            var parent = $(this).parent().parent();
+            parent.children('li.open').children('a').children('b').children('em.fa').removeClass('fa-angle-down').addClass('fa-angle-left');
+            parent.children('li.open').children('ul').slideUp(200);
+            parent.children('li.open').removeClass('open');
+            var sub = jQuery(this).next();
+            if (sub.is(":visible")) {
+                $('em.fa', $(this)).removeClass('fa-angle-down').addClass('fa-angle-left');
+                $(this).parent().removeClass("open");
+                sub.slideUp(200);
+            } else {
+                $('em.fa', $(this)).addClass('fa-angle-down').removeClass('fa-angle-left');
+                $(this).parent().addClass("open");
+                sub.slideDown(200);
+            }
+            e.preventDefault();
+        });
+		
+		//transform的值不知道怎么判断，暂时定义flag用来判断菜单的打开还是关闭
+        /* var flag=false;
+        function menuToggle(){
+            $(document.body).toggleClass('minified');
+            flag=!flag;
+            if (flag) {
+                $("#page-sidebar-switch").css({transform:"rotate(0deg)"});
+            }else{
+                $("#page-sidebar-switch").css({transform:"rotate(90deg)"});
+            }
+        } */
+        
+        function closeWindow(){
+        	window.parent.$("#dialog").data("kendoWindow").close();
+        }
+		
+		init();
 	</script>
 	
 </div>

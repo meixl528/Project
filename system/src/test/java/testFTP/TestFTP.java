@@ -7,13 +7,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -23,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.github.pagehelper.StringUtil;
+import com.ssm.fnd.dto.FileMenuItem;
 
 public class TestFTP {
 	
@@ -46,9 +50,48 @@ public class TestFTP {
 		
 		//testDownLoad();
 		
-		if(delete("/invoice/excel/2017/05/02","608146e6-d63a-4ee0-a8b9-607fd4d3beb0_login.sql")){
+		/*if(delete("/invoice/excel/2017/05/02","608146e6-d63a-4ee0-a8b9-607fd4d3beb0_login.sql")){
 			System.out.println("delete OK");
-		};
+		};*/
+		
+		try {
+			get(ftp_basepath);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void get(String basePath) throws Exception{
+		// 创建一个FtpClient对象
+		FTPClient ftpClient = connect();
+		List<FileMenuItem> list = getServerFolderMenu(null,ftpClient,basePath);
+		
+		ftpClient.logout();
+	}
+	
+	public static List<FileMenuItem> getServerFolderMenu(String parentFolder,FTPClient ftpClient,String basePath) throws Exception{
+		List<FileMenuItem> list = new ArrayList<>();
+		
+		if (ftpClient != null) {
+			ftpClient.changeWorkingDirectory(basePath);
+			FTPFile[] listFiles = ftpClient.listFiles();
+			
+			for (FTPFile ftpFile : listFiles) {
+				String path = basePath;
+				FileMenuItem item = new FileMenuItem();
+				if(ftpFile.isDirectory()){
+					System.out.println(ftpFile);
+					path += "/"+ ftpFile.getName();
+					item.setFolderName(ftpFile.getName());
+					if(StringUtils.isNoneBlank(parentFolder)){
+						item.setParentForlder(parentFolder);
+					}
+					item.setChildrenFolder(getServerFolderMenu(ftpFile.getName(),ftpClient,path));
+					list.add(item);
+				}
+			}
+		}
+		return list;
 	}
 	
 	//测试上传 

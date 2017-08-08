@@ -4,9 +4,6 @@ import com.ssm.generator.service.impl.XmlColumnsInfo;
 
 import java.util.List;
 
-/**
- * Created by jialong.zuo@hand-china.com on 2016/10/26.
- */
 public class FtlInfo {
     private String fileName;
     private String packageName;

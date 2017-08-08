@@ -1,20 +1,12 @@
-/*
- * #{copyright}#
- */
 package com.ssm.attachment.mapper;
 
 import java.util.List;
 
-import com.ssm.attachment.dto.AttachCategory;
-import com.ssm.attachment.dto.Attachment;
-import com.ssm.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-/**
- * Created by xiaohua on 16/2/1.
- * 
- * @author hua.xiao@hand-china.com
- */
+import com.ssm.attachment.dto.AttachCategory;
+import com.ssm.mybatis.common.Mapper;
+
 public interface AttachCategoryMapper extends Mapper<AttachCategory> {
 
     /**

@@ -2,9 +2,6 @@
  * @summary Hap
  * @description 抽象通用函数
  * @version 2.0
- * @author njq.niu@hand-china.com
- * @author shengyang.zhou@hand-china.com
- * @copyright Copyright Hand China Co.,Ltd.
  *
  */
 !(function ($) {
@@ -299,7 +296,7 @@
             var d = (value instanceof Date) ? value : Hap.strToDate(value);
             return kendo.toString(d, "yyyy-MM-dd")
         }
-        //add by jinqin.ma@hand-china.com
+        
         Hap.bytestosize=function (bytes) {
             if (bytes === 0) return '0 B';
             var k = 1024, // or 1024

@@ -1,14 +1,17 @@
 package com.ssm.account.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ssm.account.AccountConfig;
 import com.ssm.account.Md5Util;
 import com.ssm.account.dto.User;
 import com.ssm.account.exception.UserException;
@@ -24,11 +27,28 @@ import com.ssm.sys.service.impl.BaseServiceImpl;
  * @date        2017年6月19日上午9:19:55
  * @version
  */
-@Service()
+@Service
 public class UserServiceImpl extends BaseServiceImpl<User> implements IUserService{
 	
 	@Autowired
 	private UserMapper userMapper;
+	
+	@Override
+	public List<String> getAcceptedProfiles() {
+		return Arrays.asList("DEFAULT_PASSWORD","PASSWORD_MIN_LENGTH","PASSWORD_COMPLEXITY");
+	}
+
+	@Override
+	public void updateProfile(String profileName, String profileValue) {
+		if(profileName.equals("DEFAULT_PASSWORD")){
+			AccountConfig.DEFAULT_PASSWORD = profileValue;
+		}else if(profileName.equals("PASSWORD_MIN_LENGTH")){
+			AccountConfig.PASSWORD_MIN_LENGTH = Integer.valueOf(profileValue);
+		}else if(profileName.equals("PASSWORD_COMPLEXITY")){
+			AccountConfig.PASSWORD_COMPLEXITY = profileValue;
+		}
+	}
+	
 
 	/**
 	 * 验证用户名是否存在
@@ -59,6 +79,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements IUserServi
 	@Transactional
 	public List<User> submitUser(HttpServletRequest request,IRequest iRequest,@StdWho List<User> list) {
 		for (User user : list) {
+			if(StringUtils.isBlank(user.getPassword())){
+				user.setPassword(Md5Util.MD5(AccountConfig.DEFAULT_PASSWORD));
+			}
             if (user.getUserId() == null) {
             	userMapper.insertSelective(user);
             } else {

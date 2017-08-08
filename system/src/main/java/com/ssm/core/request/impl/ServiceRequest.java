@@ -20,7 +20,11 @@ import com.ssm.core.request.IRequest;
  */
 public class ServiceRequest implements IRequest {
 
-    private static final String ATTR_ACCOUNT_ID = "_accountId";
+    /**
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private static final String ATTR_ACCOUNT_ID = "_accountId";
 
     private static final String ATTR_ROLE_ID = "_roleId";
 

@@ -6,9 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import com.ssm.core.AppContextInitListener;
 import com.ssm.core.annotation.ServiceListener;
 import com.ssm.core.util.CommonUtils;
 import com.ssm.extensible.base.IServiceListener;
@@ -17,12 +18,13 @@ import com.ssm.extensible.base.IServiceListener;
  */
 @Component
 @SuppressWarnings("rawtypes")
-public class ServiceListenerManager implements AppContextInitListener {
-
-    Map<Class<?>, List<IServiceListener>> listenerMapping = new HashMap<>();
+public class ServiceListenerManager implements ApplicationListener<ContextRefreshedEvent> {
+    
+	Map<Class<?>, List<IServiceListener>> listenerMapping = new HashMap<>();
 
 	@Override
-    public void contextInitialized(ApplicationContext applicationContext) {
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+		ApplicationContext applicationContext = event.getApplicationContext();
         Map<String, IServiceListener> map = applicationContext.getBeansOfType(IServiceListener.class);
         map.forEach((k, v) -> {
             ServiceListener annotation = v.getClass().getAnnotation(ServiceListener.class);

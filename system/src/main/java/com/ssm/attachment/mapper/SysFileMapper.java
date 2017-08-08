@@ -1,6 +1,3 @@
-/*
- * #{copyright}#
- */
 package com.ssm.attachment.mapper;
 
 import java.util.List;
@@ -10,11 +7,6 @@ import org.apache.ibatis.annotations.Param;
 import com.ssm.attachment.dto.SysFile;
 import com.ssm.mybatis.common.Mapper;
 
-/**
- * Created by xiaohua on 16/2/1.
- * 
- * @author hua.xiao@hand-china.com
- */
 public interface SysFileMapper extends Mapper<SysFile> {
 
     /**

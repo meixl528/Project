@@ -20,26 +20,30 @@
             <div class="panel" style="padding:0px;">
                 <form id="mainform"  class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
                     <div class="panel-body">
-                            <div class="col-sm-6">
+                    	<div class="row" style="padding-bottom:10px">
+                            <div class="col-sm-5">
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label"><@spring.message "profile.profilename"/></label>
                                     <div class="col-sm-8">
                                     	<input id="profileId" type="hidden" name="profileId"  data-bind="value:model.profileId" class="k-textbox">
                                     	<script> kendo.bind($('#profileId'),viewModel)</script>
-                                        <input id="profileName" type="text" style="width:100%" name="profileName"   required data-bind="value:model.profileName" class="k-textbox">
+                                        <input id="profileName" type="text" style="width:500px" name="profileName"   required data-bind="value:model.profileName" class="k-textbox">
                                         <script> kendo.bind($('#profileName'),viewModel)</script>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-6">
+                         </div>
+                         <div class="row" style="padding-bottom:10px">
+                            <div class="col-sm-5">
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label"><@spring.message "profile.description"/></label>
                                     <div class="col-sm-8">
-                                        <input type="text" id = "description" style="width:100%" name="description"   required data-bind="value:model.description" class="k-textbox">
+                                        <input type="text" id = "description" style="width:500px" name="description"   required data-bind="value:model.description" class="k-textbox">
                                         <script> kendo.bind($('#description'),viewModel)</script>
                                     </div>
                                 </div>
                             </div>
+                          </div>
                     </div>
                 </form>
             </div>

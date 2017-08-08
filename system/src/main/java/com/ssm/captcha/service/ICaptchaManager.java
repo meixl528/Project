@@ -6,13 +6,15 @@ package com.ssm.captcha.service;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import com.ssm.message.profile.SystemConfigListener;
+
 /**
  * 验证码接口.
  * <p>
  * 生成验证码图片以及captchaKey等.
  * @author meixl
  */
-public interface ICaptchaManager {
+public interface ICaptchaManager extends SystemConfigListener{
 
     /**
      * 获取CaptchaKeyName.

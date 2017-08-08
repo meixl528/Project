@@ -102,7 +102,8 @@ public final class RequestHelper {
                 requestContext.setLocale(locale.toString());
             }
         }
-        Map<String, String> mdcMap = MDC.getCopyOfContextMap();
+        @SuppressWarnings("unchecked")
+		Map<String, String> mdcMap = MDC.getCopyOfContextMap();
         if (mdcMap != null) {
             mdcMap.forEach((k, v) -> requestContext.setAttribute(IRequest.MDC_PREFIX.concat(k), v));
         }

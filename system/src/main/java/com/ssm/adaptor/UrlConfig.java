@@ -1,0 +1,26 @@
+package com.ssm.adaptor;
+
+public interface UrlConfig{
+
+    // 跳转
+    public static final String REDIRECT = "redirect:";
+
+    // 校验码
+    public static final String KEY_VERIFICODE = "verifiCode";
+
+    // 默认主页
+    public static final String VIEW_WELCOME = "/welcome.html";
+
+    // 默认的登录页
+    public static final String VIEW_LOGIN = "/login.html";
+
+    // 默认角色选择路径
+    public static final String VIEW_ROLE_SELECT = "/role.html";
+    
+    // 选择角色
+    public static final String ROLE_SELECT_ED = "/selectedRole.html";
+    
+    //后缀
+    public static final String URL_SUFFIX = ".html";
+	
+}

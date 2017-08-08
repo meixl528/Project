@@ -35,7 +35,6 @@ import com.ssm.mybatis.common.rowbounds.SelectByExampleRowBoundsMapper;
  * PageHelper - http://git.oschina.net/free/Mybatis_PageHelper
  *
  * @param <T> 不能为空
- * @author liuzh
  */
 public interface RowBoundsMapper<T> extends
         SelectByExampleRowBoundsMapper<T>,

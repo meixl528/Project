@@ -1,5 +1,7 @@
 package com.ssm.fnd.service;
 
+import java.util.List;
+
 import com.ssm.core.annotation.StdWho;
 import com.ssm.core.proxy.ProxySelf;
 import com.ssm.core.request.IRequest;
@@ -18,21 +20,21 @@ public interface ISequenceService extends IBaseService<Sequence>, ProxySelf<ISeq
 	 * @param sequence
 	 * @return
 	 */
-	Sequence createSequence(Sequence sequence);
+	Sequence createSequence(IRequest request,@StdWho Sequence sequence);
 	
 	/**
 	 * 更新序列
 	 * @param sequence
 	 * @return
 	 */
-	Sequence updateSequence(Sequence sequence);
+	Sequence updateSequence(IRequest request,@StdWho Sequence sequence);
 	
 	/**
 	 * 获取序号
 	 * @param sequenceCode 序列代码
 	 * @return
 	 */
-	public String getSequence(String sequenceCode);
+	public String getSequence(IRequest request,String sequenceCode);
 	
 	/**
 	 * 获取序号
@@ -40,11 +42,19 @@ public interface ISequenceService extends IBaseService<Sequence>, ProxySelf<ISeq
 	 * @param sequencePrefix 序列传入前缀
 	 * @return
 	 */
-	public String getSequence(String sequenceCode,String sequencePrefix);
+	public String getSequence(IRequest request,String sequenceCode,String sequencePrefix);
 
 	/**
 	 * 重新加载数据到Redis
 	 */
 	public void refreshSequenceForRedis();
+
+	/**
+	 * 序列号提交
+	 * @param request
+	 * @param sequences
+	 * @return
+	 */
+	List<Sequence> submit(IRequest request, List<Sequence> sequences);
 
 }

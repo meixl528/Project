@@ -12,7 +12,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ssm.account.dto.User;
-import com.ssm.adaptor.UrlUtil;
+import com.ssm.adaptor.UrlConfig;
+import com.ssm.captcha.service.CaptchaConfig;
 /**
  * 拦截请求 ,
  * 检测session中是否有用户信息
@@ -22,8 +23,8 @@ public class UserLoginInterceptor implements HandlerInterceptor {
 	//设置允许通过的url
 	private List<String> allowedUrl = new ArrayList<>();
 	public void setAllowedUrl(List<String> url) {
-		if(!allowedUrl.contains(UrlUtil.VIEW_LOGIN)){
-			allowedUrl.add(UrlUtil.VIEW_LOGIN);
+		if(!allowedUrl.contains(UrlConfig.VIEW_LOGIN)){
+			allowedUrl.add(UrlConfig.VIEW_LOGIN);
 		}
 		if(url!=null && !url.isEmpty()){
 			this.allowedUrl = url;
@@ -63,7 +64,7 @@ public class UserLoginInterceptor implements HandlerInterceptor {
 				System.out.println("访问用户名和密码不正确 !");
 			}
 		}
-		resp.sendRedirect(req.getContextPath() + UrlUtil.VIEW_LOGIN);
+		resp.sendRedirect(req.getContextPath() + UrlConfig.VIEW_LOGIN);
 		return false;
 	}
 
@@ -71,8 +72,8 @@ public class UserLoginInterceptor implements HandlerInterceptor {
 	@Override
 	public void postHandle(HttpServletRequest req, HttpServletResponse resp, Object obj, ModelAndView mv)
 			throws Exception {
-		if(mv!=null && mv.getViewName().indexOf(UrlUtil.VIEW_LOGIN)!=-1){
-			mv.addObject("ENABLE_CAPTCHA",UrlUtil.VALIDATE_CAPTCHA);
+		if(mv!=null && mv.getViewName().indexOf(UrlConfig.VIEW_LOGIN)!=-1){
+			mv.addObject("ENABLE_CAPTCHA",CaptchaConfig.VALIDATE_CAPTCHA);
 		}
 	}
 

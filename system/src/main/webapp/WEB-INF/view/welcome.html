@@ -419,9 +419,6 @@
             <img class="navbar-logo-img" height="28"  src="${base.contextPath}/resources/upload/logo.png" />
             <div class="navbar-logo-title">${SYS_TITLE!'卧槽'}</div>
         </div>
-        <form id="langForm" action="" style="display: inline-block" method="GET" autocomplete="off">
-            <input type="hidden" name="lang"/>
-        </form>
         <ul class="navbar-links navbar-right">
             <li style="margin-top: 15px; ">
         		<span id="msgmail" style="font-size:15px;border:1px solid #999999;padding:4px;cursor: pointer;">邮件</span>
@@ -608,16 +605,6 @@
                 html.push('</li>')
             }
     	}
-        function changeLanguage(code) {
-            var form = jQuery('#langForm')
-            kendo.ui.showConfirmDialog({
-                title:'<@spring.message "hap.prompt"/>',
-                message: '<@spring.message "msg.info.sys.change_language"/>'
-            }).done(function(e){
-                form.children('input').val(code);
-                form.submit()
-            })
-        }
         
         function editUserInfo(userId) {
             openTab("editUser_" + userId, "<@spring.message "user.info"/>", "${base.contextPath}/sys/um/sys_user_info.html?userId=" + userId);

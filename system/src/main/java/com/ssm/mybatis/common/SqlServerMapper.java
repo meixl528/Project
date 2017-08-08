@@ -32,7 +32,6 @@ import com.ssm.mybatis.common.sqlserver.InsertSelectiveMapper;
  * 通用Mapper接口,SqlServerMapper独有的通用方法
  *
  * @param <T> 不能为空
- * @author liuzh
  */
 public interface SqlServerMapper<T> extends
         InsertMapper<T>,

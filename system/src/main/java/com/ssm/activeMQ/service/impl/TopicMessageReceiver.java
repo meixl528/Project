@@ -27,6 +27,7 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.ssm.activeMQ.annotation.Topic;
 import com.ssm.activeMQ.listener.ITopicListener;
+import com.ssm.util.SerializeUtil;
 
 /**
  * Tpoic 订阅收取,
@@ -110,7 +111,7 @@ public class TopicMessageReceiver implements InitializingBean {
 					if (message instanceof TextMessage) {  //文本
 						foreach(((TextMessage)message).getText(), channel);
 					}else if(message instanceof MapMessage || message instanceof ObjectMessage){
-						foreach(((ObjectMessage)message).getObject(), channel);
+						foreach(SerializeUtil.unserialize((byte[])((ObjectMessage)message).getObject()), channel);
 					}else if(message instanceof StreamMessage){  //流
 						foreach(((StreamMessage)message).readString(), channel);
 					}else if(message instanceof BytesMessage){ //接收字节消息     

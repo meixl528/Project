@@ -37,13 +37,9 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
-/**
- * Created by jialong.zuo@hand-china.com on 2016/10/25.
- */
 public class FileUtil {
 
     private FileUtil() {
-
     }
 
     public enum pType {

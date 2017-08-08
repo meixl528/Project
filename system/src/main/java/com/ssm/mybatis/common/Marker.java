@@ -1,8 +1,6 @@
 /*
  * The MIT License (MIT)
- *
- * Copyright (c) 2014-2016 abel533@gmail.com
- *
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -26,8 +24,6 @@ package com.ssm.mybatis.common;
 
 /**
  * 标记接口，继承该接口的接口，在MapperScannerConfigurer#setMarkerInterface时，会自动注册到通用Mapper
- *
- * @author liuzh
  * @since 3.2.2
  */
 public interface Marker {

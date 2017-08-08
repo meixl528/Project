@@ -1,7 +1,3 @@
-/*
- * #{copyright}#
- */
-
 package com.ssm.job.dto;
 
 import java.util.Date;
@@ -9,9 +5,6 @@ import java.util.List;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-/**
- * @author shengyang.zhou@hand-china.com
- */
 public class JobCreateDto extends TriggerDto {
 
 //    @Size(min = 20, max = 40)

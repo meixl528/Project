@@ -1,0 +1,493 @@
+<#-- 
+* description: 系统配置页面 
+* version: 1.0 
+--> 
+<#include "../include/header.html">
+<body onload="showCaptchaPolicy()">
+<script src="${base.contextPath}/common/code?captchaPolicy=SYS.CAPTCHA_POLICY&passwordComplexity=SYS.PASSWORD_COMPLEXITY"
+        type="text/javascript"></script>
+
+<style type="text/css">
+.file {
+    position: relative;
+    display: inline-block;
+    background: #FFF;
+    border: 1px solid #eaf4fc;
+    border-radius: 4px;
+    padding: 4px 12px;
+    overflow: hidden;
+    color: #004974;
+    text-decoration: none;
+    text-indent: 0;
+     font-size:10px;
+
+}
+.file input {
+    position: absolute;
+    right: 0;
+    top: 0;
+    opacity: 0;
+
+}
+.file:hover {
+    background: #faf9f9;
+    border-color: #FFF;
+    color: #54565B;
+    text-decoration: none;
+}
+
+.submitButton{
+    position: absolute;
+    top:0px;
+    left:100px;
+} 
+
+
+</style>
+<script type="text/javascript">
+
+var datas=[];
+
+var viewModel = kendo.observable({
+    model: {},
+    source: captchaPolicy,
+    passwordComplexityData:passwordComplexity,
+    saveForm:function(e)
+    {
+    	//定义一个枚举用来循环存放
+    	var radioValue=$(":radio[name='captcha']:checked").val();
+        var roleMerge = $("#checkbox").val();
+        var firstLoginRestPW = $("#resetPW").val();
+    	var enums=['sys_title','captcha','default_password','password_min_length','password_complexity','password_invalid_time','user_role_merge','default_target_url','first_login_reset_password'];
+        viewModel.model.set("captcha",radioValue);
+        viewModel.model.set("user_role_merge",roleMerge);
+        viewModel.model.set("first_login_reset_password",firstLoginRestPW);
+        var data=[];
+    	for(var i= 0;i<enums.length;i++){
+    	    var  temp = enums[i].toUpperCase();
+    		for(var j=0;j<datas.length;j++)
+    	    {	
+    			if(enums[i] ==datas[j].configCode)
+    			{
+    				   data.push({
+    					   _token:datas[j]._token,
+    					   configId: datas[j].configId,
+    					   configCode: temp,
+    					   configValue: viewModel.model.get(enums[i]),
+    					   __status:'update'
+    				  })
+    			}    			
+    	  }
+    	}
+
+    	$.ajax({
+    		 url: '${base.contextPath}/sys/config/submit',
+    		 type: "POST",
+    		 dataType: "json",
+    		 contentType: "application/json",
+    		 data       : kendo.stringify(data),
+    		 success: function (args) {
+    		      if(args.success){
+    		    	  kendo.ui.showInfoDialog({
+    		    	        title:$l('hap.prompt'),
+    		    	        message:$l('hap.tip.success')
+    		    	  })
+    		      }
+    		      else{
+    		    	  alert("error")
+    		    }
+    		 },
+    		 error: function () {
+    		     alert("error");
+    		 }
+        });
+    }
+});
+
+function showCaptchaPolicy(){
+	var html = '';
+	for(var i=0;i<viewModel.source.length;i++)
+	{
+		html+='<input name="captcha" type="radio"  id="'+viewModel.source[i].value+'" value="'+viewModel.source[i].value+'"/>';
+		html+='<span class="info" style="margin-left:10px;font-weight:bold;">'+viewModel.source[i].meaning+'</span>';
+		html+='<div style="color: #5a5a5a;margin:10px 20px;">'+viewModel.source[i].description+'</div>'; 
+	}
+	$("#captcha").html(html);
+}
+function showUploadSucessFavicon(){
+	//返回时 重新渲染图片框 如果地址一样 不会再次刷新
+	$("#sys-favicon-img").attr("src","${base.contextPath}/resources/upload/favicon.png?"+Math.random());
+}
+function showUploadSucessLogo(){
+	$("#sys-logo-img").attr("src","${base.contextPath}/resources/upload/logo.png?"+Math.random());
+}
+function showUploadError(message){
+	kendo.ui.showInfoDialog({
+        title:$l('hap.prompt'),
+        message:message
+    })
+}
+
+
+function passwordlength(){
+	var input = event.srcElement;
+	if(input.value < 6){
+		input.value = 6;
+	}else if(input.value>16){
+		input.value = 16;
+	}
+}
+</script>
+	   
+	<div class="page-content" >
+	 <div  class="form-horizontal" role="form" autocomplete="off">
+		<div class="panel panel-default">
+		<div class="panel-heading">
+		   <span class="panel-title"> <@spring.message "sys.config.configuration"/></span>
+		</div>
+        <div class="panel-body">
+          <div class="row">
+                <div class="form-group ">
+                    <label class="col-sm-2 control-label"><@spring.message "sys.config.system_title"/></label>
+                    <div class="col-sm-5">
+                        <input  class=" k-textbox" id="sys_title" data-bind = "value:model.sys_title"  style="width: 100%"/>
+                        <script>kendo.bind($('#sys_title'), viewModel);</script>
+                    </div>
+                </div>
+         </div>
+         <p class="bord-btm pad-ver text-main text-bold">
+		    <@spring.message "sys.config.style"/>
+		 </p>
+         <div class="row">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"><@spring.message "sys.config.systemlogo"/></label>
+                    <div class="col-xs-5">
+                      <div class="col-xs-3">
+                        <div style="width:70px;height:30px;background-color:#ebf6f7;">
+                           <img  id="sys-logo-img" name ="logo" src="${base.contextPath}/resources/upload/logo.png" style="width:70px;height:30px">
+                        </div>
+                      </div>
+                      
+                      <div class="col-xs-6" >
+                      <form id="upload-logo-form" action="${base.contextPath}/sys/config/uploadLogo?${_csrf.parameterName}=${_csrf.token}" target="_uploadTarget" enctype="multipart/form-data"  method="POST">
+                          <a href="javascript:void(0);" class="file" ><@spring.message "sys.config.select_file"/>
+                           <input type="file" name="logo" id="syslogo" onChange="preivew(this,'logo-img');"  /> 
+                      	 </a>
+                      	 <button type="submit" class="btn btn-success submitButton" onclick="$('#logo-img').css('visibility','hidden');"  disabled="disabled"><@spring.message "sys.config.upload_file"/></button>
+                         <small class="help-block"> <@spring.message "sys.config.systemlogo.desciption"/></small>
+                      </form>
+                      
+                      </div>
+                      
+                      
+                      <div style="width:70px;height:30px;marigin-right:20px" class="col-xs-3">
+                          <img id="logo-img"  style="visibility:hidden;width:70px;height:30px">
+                      </div>
+                    </div>
+               </div>
+         </div> 
+         
+         <div class="row">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"><@spring.message "sys.config.favicon"/></label>
+                    <div class="col-xs-5">
+                        <div class="col-xs-3">
+                        <div style="width:32px;height:32px;background-color:#e8ecef;">
+                           <img id="sys-favicon-img" name ="favicon" src="${base.contextPath}/resources/upload/favicon.png" style="width:32px;height:32px" >
+                        </div>
+                        </div>
+                        
+                        
+                        <div class="col-xs-6">
+                        <form id="upload-icon-form" action="${base.contextPath}/sys/config/uploadIcon?${_csrf.parameterName}=${_csrf.token}" target="_uploadTarget" enctype="multipart/form-data"  method="POST">
+                            <a href="javascript:void(0);" class="file" ><@spring.message "sys.config.select_file"/>
+                          <input type="file" name="favicon" id="favicon" onChange="preivew(this,'favicon-img');"/>
+                      	  </a>
+                      	   <button type="submit" class="btn btn-success submitButton" onclick="$('#favicon-img').css('visibility','hidden');" disabled="disabled"><@spring.message "sys.config.upload_file"/></button>
+                          <small class="help-block">
+                            <@spring.message "sys.config.favicon.desciption"/>
+                          </small>
+                        </form>
+                        </div>
+                        
+                        
+                        <div style="width:32px;height:32px;" class="col-xs-3">
+                          <img id="favicon-img"  style="visibility:hidden;width:32px;height:32px;">
+                        </div>
+                    </div>
+                </div>
+         </div>
+         
+         <p class="bord-btm pad-ver text-main text-bold">
+		    <@spring.message "sys.config.safety"/>
+		 </p>
+         <div class="row">
+                <div class="form-group"> 
+                    <label class="col-xs-2 control-label"><@spring.message "sys.config.captcha"/></label>
+                    <div class="col-xs-5" id="captcha" >
+
+                    </div>
+                      <script>kendo.bind($('#captcha'), viewModel);</script>
+                </div>
+         </div>
+
+        <p class="bord-btm pad-ver text-main text-bold"> <@spring.message "sys.config.password_policy"/></p>
+         <div class="row">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"><@spring.message "sys.config.default_password"/></label>
+                    <div class="col-xs-5">
+                        <input class=" k-textbox" id="default_password"  data-bind = "value:model.default_password" style="width: 100%"/>
+                        <script>kendo.bind($('#default_password'), viewModel);</script>
+                    </div>
+                </div>
+         </div>
+          <div class="row">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"><@spring.message "sys.config.password_min_length"/></label>
+                    <div class="col-xs-5">
+                        <input  type="number"  onkeyup='this.value=this.value.replace(/\D/gi,"")'  value="8" max="16" min="6"  id="password_min_length"  data-bind = "value:model.password_min_length" style="width: 100%;text-align:right" onchange="passwordlength();"/>
+                        <script>
+                        $("#password_min_length").kendoNumericTextBox({format:'0'});
+                        kendo.bind($('#password_min_length'), viewModel);</script>
+                    </div>
+                </div>
+         </div>
+          <div class="row">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"><@spring.message "sys.config.password_complexity"/></label>
+                    <div class="col-xs-5">
+                         <select data-role="combobox" id="password_complexity" data-value-primitive="true"  style="width:100%;"
+										data-text-field="meaning" data-value-field="value"
+										data-bind="source: passwordComplexityData, value: model.password_complexity"></select>                   
+						<script>kendo.bind($('#password_complexity'), viewModel);</script>
+                    </div>
+                </div>
+         </div>
+         <div class="row">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"><@spring.message "sys.config.password_invalid_time"/></label>
+                    <div class="col-xs-5">
+                        <input  id="password_invalid_time" onkeyup='this.value=this.value.replace(/\D/gi,"")'    type="number" data-bind = "value:model.password_invalid_time" style="width: 100%;text-align:right"/>
+                        <script>
+                            kendo.bind($('#password_invalid_time'), viewModel);
+                            $("#password_invalid_time").kendoNumericTextBox({
+                                 format: "0",
+                                 min: 0
+                            });
+                        </script>
+                    </div>
+                    <label class="col-xs-4 control-label" style="text-align:left;" ><@spring.message "sys.config.password_invalid_describe"/></label>
+                </div>
+        </div>
+            <p class="bord-btm pad-ver text-main text-bold">
+                <@spring.message "sys.login.safety"/>
+            </p>
+
+            <div class="row">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"><@spring.message "sys.config.resetpassword"/></label>
+                    <div class="col-xs-1"  id="resetPWDiv" >
+                        <input id="resetPW"  name="resetPW" style="margin-top:8px"  type="checkbox" data-bind="enabled: isEnabled,value:model.first_login_reset_password" />
+                    </div>
+                    <script>
+                        $("#resetPW").kendoCheckbox({
+                            checkedValue: 'Y',
+                            uncheckedValue: 'N'
+                        });
+                        kendo.bind($('#resetPWDiv'), viewModel);
+                    </script>
+                    <label class="col-xs-4 control-label" style="text-align:left;" ><@spring.message "sys.config.resetpassword.describe"/></label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"><@spring.message "sys.config.rolemerge"/></label>
+                    <div class="col-xs-1"  id="roleMerge" >
+                        <input id="checkbox"  name="checkbox" style="margin-top:8px"  type="checkbox" data-bind="enabled: isEnabled,value:model.user_role_merge" />
+                    </div>
+                    <script>
+                        $("#checkbox").kendoCheckbox({
+                            checkedValue: 'Y',
+                            uncheckedValue: 'N'
+                        });
+                        kendo.bind($('#checkbox'), viewModel);
+                    </script>
+                    <label class="col-xs-4 control-label" style="text-align:left;" ><@spring.message "sys.config.user_role_merge.describe"/></label>
+                </div>
+            </div>
+
+        </div>
+         <div class=" panel-footer text-left">
+           <span class="btn btn-success" id="save"  style="width:100px" data-bind="click:saveForm" ><i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+            <script>kendo.bind($('#save'), viewModel);</script>
+         </div>
+         
+
+	</div>
+</div>
+<iframe id="_uploadTarget" name="_uploadTarget" src="about:blank" style="position:absolute;left:-10000px;top:-10000px;width:1px;height:1px;display:none"></iframe>
+</div>
+
+
+
+<script type="text/javascript">
+
+    $.ajax({
+	    url: '${base.contextPath}/sys/config/query',
+	    type: "POST",
+	    dataType: "json",
+	    contentType: "application/json",
+	    // data       : kendo.stringify(para),
+	    success: function (args) {
+	        //数据成功以后 绑定到viewmodel上
+	        datas = args.rows || [];
+	        for (var k =0;k< datas.length;k++) {
+	        	if(datas[k].configCode){
+	        	   datas[k].configCode = datas[k].configCode.toLowerCase();
+	        	   if (datas[k].configCode == 'captcha') {
+	        		  $.each(viewModel.source,function(i,v){
+	        			  if(v.value == datas[k].configValue )
+	        			  {
+	        				  var check = v.value;
+	        				  $("#"+check).attr("checked",true);	
+	        			  } 
+	        		 })
+	              }
+	              else
+	                 viewModel.model.set(datas[k].configCode,datas[k].configValue )
+	           }
+	         }
+	    },
+	    error: function () {
+	        alert("error");
+	    }
+  });
+ 
+ var preivew=function(file, container){
+	
+ 	try{
+ 		var pic=new Picture(file, document.getElementById(container));
+ 	}catch(e){
+ 		alert(e);
+ 	}
+ }
+ //缩略图类定义
+ var boolPicture = function(file)
+ {
+	 imgName=file.value; 
+	 var ext,idx;
+	 if (imgName == ''){  
+	       kendo.ui.showInfoDialog({
+             title:$l('hap.prompt'),
+             message:'NO_FILE'
+          }) 
+          var s = file.name+"-img";
+          var a = "#"+s;
+          $(a).css("visibility","hidden");
+          
+          $(file).parent().next().attr("disabled",true); 
+	      return false; 
+	  } else {   
+	        idx = imgName.lastIndexOf(".");   
+	        if (idx != -1){   
+	            ext = imgName.substr(idx+1).toUpperCase();   
+	            ext = ext.toLowerCase( ); 
+	            if (ext != 'jpg' && ext != 'png' && ext != 'jpeg' && ext != 'gif'){
+	            	kendo.ui.showInfoDialog({
+	                   title:$l('hap.prompt'),
+	                   message:'FILE_TYPE_ERROR'
+	               })
+	               $(file).parent().next().attr("disabled",true); 
+	            	
+	                return false;  
+	            }   
+	        } else {  
+	        	kendo.ui.showInfoDialog({
+	                 title:$l('hap.prompt'),
+	                 message:'FILE_NO_SUFFIX'
+	            })
+	            $(file).parent().next().attr("disabled",true);
+	            return false;
+	        }   
+	    }
+	    var isIE = /msie/i.test(navigator.userAgent) && !window.opera;  
+	    var fileSize = 0;           
+	    if (isIE && !file.files){       
+	        var filePath = file.value;       
+	        var fileSystem = new ActiveXObject("Scripting.FileSystemObject");          
+	        var files = fileSystem.GetFile (filePath);       
+	        fileSize = files.Size;      
+	    } else {      
+	        fileSize = file.files[0].size;       
+	    }     
+
+	    var size = fileSize / 1024*1024;   
+
+	    if(size <1 ){    
+	    	
+	    	kendo.ui.showInfoDialog({
+                title:$l('hap.prompt'),
+                message:'FILE_SIZE_ERROR'
+            }) 
+            $(file).parent().next().attr("disabled",true);
+	        return false;
+	    }else{
+	    	$(file).parent().next().attr("disabled",false);
+	    	return true;
+	    }  
+	    
+ }
+ var Picture=function(file, container){
+	if( !boolPicture(file))
+	{
+		return;
+	}
+ 	var height=0,
+ 	widht =0,
+ 	ext='',
+ 	size=0,
+ 	name='',
+ 	path='';
+ 	var self=this;
+ 	if(file){
+ 		name=file.value;  
+         setTimeout('$("#file").select();', 1);  
+ 		if(window.navigator.userAgent.indexOf("MSIE")>=1){ //IE
+ 			file.select();
+             if (window.getSelection) { 
+                path = window.getSelection(); 
+             } else if (window.document.getSelection) { 
+                path = window.document.getSelection(); 
+             } else if (window.document.selection) { 
+                path = window.document.selection.createRange().text; 
+             } 
+ 		}else if(window.navigator.userAgent.indexOf("Firefox")>=1){ 
+ 			if(file.files){
+ 				path= window.URL.createObjectURL(file.files[0]);
+ 			}else{
+ 				//url = window.webkitURL.createObjectURL(file) ; 
+ 				path=file.value;
+ 			}
+ 		}else if(window.navigator.userAgent.indexOf("Chrome")>=1)
+ 		{
+ 			path = window.webkitURL.createObjectURL(file.files[0]) ;
+ 		}
+ 	}else{
+ 		throw 'FILE_INVALID';
+ 	}
+ 	ext=name.substr(name.lastIndexOf("."), name.length);
+ 	if(container.tagName.toLowerCase()!='img'){
+ 		throw 'HTML_TAG_ERROR';
+ 		container.visibility='hidden';
+ 	}
+ 	container.src=path;
+ 	container.alt=name;
+ 	container.style.visibility='visible';
+ 	height=container.height;
+ 	width=container.width;
+
+ }
+ </script>
+</body>
+</html>

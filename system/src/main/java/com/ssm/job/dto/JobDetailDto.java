@@ -1,16 +1,9 @@
-/*
- * #{copyright}#
- */
 package com.ssm.job.dto;
 
 import java.util.List;
 
 import javax.persistence.Id;
 
-/**
- *
- * @author shengyang.zhou@hand-china.com
- */
 public class JobDetailDto {
 
     @Id

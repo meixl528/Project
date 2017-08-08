@@ -18,14 +18,14 @@
 </script>
 <div id="page-content">
     <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
-        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="uploadWindow()"><@spring.message "hap.new"/></span>
+        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="uploadWindow()"><@spring.message "sysfile.upload"/></span>
         <span onclick="deleteData()" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>
     </div>
     <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
     <div class="pull-right" id="query-form" style="padding-bottom:10px;">
-            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "file_code"/>'
+            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "文件编码"/>'
                    data-bind="value:model.fileCode" class="k-textbox">
-            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "file_name"/>'
+            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='<@spring.message "文件名"/>'
                    data-bind="value:model.fileName" class="k-textbox">
         <span class="btn btn-primary" style="float:left;width:70px" data-bind="click:querySequence" type="submit"><@spring.message "hap.query"/></span>
         <div style="clear:both"></div>
@@ -112,10 +112,13 @@
             },
             {
             	field : 'fileSize',
-            	title: '<@spring.message "文件大小"/>',
+            	title: '<@spring.message "文件大小(M)"/>',
             	width: 60,
             	headerAttributes: { "class": "table-header-cell",style: "text-align: center"},
-            	attributes: {style: "text-align:center"}
+            	attributes: {style: "text-align:center"},
+            	template: function(dataItem){
+					return (dataItem.fileSize /(1024.0*1024)).toFixed(3) || "";
+	           	}
             },
             {
             	field: "fileType", 
@@ -133,8 +136,21 @@
 			    format:"{0: yyyy/MM/dd HH:mm:ss}"
             },
             {
-            	command	:  [{name:"destroy"}],
+            	command	:  [
+            	   {name:"destroy"},
+            	   {  
+     		             name: "[下载]",  
+     		             click: function(e) {  
+     		                var data = this.dataItem($(e.target).closest("tr"));  
+     		                if(data && data.filePath && data.fileName){
+     		       	    		window.open("${base.contextPath}/fnd/ftp/download?fileName=" +fileName+"&filePath="+filePath+"&newName=invoice");
+     		           		}
+     		             }
+     		        }
+            	],
 	         	width:"60px" ,
+	         	headerAttributes: { "class": "table-header-cell",style: "text-align: center"},
+             	attributes: {style: "text-align:center"}
             },
         ],
         editable: "inline"
@@ -158,6 +174,7 @@
         }).data("kendoWindow");
         dialog.center().open();
     };
+    
 
     function deleteData() {
         Hap.deleteGridSelection({

@@ -9,6 +9,7 @@ import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.ssm.mybatis.annotation.Condition;
 import com.ssm.sys.dto.BaseDTO;
 
 /**
@@ -31,6 +32,7 @@ public class SysFile extends BaseDTO {
     private Long attachmentId;
     
     @Column
+    @Condition(operator=LIKE)
     private String fileCode;
 
     /**
@@ -38,6 +40,7 @@ public class SysFile extends BaseDTO {
      */
     @Column
     @NotEmpty
+    @Condition(operator=LIKE)
     private String fileName;
 
     /**

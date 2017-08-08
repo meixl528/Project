@@ -1,8 +1,6 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 abel533@gmail.com
- *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -35,7 +33,6 @@ import com.ssm.mybatis.common.condition.UpdateByConditionSelectiveMapper;
  * 通用Mapper接口,Condition查询
  *
  * @param <T> 不能为空
- * @author liuzh
  */
 public interface ConditionMapper<T> extends
         SelectByConditionMapper<T>,

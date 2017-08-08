@@ -20,7 +20,7 @@ import com.ssm.sys.responceFactory.ResponseData;
  * 
  * @author meixl
  */
-public interface ILoginAdaptor {
+public interface ILoginAdaptor{
 
     /**
      * 超时登陆逻辑.
