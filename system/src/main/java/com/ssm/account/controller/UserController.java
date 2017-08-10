@@ -1,6 +1,7 @@
 package com.ssm.account.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -22,12 +23,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import com.ssm.account.Md5Util;
 import com.ssm.account.dto.User;
 import com.ssm.account.exception.UserException;
 import com.ssm.account.service.IUserService;
+import com.ssm.account.service.impl.AccountConfig;
 import com.ssm.core.exception.BaseException;
 import com.ssm.core.request.IRequest;
-import com.ssm.fnd.service.ISequenceService;
 import com.ssm.sys.controller.BaseController;
 import com.ssm.sys.responceFactory.ResponseData;
 /**
@@ -44,13 +46,8 @@ public class UserController extends BaseController{
 	
 	@Autowired
     private IUserService userService;
-	@Autowired
-	private ISequenceService sequenceService;
-	
-	/**
-	 * 用户名已存在    ex : 用户名:{0}已存在!
-	 */
-	public static final String USERNAME_EXIST = "UserName_Exist";
+	//@Autowired
+	//private ISequenceService sequenceService;
 	
 	/**
      * 初始化时间
@@ -104,7 +101,7 @@ public class UserController extends BaseController{
         ResponseData  responseData = new ResponseData(true);
         if(msg!=null){
         	responseData.setSuccess(false);
-        	responseData.setMessage(this.getMessageSource().getMessage(UserException.USER_EXIST, new Object[]{msg},RequestContextUtils.getLocale(request)));
+        	responseData.setMessage(messageSource.getMessage(UserException.USER_EXIST, new Object[]{msg},RequestContextUtils.getLocale(request)));
         }else{
         	responseData.setRows(userService.submitUser(request,iRequest, userList));
         }
@@ -120,9 +117,32 @@ public class UserController extends BaseController{
     @RequestMapping(value = "/sys/user/resetPass", method = RequestMethod.POST)
     @ResponseBody
     public ResponseData resetPassword(HttpServletRequest request,String pass,Long userId){
-    	createRequestContext(request);
-        userService.updatePassword(userId, pass);
-        return new ResponseData(true);
+    	IRequest requestContext = createRequestContext(request);
+    	
+    	ResponseData rd = new ResponseData(false);
+    	if(AccountConfig.PASSWORD_MIN_LENGTH > pass.length()){
+    		rd.setMessage("密码长度不得小于"+AccountConfig.PASSWORD_MIN_LENGTH+"位");
+    	    return rd;
+		}
+    	if ("no_limit".equals(AccountConfig.PASSWORD_COMPLEXITY)) {
+
+        } else if ("digits_and_letters".equals(AccountConfig.PASSWORD_COMPLEXITY) && !pass.matches(".*[0-9]+.*")
+                && !pass.matches(".*[a-zA-Z]+.*")) {
+            //throw new UserException(UserException.USER_PASSWORD_REQUIREMENT, null);
+            rd.setMessage(messageSource.getMessage(UserException.USER_PASSWORD_REQUIREMENT, null, RequestContextUtils.getLocale(request))+":必须混合数字和字母");
+            return rd;
+        } else if ("digits_and_case_letters".equals(AccountConfig.PASSWORD_COMPLEXITY) && !pass.matches(".*[a-z]+.*")
+                && !pass.matches(".*[A-Z]+.*") && !pass.matches(".*[0-9]+.*")) {
+            //throw new UserException(UserException.USER_PASSWORD_REQUIREMENT, null);
+        	rd.setMessage(messageSource.getMessage(UserException.USER_PASSWORD_REQUIREMENT, null, RequestContextUtils.getLocale(request))+":必须混合数字和大小写字母");
+        	return rd;
+        }
+    	
+    	User user = new User();
+    	user.setUserId(userId);
+    	user.setPassword(Md5Util.MD5(pass));
+        userService.batchUpdate(requestContext,Arrays.asList(user));
+        return new ResponseData();
     }
 
 }

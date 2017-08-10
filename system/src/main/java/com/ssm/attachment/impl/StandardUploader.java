@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemHeaders;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -390,6 +391,17 @@ public class StandardUploader implements Uploader {
         public OutputStream getOutputStream() throws IOException {
             return null;
         }
+
+		@Override
+		public FileItemHeaders getHeaders() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void setHeaders(FileItemHeaders headers) {
+			// TODO Auto-generated method stub
+		}
 
     }
 }

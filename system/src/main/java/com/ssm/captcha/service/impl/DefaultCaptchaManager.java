@@ -6,8 +6,6 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +17,6 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.ssm.captcha.service.CaptchaConfig;
 import com.ssm.captcha.service.ICaptchaManager;
 
 /**
@@ -28,18 +25,6 @@ import com.ssm.captcha.service.ICaptchaManager;
  */
 @Service
 public class DefaultCaptchaManager implements ICaptchaManager{
-	
-	@Override
-	public List<String> getAcceptedProfiles() {
-		return Arrays.asList("CAPTCHA");
-	}
-
-	@Override
-	public void updateProfile(String profileName, String profileValue) {
-		if(profileName.equals("CAPTCHA")){
-			CaptchaConfig.VALIDATE_CAPTCHA = profileValue.equals("DISABLE")?false:true;
-		}
-	}
 
     private static final int CAPTCHA_WIDTH = 85;
     private static final int CAPTCHA_HEIGHT = 30;

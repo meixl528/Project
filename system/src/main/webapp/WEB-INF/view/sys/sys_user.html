@@ -154,7 +154,7 @@
         
         
         function deleteData(){
-            var checked = grid.selectedDataItems();
+            /* var checked = grid.selectedDataItems();
             if(grid.selectedDataItems().length){  
                  kendo.ui.showConfirmDialog({
                     title:$l('hap.tip.info'),
@@ -167,7 +167,10 @@
                         grid.dataSource.sync();
                     }
                 })  
-            }
+            } */
+            Hap.deleteGridSelection({
+                grid: $('#grid')
+            });
         
         }
         $(document).ready(function () {
@@ -191,7 +194,6 @@
 /*
                           errorTemplate: '<div class="k-widget k-tooltip k-tooltip-validation k-invalid-msg" style="margin: 0.5em; display: block;" role="alert"><span class="k-icon k-warning"> </span>#=message#<div class="k-callout k-callout-n"></div></div>'
 */
-
                       }); 
          
             
@@ -237,7 +239,7 @@
                         data:'rows',
                         total:'total',
                         model: {
-                            id: "id",
+                            id: "userId",
                             fields: {
                                 status: {defaultValue:userStatusData[0].value},
                                 //status: {defaultValue:"ACTV"},

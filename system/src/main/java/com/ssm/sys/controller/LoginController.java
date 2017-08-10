@@ -31,7 +31,7 @@ public class LoginController extends BaseController{
     /**
      * 显示角色选择界面.
      */
-    @RequestMapping(value = { "/role.html","/role"})
+    @RequestMapping(value = { "/role.html","/role"} , method = RequestMethod.GET)
     public ModelAndView roleView(final HttpServletRequest request, final HttpServletResponse response){
         return loginAdaptor.roleView(request, response);
     }
@@ -39,7 +39,7 @@ public class LoginController extends BaseController{
     /**
      * 显示主界面.
      */
-    @RequestMapping(value = { "/welcome.html","/welcome"})
+    @RequestMapping(value = { "/welcome.html","/welcome"} , method = RequestMethod.GET)
     public ModelAndView indexView(final HttpServletRequest request, final HttpServletResponse response) {    
         return loginAdaptor.indexView(request, response);
     }
@@ -49,7 +49,7 @@ public class LoginController extends BaseController{
      * @param role 角色对象
      * @throws RoleException 
      */
-    @RequestMapping(value = {"/selectedRole.html","/selectedRole"})
+    @RequestMapping(value = {"/selectedRole.html","/selectedRole"} )
     public ModelAndView selectRole(final Long roleId, final HttpServletRequest request,final HttpServletResponse response) throws RoleException{
         return loginAdaptor.doSelectRole(roleId, request, response);
     }
@@ -66,7 +66,7 @@ public class LoginController extends BaseController{
     /**
      * 退出登录
      */
-	@RequestMapping(value = {"/logout.html","/logout"})
+	@RequestMapping(value = {"/logout.html","/logout"} )
 	public ModelAndView logout(final HttpServletRequest request,final HttpServletResponse response){
 		return loginAdaptor.logout(request,response);
 	}

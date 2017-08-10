@@ -1,6 +1,5 @@
 package com.ssm.account.service.impl;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ssm.account.AccountConfig;
 import com.ssm.account.Md5Util;
 import com.ssm.account.dto.User;
 import com.ssm.account.exception.UserException;
@@ -32,23 +30,6 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements IUserServi
 	
 	@Autowired
 	private UserMapper userMapper;
-	
-	@Override
-	public List<String> getAcceptedProfiles() {
-		return Arrays.asList("DEFAULT_PASSWORD","PASSWORD_MIN_LENGTH","PASSWORD_COMPLEXITY");
-	}
-
-	@Override
-	public void updateProfile(String profileName, String profileValue) {
-		if(profileName.equals("DEFAULT_PASSWORD")){
-			AccountConfig.DEFAULT_PASSWORD = profileValue;
-		}else if(profileName.equals("PASSWORD_MIN_LENGTH")){
-			AccountConfig.PASSWORD_MIN_LENGTH = Integer.valueOf(profileValue);
-		}else if(profileName.equals("PASSWORD_COMPLEXITY")){
-			AccountConfig.PASSWORD_COMPLEXITY = profileValue;
-		}
-	}
-	
 
 	/**
 	 * 验证用户名是否存在
@@ -138,15 +119,5 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements IUserServi
         }
         return user1;
     }
-
-	@Override
-	@Transactional
-	public void updatePassword(Long userId, String password) {
-		String passwordEncrypted = Md5Util.MD5(password);
-		User u = new User();
-		u.setUserId(userId);
-		u.setPassword(passwordEncrypted);
-		userMapper.updateByPrimaryKeySelective(u);
-	}
 	
 }

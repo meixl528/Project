@@ -8,10 +8,9 @@ import com.ssm.account.dto.User;
 import com.ssm.account.exception.UserException;
 import com.ssm.core.proxy.ProxySelf;
 import com.ssm.core.request.IRequest;
-import com.ssm.message.profile.SystemConfigListener;
 import com.ssm.sys.service.IBaseService;
 
-public interface IUserService extends IBaseService<User>, ProxySelf<IUserService>, SystemConfigListener{
+public interface IUserService extends IBaseService<User>, ProxySelf<IUserService>{
 
 	List<User> submitUser(HttpServletRequest request, IRequest iRequest, List<User> userList);
 	/**
@@ -25,8 +24,4 @@ public interface IUserService extends IBaseService<User>, ProxySelf<IUserService
 	
 	
 	User login(User user) throws UserException;
-
-	void updatePassword(Long userId, String password);
-
-	
 }

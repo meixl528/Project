@@ -33,7 +33,7 @@ public class BaseController {
 	protected static final String DEFAULT_PAGE_SIZE = "10";
 	
 	@Autowired
-    private MessageSource messageSource;
+    protected MessageSource messageSource;
 	
 	@Autowired
     private Validator validator;
@@ -50,10 +50,6 @@ public class BaseController {
 	protected IRequest createRequestContext(HttpServletRequest request) {
         return RequestHelper.createServiceRequest(request);
     }
-
-	public MessageSource getMessageSource() {
-        return messageSource;
-    }
 	
 	protected String getErrorMessage(Errors errors, HttpServletRequest request) {
         Locale locale = RequestContextUtils.getLocale(request);
@@ -68,7 +64,7 @@ public class BaseController {
         }
         return errorMessage;
     }
-
+	
     /**
      * 处理控制层所有异常.
      *

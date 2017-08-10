@@ -139,11 +139,12 @@
             	command	:  [
             	   {name:"destroy"},
             	   {  
-     		             name: "[下载]",  
+     		             name: '下载',  
+     		             text: "[下载]",
      		             click: function(e) {  
      		                var data = this.dataItem($(e.target).closest("tr"));  
      		                if(data && data.filePath && data.fileName){
-     		       	    		window.open("${base.contextPath}/fnd/ftp/download?fileName=" +fileName+"&filePath="+filePath+"&newName=invoice");
+     		       	    		window.open("${base.contextPath}/fnd/ftp/download?fileName=" +data.fileName+"&filePath="+data.filePath+"&newName=invoice");
      		           		}
      		             }
      		        }
@@ -174,7 +175,6 @@
         }).data("kendoWindow");
         dialog.center().open();
     };
-    
 
     function deleteData() {
         Hap.deleteGridSelection({

@@ -9,18 +9,22 @@ public interface UrlConfig{
     public static final String KEY_VERIFICODE = "verifiCode";
 
     // 默认主页
-    public static final String VIEW_WELCOME = "/welcome.html";
+    public static final String VIEW_WELCOME = "/welcome";
+    public static final String VIEW_WELCOME_REDIRECT = "/welcome.html";
 
     // 默认的登录页
-    public static final String VIEW_LOGIN = "/login.html";
+    public static final String VIEW_LOGIN = "/login";
+    public static final String VIEW_LOGIN_REDIRECT = "/login.html";
 
     // 默认角色选择路径
-    public static final String VIEW_ROLE_SELECT = "/role.html";
+    public static final String VIEW_ROLE_SELECT = "/role";
+    public static final String VIEW_ROLE_SELECT_REDIRECT = "/role";
     
     // 选择角色
-    public static final String ROLE_SELECT_ED = "/selectedRole.html";
+    public static final String ROLE_SELECT_ED = "/selectedRole";
+    public static final String ROLE_SELECT_ED_REDIRECT = "/selectedRole";
     
     //后缀
-    public static final String URL_SUFFIX = ".html";
+    public static final String SUFFIX = ".html";
 	
 }

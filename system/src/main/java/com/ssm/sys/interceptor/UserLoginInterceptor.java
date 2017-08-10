@@ -2,7 +2,6 @@ package com.ssm.sys.interceptor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +12,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ssm.account.dto.User;
 import com.ssm.adaptor.UrlConfig;
-import com.ssm.captcha.service.CaptchaConfig;
 /**
  * 拦截请求 ,
  * 检测session中是否有用户信息
@@ -64,7 +62,7 @@ public class UserLoginInterceptor implements HandlerInterceptor {
 				System.out.println("访问用户名和密码不正确 !");
 			}
 		}
-		resp.sendRedirect(req.getContextPath() + UrlConfig.VIEW_LOGIN);
+		resp.sendRedirect(req.getContextPath()+UrlConfig.VIEW_LOGIN_REDIRECT);
 		return false;
 	}
 
@@ -72,15 +70,15 @@ public class UserLoginInterceptor implements HandlerInterceptor {
 	@Override
 	public void postHandle(HttpServletRequest req, HttpServletResponse resp, Object obj, ModelAndView mv)
 			throws Exception {
-		if(mv!=null && mv.getViewName().indexOf(UrlConfig.VIEW_LOGIN)!=-1){
-			mv.addObject("ENABLE_CAPTCHA",CaptchaConfig.VALIDATE_CAPTCHA);
+		if(mv!=null && (mv.getViewName().indexOf(UrlConfig.VIEW_LOGIN)!=-1 || mv.getViewName().indexOf(UrlConfig.VIEW_WELCOME)!=-1) ){
+			
 		}
 	}
 
 	// 在DispatCherServlet 处理之后执行 ----清理工作
 	@Override
-	public void afterCompletion(HttpServletRequest req, HttpServletResponse resp, Object obj, Exception e)
-			throws Exception {
+	public void afterCompletion(HttpServletRequest req, HttpServletResponse resp, Object obj, Exception e)throws Exception {
+		
 	}
 	
 	/**
@@ -88,7 +86,6 @@ public class UserLoginInterceptor implements HandlerInterceptor {
 	 * @param 官方建议引用   spring security 
 	 */
 	private boolean csrf(HttpServletRequest req){
-		Map<String, String[]> map = req.getParameterMap();
 		Object _csrf = req.getParameter("_csrf");
 		if(_csrf!=null){
 			Object csrf = req.getSession(true).getAttribute("_csrf");

@@ -51,10 +51,9 @@ public class RegisterDB implements ApplicationContextAware{
 				if(!applicationContext.containsBean(beanName)){
 					DefaultListableBeanFactory acf = (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
 			        
-			        JndiObjectFactoryBean jndiBean = new JndiObjectFactoryBean();
 			        //BeanDefinition beanDefinition = new ChildBeanDefinition("dataSource");
 			        
-			        BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(jndiBean.getClass());
+			        BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(JndiObjectFactoryBean.class);
 		            beanDefinitionBuilder.addPropertyValue("jndiName", dbs[i].trim());
 			        
 		        	acf.registerBeanDefinition(beanName, beanDefinitionBuilder.getRawBeanDefinition());

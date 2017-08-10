@@ -36,12 +36,13 @@ import com.ssm.account.exception.RoleException;
 import com.ssm.account.exception.UserException;
 import com.ssm.account.service.IRoleService;
 import com.ssm.account.service.IUserService;
+import com.ssm.account.service.impl.AccountConfig;
 import com.ssm.adaptor.ILoginAdaptor;
 import com.ssm.adaptor.ISaveIpAddressListener;
 import com.ssm.adaptor.UrlConfig;
 import com.ssm.adaptor.dto.CSRF;
-import com.ssm.captcha.service.CaptchaConfig;
 import com.ssm.captcha.service.ICaptchaManager;
+import com.ssm.captcha.service.impl.CaptchaConfig;
 import com.ssm.core.BaseConstants;
 import com.ssm.core.ILanguageProvider;
 import com.ssm.core.request.IRequest;
@@ -80,6 +81,9 @@ public class DefaultLoginAdaptor implements ILoginAdaptor{
 
     @Autowired
     private IUserService userService;
+    
+    @Autowired
+    private CaptchaConfig captchaConfig;
 
     public ModelAndView doLogin(User user, HttpServletRequest request, HttpServletResponse response) {
         ModelAndView view = new ModelAndView();
@@ -158,7 +162,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor{
      */
     private void checkCaptcha(HttpServletRequest request, HttpServletResponse response)
             throws UserException {
-        if (CaptchaConfig.VALIDATE_CAPTCHA) {
+        if (captchaConfig.isEnableCaptcha(WebUtils.getCookie(request, CaptchaConfig.LOGIN_KEY))) {
             Cookie cookie = WebUtils.getCookie(request, captchaManager.getCaptchaKeyName());
             String captchaCode = request.getParameter(UrlConfig.KEY_VERIFICODE);
             if (cookie == null || StringUtils.isEmpty(captchaCode) || !captchaManager.checkCaptcha(cookie.getValue(), captchaCode)) {
@@ -183,7 +187,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor{
      */
     protected void afterLogin(ModelAndView view, User user, HttpServletRequest request, HttpServletResponse response)
             throws UserException {
-        view.setViewName(UrlConfig.REDIRECT + UrlConfig.VIEW_ROLE_SELECT);
+        view.setViewName(UrlConfig.REDIRECT + UrlConfig.VIEW_ROLE_SELECT_REDIRECT);
         Cookie cookie = new Cookie(User.FIELD_USER_NAME, user.getUserName());
         cookie.setPath(StringUtils.defaultIfEmpty(request.getContextPath(), "/"));
         cookie.setMaxAge(-1);
@@ -204,10 +208,10 @@ public class DefaultLoginAdaptor implements ILoginAdaptor{
         		Role role =  roleService.checkUserRoleExists(request.getLocale().toString(),userId, roleId);
                 session.setAttribute(Role.FIELD_ROLE_ID, role.getRoleId());
                 session.setAttribute(Role.FIELD_ROLE_NAME, role.getRoleName());
-                result.setViewName(UrlConfig.REDIRECT + UrlConfig.VIEW_WELCOME);
+                result.setViewName(UrlConfig.REDIRECT + UrlConfig.VIEW_WELCOME_REDIRECT);
         	}
         } else {
-            result.setViewName(UrlConfig.REDIRECT + UrlConfig.VIEW_LOGIN);
+            result.setViewName(UrlConfig.REDIRECT + UrlConfig.VIEW_LOGIN_REDIRECT);
         }
         return result;
     }
@@ -242,19 +246,21 @@ public class DefaultLoginAdaptor implements ILoginAdaptor{
         if (session != null) {
         	Long sessionUserId = (Long) session.getAttribute(User.FIELD_USER_ID);
         	if (sessionUserId == null) {
-                return new ModelAndView(UrlConfig.REDIRECT + UrlConfig.VIEW_LOGIN);
+                return new ModelAndView(UrlConfig.REDIRECT + UrlConfig.VIEW_LOGIN_REDIRECT);
             }
             Long sessionRoleId = (Long) session.getAttribute(Role.FIELD_ROLE_ID);
             if (sessionRoleId == null) {
-                return new ModelAndView(UrlConfig.REDIRECT + UrlConfig.VIEW_ROLE_SELECT);
+                return new ModelAndView(UrlConfig.REDIRECT + UrlConfig.VIEW_ROLE_SELECT_REDIRECT);
             }
+            ModelAndView view = new ModelAndView(UrlConfig.VIEW_WELCOME);
             // 返回支持的语言
             List<Language> list = languageProvider.getSupportedLanguages();
-            ModelAndView view = new ModelAndView(UrlConfig.VIEW_WELCOME);
             view.addObject("languages",list);
+            //网站标题
+            view.addObject("SYS_TITLE", AccountConfig.SYS_TITLE);
             return view;
         }
-        return new ModelAndView(UrlConfig.REDIRECT + UrlConfig.VIEW_LOGIN);
+        return new ModelAndView(UrlConfig.REDIRECT + UrlConfig.VIEW_LOGIN_REDIRECT);
     }
     
     private String UUID_CSRF(){
@@ -273,6 +279,11 @@ public class DefaultLoginAdaptor implements ILoginAdaptor{
         ModelAndView view = new ModelAndView(UrlConfig.VIEW_LOGIN);
         User sessionUser = (User)session.getAttribute(User.FIELD_SESSION_USER);
         if(sessionUser ==null || sessionUser.getUserId()==null){
+        	// 配置3次以后开启验证码
+            Cookie cookie = WebUtils.getCookie(request, CaptchaConfig.LOGIN_KEY);
+            // 向前端传递是否开启验证码
+            view.addObject("ENABLE_CAPTCHA", captchaConfig.isEnableCaptcha(cookie));
+            
         	// 返回支持的语言
             List<Language> list = languageProvider.getSupportedLanguages();
             view.addObject("languages",list);
@@ -284,10 +295,22 @@ public class DefaultLoginAdaptor implements ILoginAdaptor{
         		user = userService.login(user);
 			} catch (UserException e) {
 	            view.addObject("msg", messageSource.getMessage(e.getCode(), null, locale));
+	            
+	            if (captchaConfig.getWrongTimes() > 0) {
+	                if (cookie == null) {
+	                    String uuid = UUID.randomUUID().toString();
+	                    cookie = new Cookie(CaptchaConfig.LOGIN_KEY, uuid);
+	                    cookie.setPath(StringUtils.defaultIfEmpty(request.getContextPath(), "/"));
+	                    cookie.setMaxAge(captchaConfig.getExpire());
+	                    response.addCookie(cookie);
+	                }
+	                captchaConfig.updateLoginFailureInfo(cookie);
+	            }
 	            return view;
 			}
         }
-    	if(StringUtil.isNotNull(user.getUserName()) && StringUtil.isNotNull(user.getPassword())){
+        captchaConfig.resetLoginFailureInfo(request,response);
+    	if(StringUtil.isNotNull(user.getUserName()) && user.getUserId()!=null){
     		user.setPassword(null);
     		session.setAttribute(User.FIELD_SESSION_USER, user);
         	session.setAttribute(User.FIELD_USER_ID, user.getUserId());
@@ -306,7 +329,8 @@ public class DefaultLoginAdaptor implements ILoginAdaptor{
     	redisTemplate.expire("sso:session:tokenKey:"+token, 30*60, TimeUnit.SECONDS);
     	//放置token到浏览器cookie
     	CookieUtils.setCookie(request, response, "LOGIN_TOKEN", token);
-    	return new ModelAndView(UrlConfig.REDIRECT +UrlConfig.VIEW_ROLE_SELECT);
+    	
+    	return new ModelAndView(UrlConfig.REDIRECT +UrlConfig.VIEW_ROLE_SELECT_REDIRECT);
     }
 
     @Override
@@ -331,7 +355,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor{
                 }
                 if(roles.size()==1){
                 	session.setAttribute(Role.FIELD_ROLE_ID, roles.get(0).getRoleId());
-                	mv.setViewName(UrlConfig.REDIRECT +UrlConfig.ROLE_SELECT_ED);
+                	mv.setViewName(UrlConfig.REDIRECT +UrlConfig.ROLE_SELECT_ED_REDIRECT);
                 	return mv;
                 }
                 mv.addObject("roles", roles);
@@ -375,7 +399,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor{
     @Override
     public ModelAndView logout(HttpServletRequest request, HttpServletResponse response){
     	cleanSession(request,response);
-		ModelAndView view = new ModelAndView(UrlConfig.REDIRECT + UrlConfig.VIEW_LOGIN);
+    	ModelAndView view = new ModelAndView(UrlConfig.REDIRECT + UrlConfig.VIEW_LOGIN_REDIRECT);
 		return view;
     }
     

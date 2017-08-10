@@ -21,7 +21,7 @@
 	<context:component-scan base-package="**.controller" />
     <context:component-scan base-package="**.adaptor" />
     <context:component-scan base-package="**.webservice" />
-	<!-- <mvc:default-servlet-handler/>  -->
+	<!-- <mvc:default-servlet-handler/>  --> 
     
     <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
 	   <!-- 格式化时间,解决controller 时间绑定不了,返回400的问题   -> http://www.dewafer.com/2015/12/28/spring-datetime-format -->
@@ -92,16 +92,14 @@
 
 	<mvc:view-controller path="/" view-name="redirect:/login.html" />
 	<!-- <mvc:view-controller path="/home.html" view-name="/home" /> -->
-	
-  	<!-- <mvc:view-controller path="/" view-name="redirect:/login" /> -->
-  	<!-- <mvc:view-controller path="/index" view-name="redirect:/" /> -->
+
 
     <!-- 配置渲染器  视图解析器-->
  	<!-- <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">  
 	   <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>  
-	   <property name="contentType" value="text/html"/>  
-	   <property name="prefix" value="/WEB-INF/view"/>  
-	   <property name="suffix" value=".html"/>  
+	   <property name="contentType" value="text/html;charset=UTF-8"/>  
+	   <property name="prefix" value="/WEB-INF/jsp"/>  
+	   <property name="suffix" value=".jsp"/>  
 	</bean> -->
 
   	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
@@ -133,15 +131,28 @@
         <!-- <property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView" /> -->
         <property name="viewClass" value="com.ssm.core.web.DefaultFreeMarkerView" />
         <property name="cache" value="false" />
-        <!-- <property name="suffix" value=".html" /> -->
-        <property name="suffix" value="" />
+        <property name="suffix" value=".html" />
+        <property name="contentType" value="text/html;charset=UTF-8" />
+        <property name="requestContextAttribute" value="base"/>
+        <property name="exposeRequestAttributes" value="true" />     <!-- 默认false -->
+        <property name="exposeSessionAttributes" value="true" />     <!-- 默认false -->
+        <property name="exposeSpringMacroHelpers" value="true" />    <!-- 默认true -->
+        <property name="allowSessionOverride" value="true"/>         <!-- 默认false -->
+        <property name="allowRequestOverride" value="true"/>         <!-- 默认false -->
+        <property name="order" value="0"></property>
+    </bean> 
+    
+<!--     <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView" />
+        <property name="cache" value="false"/> 
+        <property name="suffix" value=".view"/>
         <property name="contentType" value="text/html;charset=UTF-8" />
         <property name="requestContextAttribute" value="base"/>
         <property name="exposeRequestAttributes" value="true" />
         <property name="exposeSessionAttributes" value="true" />
         <property name="exposeSpringMacroHelpers" value="true" />
-        <property name="allowSessionOverride" value="true"/>
-    </bean> 
+        <property name="order" value="1"></property>
+    </bean> -->
 	
 	<bean id="messageSource" class="com.ssm.core.i18n.CacheMessageSource"/>
 	
@@ -167,6 +178,9 @@
 				<list>
 					<value>/home.html</value>
 					<value>/login.html</value>
+					<value>/400.html</value>
+					<value>/404.html</value>
+					<value>/500.html</value>
 					<value>/verifiCode</value>
 				</list>
 			</property>

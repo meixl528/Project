@@ -23,6 +23,13 @@ import com.ssm.sys.service.IProfileService;
 import com.ssm.sys.service.ISysConfigService;
 import com.ssm.util.StringUtil;
 
+/**
+ * @name        GlobalProfileSubscriber
+ * @description 全局系统配置,系统文件配置
+ * @author      meixl
+ * @date        2017年8月9日下午1:57:07
+ * @version
+ */
 @Component
 @Topic(channel = { "profile", "config" })
 public class GlobalProfileSubscriber implements ITopicListener<GlobalProfile>, ListenerInitHandler, ApplicationListener<ContextRefreshedEvent> {

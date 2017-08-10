@@ -15,6 +15,7 @@ import com.ssm.sys.mapper.PromptMapper;
 
 /**
  * @author meixl
+ * 描述维护监听
  */
 @Component
 @Topic(channel = "cache.prompt")

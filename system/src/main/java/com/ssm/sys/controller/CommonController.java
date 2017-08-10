@@ -31,7 +31,6 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssm.adaptor.UrlConfig;
 import com.ssm.cache.Cache;
 import com.ssm.cache.CacheManager;
 import com.ssm.cache.impl.SysCodeCache;
@@ -229,14 +228,14 @@ public class CommonController extends BaseController{
 
     @RequestMapping(value = "/{folder1}/{name}.html")
     public ModelAndView renderFolder1View(@PathVariable String folder1, @PathVariable String name, Model model) {
-        return new ModelAndView(new StringBuilder("/").append(folder1).append("/").append(name).append(UrlConfig.URL_SUFFIX).toString());
+        return new ModelAndView(new StringBuilder("/").append(folder1).append("/").append(name).toString());
     }
 
     @RequestMapping(value = "/{folder1}/{folder2}/{name}.html")
     public ModelAndView renderFolder2View(@PathVariable String folder1, @PathVariable String folder2,
             @PathVariable String name, Model model) {
         return new ModelAndView(new StringBuilder("/").append(folder1).append("/")
-        		.append(folder2).append("/").append(name).append(UrlConfig.URL_SUFFIX).toString());
+        		.append(folder2).append("/").append(name).toString());
     }
 
     @RequestMapping(value = "/{folder1}/{folder2}/{folder3}/{name}.html")
@@ -244,7 +243,7 @@ public class CommonController extends BaseController{
             @PathVariable String folder3, @PathVariable String name, Model model) {
         return new ModelAndView(new StringBuilder("/").append(folder1).append("/")
         		.append(folder2).append("/").append(folder3).append("/")
-        		.append(name).append(UrlConfig.URL_SUFFIX).toString());
+        		.append(name).toString());
     }
 
     @RequestMapping(value = "/{folder1}/{folder2}/{folder3}/{folder4}/{name}.html")
@@ -255,7 +254,7 @@ public class CommonController extends BaseController{
 
     @RequestMapping(value = "/{name}.html")
     public ModelAndView renderView(@PathVariable String name, Model model) {
-        return new ModelAndView(name + UrlConfig.URL_SUFFIX);
+        return new ModelAndView(name);
     }
 
     protected void toJson(StringBuilder sb, String var, Object data) throws JsonProcessingException {

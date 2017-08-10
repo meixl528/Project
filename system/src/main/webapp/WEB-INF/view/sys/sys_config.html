@@ -245,7 +245,7 @@ function passwordlength(){
                 <div class="form-group">
                     <label class="col-xs-2 control-label"><@spring.message "sys.config.password_min_length"/></label>
                     <div class="col-xs-5">
-                        <input  type="number"  onkeyup='this.value=this.value.replace(/\D/gi,"")'  value="8" max="16" min="6"  id="password_min_length"  data-bind = "value:model.password_min_length" style="width: 100%;text-align:right" onchange="passwordlength();"/>
+                        <input  type="number"  onkeyup='this.value=this.value.replace(/\D/gi,"")'  value="8" max="16" min="6"  id="password_min_length"  data-bind = "value:model.password_min_length" style="width: 100%;text-align:right" onchange="passwordlength()"/>
                         <script>
                         $("#password_min_length").kendoNumericTextBox({format:'0'});
                         kendo.bind($('#password_min_length'), viewModel);</script>

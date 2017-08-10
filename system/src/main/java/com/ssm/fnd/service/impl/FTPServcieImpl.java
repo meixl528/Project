@@ -3,7 +3,6 @@ package com.ssm.fnd.service.impl;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -32,42 +31,21 @@ import com.ssm.fnd.service.ISequenceService;
  * @version
  */
 @Service
-public class FTPServcieImpl implements IFTPService {
-	//@Value("${FTP_IP}")
+public class FTPServcieImpl extends FTPConfig implements IFTPService {
+	/*@Value("${FTP_IP}")
 	private String ftp_ip;
-	//@Value("${FTP_PORT}")
+	@Value("${FTP_PORT}")
 	private int ftp_port;
-	//@Value("${FTP_NAME}")
+	@Value("${FTP_NAME}")
 	private String ftp_name;
-	//@Value("${FTP_PASS}")
+	@Value("${FTP_PASS}")
 	private String ftp_pass;
-	//@Value("${FTP_BASEPATH}")
+	@Value("${FTP_BASEPATH}")
 	private String ftp_basepath;
-	//@Value("${FTP_DATEPATH}")
+	@Value("${FTP_DATEPATH}")
 	private boolean ftp_datepath;
-	//@Value("${FTP_NUMFOLDER}")
-	private boolean ftp_numforder;
-	
-	
-	@Override
-	public List<String> getAcceptedProfiles() {
-		// FTP服务器配置(FTP_IP,FTP_PORT,FTP_NAME,FTP_PASS,FTP_BASEPATH,FTP_DATEPATH日期格式文件夹,FTP_NUMFOLDER显示数字格式文件夹)
-		return Arrays.asList("FTP_SERVER_PROFILE"); 
-	}
-
-	@Override
-	public void updateProfile(String profileName, String profileValue) {
-		String[] config = profileValue.split(",");
-		if (config.length >= 7) {
-			this.ftp_ip = config[0];                              // ip 地址
-			this.ftp_port = Integer.valueOf(config[1]);           // port 端口
-			this.ftp_name = config[2];                            // ftp_name 用户名
-			this.ftp_pass = config[3];                            // ftp_pass 用户密码
-			this.ftp_basepath = config[4];                        // ftp 服务器根目录
-			this.ftp_datepath = Boolean.getBoolean(config[5]);    // 使用日期格式目录  /2017/08/08
-			this.ftp_numforder = Boolean.valueOf(config[6]);      // 显示数字/日期格式目录
-		}
-	}
+	@Value("${FTP_NUMFOLDER}")
+	private boolean ftp_numforder;*/
 	
 	@Autowired
 	private ISequenceService iSequenceService;
@@ -118,15 +96,17 @@ public class FTPServcieImpl implements IFTPService {
 		}
 		// 修改上传文件格式 (二进制格式)
 		ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-
-		String UUIDName = new String(uuidName(file.getSize(),file.getOriginalFilename()).getBytes(), "iso-8859-1");
+		//本地 gbk编码
+		String UUIDName = uuidName(file.getSize(),file.getOriginalFilename());
+		// 服务器编码iso-8859-1 , 需要转码
+		String serverUUIDName = new String(UUIDName.getBytes(), "iso-8859-1");
 		// 参数1:服务器端文档名 , 参数2:上传文件的inputStream
-		boolean bool = ftpClient.storeFile( UUIDName, fileInputStream);
+		boolean bool = ftpClient.storeFile( serverUUIDName, fileInputStream);
 		// 关闭连接
 		fileInputStream.close();
 		ftpClient.logout();
 		if(!bool){ 
-			delete(folder,UUIDName);
+			delete(folder,serverUUIDName);
 			throw new Exception("ftp上传失败!");
 		}
 		SysFile sysFile = new SysFile();
@@ -168,8 +148,9 @@ public class FTPServcieImpl implements IFTPService {
 			}
 			if(is==null)throw new Exception("下载文件失败!");
 			String end = fileName.substring(fileName.lastIndexOf("."));
+			String name = StringUtils.isBlank(newName)?fileName:(newName+end);
 			response.setContentType("application/vnd.ms-excel");
-			response.setHeader("Content-Disposition","attachment;filename=" + new String((newName+end).getBytes("gbk"), "iso-8859-1"));
+			response.setHeader("Content-Disposition","attachment;filename=" + new String(name.getBytes("gbk"), "iso-8859-1"));
 			response.setHeader("Pragma", "public");
 			response.setHeader("Cache-Control", "max-age=0");
 			
@@ -205,7 +186,7 @@ public class FTPServcieImpl implements IFTPService {
 		boolean bool = false;
 		if (ftpClient != null) {
 			ftpClient.changeWorkingDirectory(ftp_basepath + "/" + folder);
-			bool = ftpClient.deleteFile(fileName);
+			bool = ftpClient.deleteFile(new String(fileName.getBytes(), "iso-8859-1"));
 			ftpClient.logout();
 		}
 		return bool;

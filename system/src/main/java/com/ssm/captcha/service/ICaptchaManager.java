@@ -14,7 +14,7 @@ import com.ssm.message.profile.SystemConfigListener;
  * 生成验证码图片以及captchaKey等.
  * @author meixl
  */
-public interface ICaptchaManager extends SystemConfigListener{
+public interface ICaptchaManager{
 
     /**
      * 获取CaptchaKeyName.
