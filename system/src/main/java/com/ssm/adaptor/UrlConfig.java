@@ -18,11 +18,10 @@ public interface UrlConfig{
 
     // 默认角色选择路径
     public static final String VIEW_ROLE_SELECT = "/role";
-    public static final String VIEW_ROLE_SELECT_REDIRECT = "/role";
+    public static final String VIEW_ROLE_SELECT_REDIRECT = "/role.html";
     
     // 选择角色
     public static final String ROLE_SELECT_ED = "/selectedRole";
-    public static final String ROLE_SELECT_ED_REDIRECT = "/selectedRole";
     
     //后缀
     public static final String SUFFIX = ".html";

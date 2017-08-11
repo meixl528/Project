@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.ssm.core.annotation.Children;
 import com.ssm.core.annotation.MultiLanguage;
 import com.ssm.core.annotation.MultiLanguageField;
 import com.ssm.mybatis.annotation.Condition;
@@ -90,7 +91,7 @@ public class Function extends BaseDTO {
     @Column
     private Long resourceId;
 
-//    @Children
+    @Children
     @Transient
     private List<Resource> resources;
 
@@ -112,9 +113,6 @@ public class Function extends BaseDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Transient
     private String description;
-    
-    
-    
     
     
     public Long getFuncSrcId() {
@@ -245,4 +243,5 @@ public class Function extends BaseDTO {
         this.functionSequence = functionSequence;
     }
 
+    
 }

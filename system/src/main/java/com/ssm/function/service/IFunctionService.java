@@ -29,4 +29,8 @@ public interface IFunctionService extends IBaseService<Function>, ProxySelf<IFun
 	 */
 	List<MenuItem> selectAllMenus(IRequest requestContext);
 
+	List<Resource> selectNotExitResourcesByFunction(IRequest request, Function function, Resource resource, int page,int pageSize);
+
+	Function updateFunctionResources(IRequest requestContext, Function function, List<Resource> resources);
+
 }

@@ -7,9 +7,6 @@
 <script type="text/javascript">
     var viewModel = kendo.observable({
         model        : {},
-        createFunction: function(){
-            $("#grid").data('kendoGrid').addRow();
-        },
         saveFunction: function(){
             $('#grid').data('kendoGrid').saveChanges();
         },
@@ -27,7 +24,7 @@
        <div id="content-container">
           <div id="page-content">
 	          <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
-		          <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
+		          <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;"><@spring.message "hap.new"/></span>
 		          <span class="btn btn-success k-grid-save-changes"  style="float:left;margin-right:5px;" data-bind="click:saveFunction"><@spring.message "hap.save"/></span>
 		         <span  onclick="deleteData()" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>
 	      	  </div>
@@ -80,24 +77,34 @@
              dataSource = new kendo.data.DataSource({
                  transport: {
                 	 read        : {
-                         url     : '${base.contextPath}/sys/function/fetchResource',
+                         url     : '${base.contextPath}/sys/function/fetchResource?pagesize=9999&functionId=' + ${RequestParameters.functionId},
                          type    : "POST",
                          dataType: "json"
                      },
                      create      : {
-                         url        : '${base.contextPath}/sys/function/submit',
+                         url        : '${base.contextPath}/sys/function/updateFunctionResource',
                          contentType: "application/json",
                          type       : "POST"
                      },
                      parameterMap: function(options, type) {   
-                    	 var requestData ={"_csrf":"${_csrf}"};
+                    	 // var requestData ={"_csrf":"${_csrf}"};
+                    	 var requestData ={functionId:${RequestParameters.functionId}};
                     	 if (type !== "read" && options.models) {
-                             var datas = Hap.prepareSubmitParameter(options, type);
-                             return kendo.stringify(datas);
-                         } else if (type === "read") {
-                        	 viewModel.model.functionId = '${RequestParameters.functionId!}';
-                             return Hap.prepareQueryParameter(viewModel.model.toJSON(), options);
-                         } 
+                             var datas = options.models;
+                             if (type == 'create') {
+                                requestData.resources = [];
+                                $.each(datas,function(i,v){
+                             	    requestData.resources.push({
+                             		    __status    : "add",
+                             		    url         : v.url,
+                             		    resourceId  : v.resourceId,
+                             		    name        : v.name,
+                             		    description : v.description
+                             	    })       	
+                                })
+                             }
+                         }  
+                    	return kendo.stringify(requestData);
                      }
                 },
                 batch: true,
@@ -154,7 +161,33 @@
                     }
                 ]
             }).data("kendoGrid");   
-          
+            
+            $(".k-grid-add").click(function(){
+        	    var selectFunction =  window.parent.$("#selectFunction").kendoWindow({
+	                actions: ["Close"],
+	                animation: {
+				    	close: {
+						    effects: "fadeOut zoom:out",
+						    duration: 300
+						},
+					    open: {
+					        effects: "fadeIn zoom:in",
+					        duration: 300
+					    }
+				    },
+	                width: 600,
+	                height: 400,
+	                title: '<@spring.message "function.resourcechoose"/>', 
+	                visible: false,
+	                iframe: true, 
+	                modal:true,
+	                content:'sys_function_addresource.html?functionId=' + ${RequestParameters.functionId},
+	                close:function(e){
+	                  window.parent.$("#dialog").data("kendoWindow").open();
+	                }
+        	    }).data("kendoWindow");
+        	    selectFunction.center().open(); 
+            });
             $("#grid thead>tr th").css("text-align","center");
             Hap.autoResizeGrid("#grid"); 
                  

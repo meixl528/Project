@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -63,6 +64,44 @@ public class FunctionController extends BaseController{
     }
     
     /**
+     * 获取未挂靠的功能资源.
+     *
+     * @param request
+     *            HttpServletRequest
+     * @param functionId
+     *            功能ID
+     * @param isExit
+     *            isExit
+     * @param resource
+     *            资源
+     * @param page
+     *            起始页
+     * @param pagesize
+     *            分页大小
+     * @return ResponseData
+     */
+    @RequestMapping(value = "sys/function/fetchNotResource")
+    @ResponseBody
+    public ResponseData fetch2(final HttpServletRequest request, final Long functionId, final Integer isExit,
+                               final Resource resource, @RequestParam(defaultValue = DEFAULT_PAGE) final int page,
+                               @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) final int pagesize) {
+        IRequest requestContext = createRequestContext(request);
+        Function function = new Function();
+        if (StringUtils.isEmpty(resource.getUrl())) {
+            resource.setUrl(null);
+        }
+        if (StringUtils.isEmpty(resource.getName())) {
+            resource.setName(null);
+        }
+        if (StringUtils.isEmpty(resource.getType())) {
+            resource.setType(null);
+        }
+        function.setFunctionId(functionId);
+        return new ResponseData(
+                functionService.selectNotExitResourcesByFunction(requestContext, function, resource, page, pagesize));
+    }
+    
+    /**
      * 查询功能
      */
     @RequestMapping(value = "/sys/function/query")
@@ -96,6 +135,23 @@ public class FunctionController extends BaseController{
             final HttpServletRequest request) {
         IRequest requestContext = createRequestContext(request);
         functionService.deleteFunction(requestContext, functions);
+        return new ResponseData();
+    }
+    
+    /**
+     * 更新功能资源.
+     *
+     * @param request
+     *            HttpServletRequest
+     * @param function
+     *            功能
+     * @return ResponseData ResponseData
+     */
+    @RequestMapping(value = "/sys/function/updateFunctionResource")
+    @ResponseBody
+    public ResponseData updateFunctionResource(final HttpServletRequest request, @RequestBody final Function function) {
+        IRequest requestContext = createRequestContext(request);
+        functionService.updateFunctionResources(requestContext, function, function.getResources());
         return new ResponseData();
     }
 }

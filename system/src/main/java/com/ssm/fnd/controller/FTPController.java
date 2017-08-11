@@ -42,6 +42,14 @@ public class FTPController extends BaseController{
 	@Autowired
     private ISysFileService sysFileService;
 	
+	/**
+	 * 查询文件记录
+	 * @param sysFile
+	 * @param page
+	 * @param pageSize
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/fnd/ftp/query")
 	public ResponseData query(SysFile sysFile, @RequestParam(defaultValue = DEFAULT_PAGE) int page,
 			@RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize, HttpServletRequest request){
@@ -49,6 +57,12 @@ public class FTPController extends BaseController{
 		return new ResponseData(sysFileService.selectFiles(requestContext, sysFile, page, pageSize));
 	}
 	
+	/**
+	 * 移除数据库文件记录 及 服务器文件
+	 * @param request
+	 * @param sysFiles
+	 * @return
+	 */
 	@RequestMapping(value = "/fnd/ftp/remove")
 	public ResponseData query(HttpServletRequest request,@RequestBody List<SysFile> sysFiles){
 		for (SysFile sysFile : sysFiles) {
@@ -62,7 +76,13 @@ public class FTPController extends BaseController{
 		return new ResponseData();
 	}
 	
-	
+	/**
+	 * 上传文件到服务器 并 存储记录到数据库
+	 * @param request
+	 * @param files
+	 * @param folder
+	 * @return
+	 */
 	@RequestMapping(value = "/fnd/ftp/upload")
 	@ResponseBody
 	public ResponseData upload(HttpServletRequest request,@RequestParam("file") CommonsMultipartFile[] files,@RequestParam("folder") String folder){
@@ -92,6 +112,14 @@ public class FTPController extends BaseController{
 		return response;
 	}
 	
+	/**
+	 * 下载文件
+	 * @param request
+	 * @param response
+	 * @param filePath
+	 * @param fileName
+	 * @param newName
+	 */
 	@RequestMapping(value = "/fnd/ftp/download")
 	public void download(HttpServletRequest request,HttpServletResponse response,String filePath,String fileName,String newName) {
 		try {
@@ -109,6 +137,12 @@ public class FTPController extends BaseController{
 		}
 	}
 	
+	/**
+	 * 删除服务器文件
+	 * @param folder
+	 * @param fileName
+	 * @return
+	 */
 	@RequestMapping(value = "/fnd/ftp/delete")
 	@ResponseBody
 	public ResponseData delete(String folder,String fileName){
@@ -122,6 +156,12 @@ public class FTPController extends BaseController{
 		return res;
 	}
 	
+	/**
+	 * 获取服务器文件目录结构
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value = "/fnd/ftp/getServerFolderMenu")
 	@ResponseBody
 	public ResponseData getServerFolderMenu(HttpServletRequest request,HttpServletResponse response){

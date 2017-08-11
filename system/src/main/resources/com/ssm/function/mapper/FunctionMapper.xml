@@ -6,7 +6,7 @@ PUBLIC "-//mybatis.org//DTDMapper 3.0//EN"
 <mapper namespace="com.ssm.function.mapper.FunctionMapper">
 	<!-- <cache type="com.ssm.util.LoggingRedisCache"></cache> -->
 	
-	<resultMap id="BaseResultMap" type="com.ssm.function.dto.Function">
+	<resultMap id="BaseResultMap" type="com.ssm.function.dto.Function" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
 	    <id column="FUNCTION_ID" property="functionId" jdbcType="DECIMAL" />
 	    <result column="MODULE_CODE" property="moduleCode" jdbcType="VARCHAR" />
 	    <result column="FUNCTION_ICON" property="functionIcon" jdbcType="VARCHAR" />
@@ -40,6 +40,15 @@ PUBLIC "-//mybatis.org//DTDMapper 3.0//EN"
       <result column="PARENT_FUNCTION_NAME" property="parentFunctionName" jdbcType="VARCHAR" />
       <result column="RESOURCE_NAME" property="resourceName" jdbcType="VARCHAR" />
     </resultMap>
+    
+    <resultMap id="ResourceResultMap" type="com.ssm.function.dto.Resource" extends="com.ssm.mapper.BaseMapper.BaseResultMap" >
+	    <id column="RESOURCE_ID" property="resourceId" jdbcType="DECIMAL" />
+	    <result column="URL" property="url" jdbcType="VARCHAR" />
+	    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+	    <result column="NAME" property="name" jdbcType="VARCHAR" />
+	    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+	    <result column="LOGIN_REQUIRE" property="loginRequire" jdbcType="VARCHAR" />
+	 </resultMap>
 	
 	<select id="selectForCache" resultMap="BaseResultMap">
         SELECT sfb.FUNCTION_ID,
@@ -60,27 +69,6 @@ PUBLIC "-//mybatis.org//DTDMapper 3.0//EN"
     </select>
 	
 	<select id="selectExistsResourcesByFunction" resultMap="FunctionResourceResultMap" parameterType="map">
-        <!-- select
-        sfr.FUNC_SRC_ID,
-        t.FUNCTION_NAME,
-        t.FUNCTION_CODE,
-        t.FUNCTION_ID,
-        b.RESOURCE_ID, 
-        b.URL,
-        b.TYPE, 
-        b.NAME,
-        b.DESCRIPTION
-        from tb_function_b t
-        LEFT JOIN tb_resource_b b 
-          on(b.resource_id = t.resource_id)
-        JOIN tb_FUNCTION_RESOURCE sfr 
-          on(b.RESOURCE_ID=sfr.RESOURCE_ID)
-        where b.type='HTML' and t.RESOURCE_ID is not null
-            <if test="resource.name != null">
-                AND b.name like concat('%',concat(#{resource.name,jdbcType=VARCHAR},'%'))
-            </if>
-      order by b.RESOURCE_ID -->
-      
       SELECT
         b.RESOURCE_ID, b.URL, b.TYPE, t.NAME, t.DESCRIPTION
         FROM tb_RESOURCE_B b
@@ -105,6 +93,28 @@ PUBLIC "-//mybatis.org//DTDMapper 3.0//EN"
             </if>
         </where>
       order by b.RESOURCE_ID
+  </select>
+  
+  <select id="selectNotExistsResourcesByFunction" resultMap="ResourceResultMap" parameterType="map">
+        select
+        b.RESOURCE_ID, b.URL, b.TYPE, t.NAME, t.DESCRIPTION, b.LOGIN_REQUIRE, b.OBJECT_VERSION_NUMBER,
+        b.REQUEST_ID, b.PROGRAM_ID, b.CREATION_DATE, b.CREATED_BY, b.LAST_UPDATED_BY, b.LAST_UPDATE_DATE,
+        b.LAST_UPDATE_LOGIN
+        from tb_RESOURCE_B b
+        LEFT OUTER JOIN tb_RESOURCE_TL t
+          on(b.resource_id = t.resource_id and t.lang = #{request.locale,jdbcType=VARCHAR})
+        <where>
+          b.RESOURCE_ID NOT IN (
+        SELECT sfr.RESOURCE_ID from tb_FUNCTION_RESOURCE sfr 
+        WHERE sfr.FUNCTION_ID = #{function.functionId,jdbcType=DECIMAL})
+            <if test="resource.url != null">
+                AND b.URL like concat('%',concat(#{resource.url,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="resource.name != null">
+                AND t.NAME like concat('%',concat(#{resource.name,jdbcType=VARCHAR},'%'))
+            </if>
+        </where>
+        order by b.RESOURCE_ID
   </select>
   
   <select id="selectFunctions" resultMap="FunctionDisplayMap" parameterType="com.ssm.function.dto.Function" >

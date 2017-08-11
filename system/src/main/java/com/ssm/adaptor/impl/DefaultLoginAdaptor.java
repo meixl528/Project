@@ -355,7 +355,7 @@ public class DefaultLoginAdaptor implements ILoginAdaptor{
                 }
                 if(roles.size()==1){
                 	session.setAttribute(Role.FIELD_ROLE_ID, roles.get(0).getRoleId());
-                	mv.setViewName(UrlConfig.REDIRECT +UrlConfig.ROLE_SELECT_ED_REDIRECT);
+                	mv.setViewName(UrlConfig.REDIRECT +UrlConfig.ROLE_SELECT_ED);
                 	return mv;
                 }
                 mv.addObject("roles", roles);

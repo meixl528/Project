@@ -2,6 +2,7 @@ package com.ssm.function.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,9 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.PageHelper;
 import com.ssm.cache.impl.HashStringRedisCacheGroup;
+import com.ssm.cache.impl.RoleResourceCache;
 import com.ssm.core.request.IRequest;
 import com.ssm.function.dto.Function;
 import com.ssm.function.dto.FunctionDisplay;
+import com.ssm.function.dto.FunctionResource;
 import com.ssm.function.dto.MenuItem;
 import com.ssm.function.dto.Resource;
 import com.ssm.function.mapper.FunctionMapper;
@@ -25,6 +28,7 @@ import com.ssm.function.mapper.FunctionResourceMapper;
 import com.ssm.function.service.IFunctionService;
 import com.ssm.function.service.IResourceService;
 import com.ssm.function.service.IRoleFunctionService;
+import com.ssm.sys.dto.DTOStatus;
 import com.ssm.sys.service.impl.BaseServiceImpl;
 
 @Service
@@ -33,6 +37,9 @@ public class FunctionServiceImpl extends BaseServiceImpl<Function> implements IF
 	@Autowired
     @Qualifier("functionCache")
     private HashStringRedisCacheGroup<Function> functionCache;
+	
+	@Autowired
+    private RoleResourceCache roleResourceCache;
 	
 	@Autowired
     private IRoleFunctionService roleFunctionService;
@@ -310,5 +317,70 @@ public class FunctionServiceImpl extends BaseServiceImpl<Function> implements IF
                 tmpList.add(f0);
             }
         }
+    }
+    
+    /**
+     * 查询function没有挂靠的resource.
+     * 
+     * @param request
+     *            上下文请求
+     * @param function
+     *            功能
+     * @param resource
+     *            资源
+     * @param page
+     *            页码
+     * @param pageSize
+     *            页数
+     * @return 返回满足条件的资源
+     */
+    @Override
+    public List<Resource> selectNotExitResourcesByFunction(IRequest request, Function function, Resource resource,
+            int page, int pageSize) {
+        if (function == null || function.getFunctionId() == null) {
+            return null;
+        }
+        PageHelper.startPage(page, pageSize);
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("function", function);
+        params.put("resource", resource);
+        return functionMapper.selectNotExistsResourcesByFunction(params);
+    }
+
+    /**
+     * 修改功能挂靠的resource.
+     * 
+     * @param request
+     *            上下文请求
+     * @param function
+     *            功能
+     * @param resources
+     *            资源集合
+     * @return 修改后的功能信息
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Function updateFunctionResources(IRequest request, Function function, List<Resource> resources) {
+        if (function != null) {
+            if (resources != null && !resources.isEmpty()) {
+                for (Resource resource : resources) {
+                    if (DTOStatus.ADD.equals(resource.get__status())) {
+                        FunctionResource functionResource = new FunctionResource();
+                        functionResource.setResourceId(resource.getResourceId());
+                        functionResource.setFunctionId(function.getFunctionId());
+                        functionResource.setObjectVersionNumber(1L);
+                        functionResource.setCreatedBy(request.getUserId());
+                        functionResource.setCreationDate(new Date());
+                        functionResource.setLastUpdateDate(new Date());
+                        functionResource.setLastUpdatedBy(request.getUserId());
+                        functionResourceMapper.insertSelective(functionResource);
+                    } else if (DTOStatus.DELETE.equals(resource.get__status())) {
+                        functionResourceMapper.deleteFunctionResource(function.getFunctionId(),resource.getResourceId());
+                    }
+                }
+            }
+            roleResourceCache.reload();
+        }
+        return function;
     }
 }

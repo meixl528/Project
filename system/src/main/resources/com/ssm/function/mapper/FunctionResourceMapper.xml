@@ -26,4 +26,5 @@
         delete from tb_function_resource
         where function_id=#{functionId} and resource_id=#{resourceId}
     </delete>
+    
 </mapper>

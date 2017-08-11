@@ -17,4 +17,6 @@ public interface FunctionMapper extends Mapper<Function>{
 	
 	List<FunctionDisplay> selectFunctions(Function example);
 
+	List<Resource> selectNotExistsResourcesByFunction(Map<String, Object> params);
+
 }

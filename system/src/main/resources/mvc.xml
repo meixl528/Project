@@ -173,15 +173,19 @@
 			<property name="paramName" value="theme" />
 		</bean>
 	
-		<bean class="com.ssm.sys.interceptor.UserLoginInterceptor">
+		<bean class="com.ssm.sys.interceptor.AccessInterceptor">  <!-- 权限控制  -->
 			<property name="allowedUrl">
 				<list>
 					<value>/home.html</value>
 					<value>/login.html</value>
-					<value>/400.html</value>
+					<value>/login</value>
+					<value>/logout.html</value>
+					<value>/logout</value>
+					<value>/403.html</value>
 					<value>/404.html</value>
 					<value>/500.html</value>
-					<value>/verifiCode</value>
+					<!-- <value>/verifiCode</value> -->
+					<value>/common</value>
 				</list>
 			</property>
 		</bean> 
