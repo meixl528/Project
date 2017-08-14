@@ -35,8 +35,11 @@ import com.ssm.cache.impl.RoleResourceCache;
 import com.ssm.core.BaseConstants;
 import com.ssm.function.dto.Resource;
 /**
- * 拦截请求 ,
- * 检测session中是否有用户信息
+ * 拦截请求 ,检测请求url是否有权限
+ * <br>
+ *   <b>页面无权限: 返回403(禁止)/404(未找到资源)</b>
+ *   <b>请求无权限: 返回403(禁止)</b>
+ * </br>
  * @author meixl	2017年3月31日下午2:29:32
  */
 public class AccessInterceptor implements HandlerInterceptor {
@@ -74,14 +77,33 @@ public class AccessInterceptor implements HandlerInterceptor {
 	// 如果返回为true则执行下一个拦截器 , 否不执行
 	@Override
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse resp, Object obj) throws Exception {
-		String url = req.getRequestURI().toString();
-		String basePath = req.getContextPath();
-		if(url.equals(basePath+"/"))
+		String uri_ori = StringUtils.substringAfter(req.getRequestURI(), req.getContextPath());
+		String uri = uri_ori.startsWith("/")?uri_ori.substring(1):uri_ori;
+		if(uri.equals(""))
 			return true;
 		for(String u : allowedUrl){
-			if(url.substring(url.lastIndexOf("/")).startsWith(u))
+			if(uri_ori.equals(u) || uri_ori.startsWith(u))
 				return true;
 		}
+		
+		if(!uri_ori.endsWith(".html")){
+			Resource resource = getResourceOfUri(req,uri_ori,uri);
+			if(resource==null){
+				// url 未注册时, 请求被拒绝(暂时关闭)
+				
+				//resp.setStatus(403);
+				//resp.getWriter().write("["+uri+"] is not registered");
+				//return false;
+			}else{
+				if (!BaseConstants.YES.equalsIgnoreCase(resource.getLoginRequire())) {
+		            if (logger.isDebugEnabled()) {
+		                logger.debug("url :'{}' does not require login.", uri);
+		            }
+		            return true;
+		        }
+			}
+		}
+		
 		//先判断session中是否有
 		Object user = req.getSession().getAttribute(User.FIELD_SESSION_USER);
 		if (user!=null) {

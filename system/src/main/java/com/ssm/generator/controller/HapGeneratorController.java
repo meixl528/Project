@@ -12,18 +12,17 @@ import com.ssm.sys.controller.BaseController;
 import com.ssm.sys.responceFactory.ResponseData;
 
 @Controller
-@RequestMapping(value = "/generator")
 public class HapGeneratorController extends BaseController {
     @Autowired
     IHapGeneratorService service;
 
-    @RequestMapping(value = "/alltables", method = RequestMethod.GET)
+    @RequestMapping(value = "/generator/alltables", method = RequestMethod.GET)
     @ResponseBody
     public ResponseData showTables() {
         return new ResponseData(service.showTables());
     }
 
-    @RequestMapping(value = "/newtables")
+    @RequestMapping(value = "/generator/createFile")
     @ResponseBody
     public int generatorTables(GeneratorInfo generatorInfo) {
         int rs = service.generatorFile(generatorInfo);

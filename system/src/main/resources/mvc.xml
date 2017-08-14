@@ -186,6 +186,7 @@
 					<value>/500.html</value>
 					<!-- <value>/verifiCode</value> -->
 					<value>/common</value>
+					<value>/resources</value>
 				</list>
 			</property>
 		</bean> 

@@ -490,7 +490,29 @@
 		    <version>4.2.5.RELEASE</version>
 		</dependency> 
 		        
-        
+		        
+		<!--start  消息队列apache下 kafka -->
+		<!-- Kafka和spring集成的支持类库，spring和kafka通信监听 -->
+		<dependency>
+		<groupId>org.springframework.integration</groupId>
+		 	<artifactId>spring-integration-kafka</artifactId>
+		 	<version>2.1.1.RELEASE</version>
+		</dependency>
+		
+		<!-- kafka发送消息以及接受消息使用的类库 -->
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>0.11.0.0</version>
+		</dependency>
+		
+		<!-- kafka自带监听器，依赖于spring，所以需要和pring-integration-kafka结合使用 -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+			<version>1.2.2.RELEASE</version>
+		</dependency>
+        <!--end  消息队列apache下 kafka -->
 	</dependencies>
 
 	<!-- maven install,加上后maven编译1.8版本,不会出现报1.5的错误 -->

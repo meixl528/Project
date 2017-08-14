@@ -366,7 +366,7 @@
                 }
             }
 
-            $.post("${base.contextPath}/generator/newtables", viewModel.toJSON(), function (data, status) {
+            $.post("${base.contextPath}/generator/createFile", viewModel.toJSON(), function (data, status) {
                 if (status == "success") {
                     var mess;
                     if (data == 0) {

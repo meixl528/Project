@@ -1,0 +1,10 @@
+文档:http://www.cnblogs.com/liuyuhua/p/5329926.html
+
+
+下载所需文件
+
+Zookeeper: http://www.apache.org/dyn/closer.cgi/zookeeper/
+
+Kafka    : http://kafka.apache.org/downloads.html
+
+

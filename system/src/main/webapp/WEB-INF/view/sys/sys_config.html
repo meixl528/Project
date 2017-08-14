@@ -359,8 +359,12 @@ function passwordlength(){
 	           }
 	         }
 	    },
-	    error: function () {
-	        alert("error");
+	    error: function (e) {
+	    	if(e.status==403){
+	    		alert(e.responseText)
+	    	}else{
+		        alert("error");
+	    	}
 	    }
   });
  

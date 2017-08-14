@@ -188,6 +188,56 @@
         	    }).data("kendoWindow");
         	    selectFunction.center().open(); 
             });
+            
+            function deleteData(){
+           	 var requestData ={functionId:${RequestParameters.functionId}};
+        	     //拿到选中的项
+        	      var checked = grid.selectedDataItems();
+                if(!checked.length)
+                {
+                	return;
+                }
+                requestData.resources = [];
+                $.each(checked,function(i,v){
+            	    requestData.resources.push({
+            		    __status  :"delete",
+            		    resourceId:v.resourceId
+            	    })        	
+                })
+
+                $.ajax({
+                	url        : '${base.contextPath}/sys/function/updateFunctionResource',
+                	data       : kendo.stringify(requestData),
+                	type       : 'post',
+                	contentType: "application/json",
+                	cache      : false,
+                	dataType   : 'json',
+                	success    : function (data) {
+                		if (data.success) {   
+                   		kendo.ui.showInfoDialog({
+                               title:$l('hap.tip.info'),
+                               message:$l('hap.tip.success')
+                           }).done(function(e){
+                           	$("#grid").data('kendoGrid').dataSource.read(1);
+                           })
+                       } 
+                   	else{
+                   		kendo.ui.showInfoDialog({
+                               title:$l('hap.error'),
+                               message:data.message
+                           }).done(function(e){
+                           	$("#grid").data('kendoGrid').dataSource.read(1);
+                           })
+                   	}
+                    	
+                	},
+                	error      : function () {
+                   	alert("error");
+                	}
+            	  });
+                 
+           }
+            
             $("#grid thead>tr th").css("text-align","center");
             Hap.autoResizeGrid("#grid"); 
                  
