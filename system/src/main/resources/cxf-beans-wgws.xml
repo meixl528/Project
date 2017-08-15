@@ -8,10 +8,12 @@
        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
        http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd ">
        
-
+	<!-- Available SOAP services: -->
     <bean id="helloWordService" class="com.ssm.interfaces.webservice.impl.HelloWordServiceImpl"/>
     <jaxws:endpoint id="HelloWords" implementor="#helloWordService" address="/helloWord" />
     
+    
+    <!-- Available RESTful services: -->
     <bean id="helloWordService2" class="com.ssm.interfaces.webservice.impl.HelloWordServiceImpl2"/>
     <bean id="helloWordService3" class="com.ssm.interfaces.webservice.impl.HelloWordServiceImpl3"/>
 	<jaxrs:server id="HelloWords2" address="/helloWord2">  

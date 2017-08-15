@@ -2,6 +2,7 @@ package com.ssm.kafka.controller;
 
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,17 +20,16 @@ public class KafkaProducerController {
     public void test() throws JsonProcessingException {
         
         String topic = "orderTopic";
-        String value = "test";
-        String ifPartition = "0";
+        String value = "test "+new DateTime().toString("yyyy/MM/dd HH:mm:ss Sss");
+        String ifPartition = "1";
         Integer partitionNum = 2;
         String role = "test";//用来生成key
         Map<String,Object> res = kafkaProducer.sndMesForTemplate(topic, value, ifPartition, partitionNum, role);
         
         System.out.println("测试结果如下：===============");
-        String message = (String)res.get("message");
-        String code = (String)res.get("code");
+        System.out.println("code:"+(String)res.get("code"));
+        System.out.println("message:"+(String)res.get("message"));
         
-        System.out.println("code:"+code);
-        System.out.println("message:"+message);
+        Map<String,Object> res2 = kafkaProducer.sndMesForTemplate("orderTopic2", "test2 "+new DateTime().toString("yyyy/MM/dd HH:mm:ss Sss"), ifPartition, partitionNum, "test2");
     }
 }

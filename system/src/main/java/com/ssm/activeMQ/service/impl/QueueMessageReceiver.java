@@ -1,5 +1,6 @@
 package com.ssm.activeMQ.service.impl;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,19 @@ public class QueueMessageReceiver implements InitializingBean {
 			}
 		});
 		if(listeners!=null && listeners.size() >0){
+			//校验,同样的Queue消息不能被两个bean接收
+			for (int i = 0; i < listeners.size(); i++) {
+				Map<IQueueListener,String> mapI = listeners.get(i);
+				for (int j = i+1; j < listeners.size(); j++) {
+					Map<IQueueListener,String> mapJ = listeners.get(j);
+					Collection<String> values = mapJ.values();
+					String[] queues = values.toArray(new String[values.size()]);
+					if(mapI.containsValue(queues[0])){
+						throw new Exception("Queue "+ queues[0] +" repeat in ("+ mapI.keySet().iterator().next()+","+ mapJ.keySet().iterator().next() +")");
+					}
+				}
+			}
+			
 			/**
 			 * 使用spring的线程池  org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor 出现问题, 不执行多个task
 			 */

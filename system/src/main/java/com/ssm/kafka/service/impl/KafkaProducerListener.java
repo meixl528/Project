@@ -19,11 +19,11 @@ public class KafkaProducerListener implements ProducerListener{
     public void onSuccess(String topic, Integer partition, Object key,
             Object value, RecordMetadata recordMetadata) {
         logger.info("==========kafka发送数据成功（日志开始）==========");
-        logger.info("----------topic:"+topic);
-        logger.info("----------partition:"+partition);
-        logger.info("----------key:"+key);
-        logger.info("----------value:"+value);
-        logger.info("----------RecordMetadata:"+recordMetadata);
+        logger.info("----发送------topic:"+topic);
+        logger.info("----发送------partition:"+partition);
+        logger.info("----发送------key:"+key);
+        logger.info("----发送------value:"+value);
+        logger.info("----发送------RecordMetadata:"+recordMetadata);
         logger.info("~~~~~~~~~~kafka发送数据成功（日志结束）~~~~~~~~~~");
     }
 
@@ -34,11 +34,11 @@ public class KafkaProducerListener implements ProducerListener{
     public void onError(String topic, Integer partition, Object key,
             Object value, Exception exception) {
         logger.info("==========kafka发送数据错误（日志开始）==========");
-        logger.info("----------topic:"+topic);
-        logger.info("----------partition:"+partition);
-        logger.info("----------key:"+key);
-        logger.info("----------value:"+value);
-        logger.info("----------Exception:"+exception);
+        logger.info("----发送------topic:"+topic);
+        logger.info("----发送------partition:"+partition);
+        logger.info("----发送------key:"+key);
+        logger.info("----发送------value:"+value);
+        logger.info("----发送------Exception:"+exception);
         logger.info("~~~~~~~~~~kafka发送数据错误（日志结束）~~~~~~~~~~");
         exception.printStackTrace();
     }

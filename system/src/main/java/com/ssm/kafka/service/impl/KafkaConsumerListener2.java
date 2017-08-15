@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
  * 自动监听是否有消息需要消费
  */
 @Service
-public class KafkaConsumerListener implements MessageListener<String, String>, InitializingBean {
-    protected final Logger logger = LoggerFactory.getLogger(KafkaConsumerListener.class);
+public class KafkaConsumerListener2 implements MessageListener<String, String>, InitializingBean {
+    protected final Logger logger = LoggerFactory.getLogger(KafkaConsumerListener2.class);
     
     @Autowired
     private DefaultKafkaConsumerFactory<?, ?> consumerFactory;
@@ -37,25 +37,22 @@ public class KafkaConsumerListener implements MessageListener<String, String>, I
         String value = record.value();
         long offset = record.offset();
         int partition = record.partition();
-        logger.info("------消费-------topic:"+topic);
-        logger.info("------消费-------value:"+value);
-        logger.info("------消费-------key:"+key);
-        logger.info("------消费-------offset:"+offset);
-        logger.info("------消费-------partition:"+partition);
+        logger.info("------消费2-------topic:"+topic);
+        logger.info("------消费2-------value:"+value);
+        logger.info("------消费2-------key:"+key);
+        logger.info("------消费2-------offset:"+offset);
+        logger.info("------消费2-------partition:"+partition);
         logger.info("~~~~~~~~~~~~~kafkaConsumer消费结束~~~~~~~~~~~~~");
     }
     
-    private String[] topic = {"orderTopic"};
+    private String[] topic = {"orderTopic2"};
     
-    /**
-     * 监听
-     */
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		ContainerProperties containerProperties = new ContainerProperties(topic);
 		containerProperties.setMessageListener(this);
 		
-		new KafkaMessageListenerContainer<>(consumerFactory, containerProperties).start();;
+		new KafkaMessageListenerContainer<>(consumerFactory, containerProperties).start();
 	}
 
 }
