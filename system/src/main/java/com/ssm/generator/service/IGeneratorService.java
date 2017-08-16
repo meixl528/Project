@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  */
-public interface IHapGeneratorService {
+public interface IGeneratorService {
     public List<String> showTables();
 
     public int generatorFile(GeneratorInfo info);

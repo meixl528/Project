@@ -2,6 +2,6 @@ package com.ssm.generator.mapper;
 
 /**
  */
-public interface HapGeneratorMapper {
+public interface GeneratorMapper {
 
 }

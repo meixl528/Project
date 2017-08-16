@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ssm.generator.dto.GeneratorInfo;
-import com.ssm.generator.service.IHapGeneratorService;
+import com.ssm.generator.service.IGeneratorService;
 import com.ssm.sys.controller.BaseController;
 import com.ssm.sys.responceFactory.ResponseData;
 
 @Controller
-public class HapGeneratorController extends BaseController {
+public class GeneratorController extends BaseController {
     @Autowired
-    IHapGeneratorService service;
+    IGeneratorService service;
 
     @RequestMapping(value = "/generator/alltables", method = RequestMethod.GET)
     @ResponseBody

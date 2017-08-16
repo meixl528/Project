@@ -40,5 +40,5 @@
         <property name="producerListener" ref="producerListener"/>
     </bean>
     
-    <bean id="producerListener" class="com.ssm.kafka.service.impl.KafkaProducerListener" /> 
+    <bean id="producerListener" class="com.ssm.kafka.service.impl.KafkaProducer" /> 
 </beans>

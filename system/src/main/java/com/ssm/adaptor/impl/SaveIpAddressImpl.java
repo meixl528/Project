@@ -35,12 +35,13 @@ public class SaveIpAddressImpl implements ISaveIpAddressListener {
 	
 	@Override
 	public void onSaveIpAdress(HttpServletRequest request, HttpServletResponse response) {
+		HttpSession session = request.getSession(false);
+		UserLoginDetail userLogin = new UserLoginDetail();
+		
 		String ipAddress = getIpAddress(request);
-
-        UserLoginDetail userLogin = new UserLoginDetail();
         
-        Long userId = (Long) request.getSession(false).getAttribute(User.FIELD_USER_ID);
-        userId = userId==null?((User)request.getSession(false).getAttribute(User.FIELD_SESSION_USER)).getUserId():userId;
+        Long userId = (Long) session.getAttribute(User.FIELD_USER_ID);
+        userId = userId==null?((User)session.getAttribute(User.FIELD_SESSION_USER)).getUserId():userId;
         
         userLogin.setUserId(userId);
         String path = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getRequestURI();
@@ -56,15 +57,12 @@ public class SaveIpAddressImpl implements ISaveIpAddressListener {
         userLoginDetailMapper.insertSelective(userLogin);
         //sqlSessionFactory.openSession().insert("com.ssm.sys.mapper.UserLoginDetailMapper.saveDetail", userLogin);
         
-        
-        HttpSession session = request.getSession(false);
         if (session != null) {
             session.setAttribute(IRequest.FIELD_LOGIN_ID, userLogin.getLoginId());
         }
 	}
 	
 	public String getIpAddress(HttpServletRequest request) {
-
         String ipAddress = request.getHeader("x-forwarded-for");
         if(ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getHeader("Proxy-Client-IP");

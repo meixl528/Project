@@ -3,24 +3,26 @@ package com.ssm.kafka.service.impl;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.KafkaMessageListenerContainer;
-import org.springframework.kafka.listener.MessageListener;
-import org.springframework.kafka.listener.config.ContainerProperties;
 import org.springframework.stereotype.Service;
+
+import com.ssm.kafka.listener.KafkaMessageListener;
 
 /**
  * kafka监听器启动
  * 自动监听是否有消息需要消费
  */
 @Service
-public class KafkaConsumerListener2 implements MessageListener<String, String>, InitializingBean {
-    protected final Logger logger = LoggerFactory.getLogger(KafkaConsumerListener2.class);
+public class KafkaConsumer2 extends KafkaConsumerAdaptor implements KafkaMessageListener<String,String>{
+    protected final Logger logger = LoggerFactory.getLogger(KafkaConsumer2.class);
     
-    @Autowired
-    private DefaultKafkaConsumerFactory<?, ?> consumerFactory;
+    private String[] topic = {"orderTopic2"};
+    
+    /**
+     * 新建KafkaMessageListenerContainer
+     */
+    public void init(){
+    	super.init(this.getClass().getSimpleName(),this,"orderTopic");
+    }
     
     /**
      * 监听器自动执行该方法
@@ -44,15 +46,5 @@ public class KafkaConsumerListener2 implements MessageListener<String, String>, 
         logger.info("------消费2-------partition:"+partition);
         logger.info("~~~~~~~~~~~~~kafkaConsumer消费结束~~~~~~~~~~~~~");
     }
-    
-    private String[] topic = {"orderTopic2"};
-    
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		ContainerProperties containerProperties = new ContainerProperties(topic);
-		containerProperties.setMessageListener(this);
-		
-		new KafkaMessageListenerContainer<>(consumerFactory, containerProperties).start();
-	}
 
 }

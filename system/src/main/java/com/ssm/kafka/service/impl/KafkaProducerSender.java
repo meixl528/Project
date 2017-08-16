@@ -21,7 +21,7 @@ import com.ssm.kafka.service.KafkaProducerServer;
  *     使用此模板发送消息
  */
 @Component
-public class KafkaProducerServerImpl implements KafkaProducerServer{
+public class KafkaProducerSender implements KafkaProducerServer{
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;

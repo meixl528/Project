@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ssm.mybatis.util.StringUtil;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
@@ -20,14 +19,15 @@ import org.springframework.stereotype.Service;
 import com.ssm.generator.dto.DBColumn;
 import com.ssm.generator.dto.DBTable;
 import com.ssm.generator.dto.GeneratorInfo;
-import com.ssm.generator.service.IHapGeneratorService;
+import com.ssm.generator.service.IGeneratorService;
+import com.ssm.mybatis.util.StringUtil;
 
 import freemarker.template.TemplateException;
 
 /**
  */
 @Service
-public class HapGeneratorServiceImpl implements IHapGeneratorService {
+public class GeneratorServiceImpl implements IGeneratorService {
 
     @Autowired
     @Qualifier("sqlSessionFactory")

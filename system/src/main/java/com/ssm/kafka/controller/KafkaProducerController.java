@@ -21,7 +21,7 @@ public class KafkaProducerController {
         
         String topic = "orderTopic";
         String value = "test "+new DateTime().toString("yyyy/MM/dd HH:mm:ss Sss");
-        String ifPartition = "1";
+        String ifPartition = "0";
         Integer partitionNum = 2;
         String role = "test";//用来生成key
         Map<String,Object> res = kafkaProducer.sndMesForTemplate(topic, value, ifPartition, partitionNum, role);
@@ -30,6 +30,6 @@ public class KafkaProducerController {
         System.out.println("code:"+(String)res.get("code"));
         System.out.println("message:"+(String)res.get("message"));
         
-        Map<String,Object> res2 = kafkaProducer.sndMesForTemplate("orderTopic2", "test2 "+new DateTime().toString("yyyy/MM/dd HH:mm:ss Sss"), ifPartition, partitionNum, "test2");
+        //Map<String,Object> res2 = kafkaProducer.sndMesForTemplate("orderTopic2", "test2 "+new DateTime().toString("yyyy/MM/dd HH:mm:ss Sss"), ifPartition, partitionNum, "test2");
     }
 }

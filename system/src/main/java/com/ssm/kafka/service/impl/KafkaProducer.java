@@ -10,8 +10,8 @@ import org.springframework.kafka.support.ProducerListener;
  *
  */
 @SuppressWarnings("rawtypes")
-public class KafkaProducerListener implements ProducerListener{
-    protected final Logger logger = LoggerFactory.getLogger(KafkaProducerListener.class);
+public class KafkaProducer implements ProducerListener{
+    protected final Logger logger = LoggerFactory.getLogger(KafkaProducer.class);
     /**
      * 发送消息成功后调用
      */
