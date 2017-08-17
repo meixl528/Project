@@ -15,7 +15,10 @@
      <bean id="consumerProperties" class="java.util.HashMap">
          <constructor-arg>
              <map>
+                 <!-- 配置kafka的broke -->
                  <entry key="bootstrap.servers" value="127.0.0.1:9092"/>
+                 <!-- <entry key="bootstrap.servers" value="127.0.0.1:9092,192.168.10.100:9092"/> -->
+                 <!-- 配置组-->
                  <entry key="group.id" value="KafkaConsumerListener"/>
                  <entry key="enable.auto.commit" value="false"/>
                  <entry key="auto.commit.interval.ms" value="1000"/>
@@ -32,5 +35,5 @@
              <ref bean="consumerProperties"/>
          </constructor-arg>
      </bean> -->
-     
+
 </beans>

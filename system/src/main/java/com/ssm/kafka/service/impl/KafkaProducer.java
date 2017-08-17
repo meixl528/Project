@@ -5,14 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.support.ProducerListener;
 
-/**
- * kafkaProducer监听器，在producer配置文件中开启
- *
- */
 @SuppressWarnings("rawtypes")
 public class KafkaProducer implements ProducerListener{
-    protected final Logger logger = LoggerFactory.getLogger(KafkaProducer.class);
-    /**
+	protected final Logger logger = LoggerFactory.getLogger(KafkaProducer.class);
+	
+	/**
      * 发送消息成功后调用
      */
     @Override
@@ -51,5 +48,4 @@ public class KafkaProducer implements ProducerListener{
         logger.info("///kafkaProducer监听器启动///");
         return true;
     }
-
 }

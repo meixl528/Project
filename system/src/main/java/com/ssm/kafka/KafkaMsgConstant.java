@@ -2,18 +2,16 @@ package com.ssm.kafka;
 
 /**
  * kafkaMessageConstant
- * @author wangb
- *
  */
-public class KafkaMesConstant {
+public class KafkaMsgConstant {
 
-    public static final String SUCCESS_CODE = "00000";
+    public static final String SUCCESS_CODE = "S";
     public static final String SUCCESS_MES = "成功";
     
     /*kakfa-code*/
-    public static final String KAFKA_SEND_ERROR_CODE = "30001";
-    public static final String KAFKA_NO_RESULT_CODE = "30002";
-    public static final String KAFKA_NO_OFFSET_CODE = "30003";
+    public static final String KAFKA_SEND_ERROR_CODE = "E";
+    public static final String KAFKA_NO_RESULT_CODE = "N_R";
+    public static final String KAFKA_NO_OFFSET_CODE = "N_O";
     
     /*kakfa-mes*/
     public static final String KAFKA_SEND_ERROR_MES = "发送消息超时,联系相关技术人员";

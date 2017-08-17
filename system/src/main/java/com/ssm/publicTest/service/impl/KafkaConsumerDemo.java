@@ -1,10 +1,12 @@
-package com.ssm.kafka.service.impl;
+package com.ssm.publicTest.service.impl;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.ssm.kafka.annotation.KafkaTopic;
+import com.ssm.kafka.listener.KafkaConsumerAdaptor;
 import com.ssm.kafka.listener.KafkaMessageListener;
 
 /**
@@ -12,17 +14,9 @@ import com.ssm.kafka.listener.KafkaMessageListener;
  * 自动监听是否有消息需要消费
  */
 @Service
-public class KafkaConsumer extends KafkaConsumerAdaptor implements KafkaMessageListener<String,String> {
-    protected final Logger logger = LoggerFactory.getLogger(KafkaConsumer.class);
-    
-    private String[] topic = {"orderTopic"};
-    
-    /**
-     * 新建KafkaMessageListenerContainer
-     */
-    public void init(){
-    	super.init(this.getClass().getSimpleName(),this,topic);
-    }
+@KafkaTopic(topics={"orderTopic"})
+public class KafkaConsumerDemo extends KafkaConsumerAdaptor implements KafkaMessageListener<String,String> {
+    protected final Logger logger = LoggerFactory.getLogger(KafkaConsumerDemo.class);
     
     /**
      * 监听器自动执行该方法

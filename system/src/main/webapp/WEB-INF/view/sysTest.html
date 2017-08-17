@@ -37,6 +37,10 @@
 		websocket:spring websocket
 		<button id="websocketAll" type="button">websocket全部用户测试</button>
 		
+		
+		<br><br>
+		kafka: spring kafka
+		<button id="kafka" type="button">kafka发送消息测试</button>
 	</div>
 	<div id="tips" style="font-size:30px;text-align: center">
 	</div>
@@ -200,6 +204,22 @@
    			cache:false,
    			success:function(data){
    				//alert(data);
+   			},
+   			error:function(er){
+   				alert("error")
+   			}
+   		})
+	  })
+	  
+	  $("#kafka").click(function(){
+   		$.ajax({
+   			url:"${base.contextPath}/kafka/test",
+   			data:{},
+   			dataType:"json",
+   			type:"post",
+   			cache:false,
+   			success:function(data){
+   				alert(data.message);
    			},
    			error:function(er){
    				alert("error")

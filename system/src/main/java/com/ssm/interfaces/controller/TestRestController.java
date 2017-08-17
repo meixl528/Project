@@ -20,8 +20,14 @@ import com.ssm.interfaces.service.IRestService;
 import com.ssm.sys.controller.BaseController;
 import com.ssm.sys.responceFactory.ResponseData;
 
-//import freemarker.template.Configuration;
-
+/**
+ * @description 
+ * HTTP协议本身是一种面向资源的应用层协议，但对HTTP协议的使用实际上存在着两种不同的方式：
+ * 一种是RESTful的，它把HTTP当成应用层协议，比较忠实地遵守了HTTP协议的各种规定；
+ * 另一种是SOA的，它并没有完全把HTTP当成应用层协议，而是把HTTP协议作为了传输层协议，然后在HTTP之上建立了自己的应用层协议。
+ * 幂等性并不属于特定的协议，它是分布式系统的一种特性；
+ * 所以，不论是SOA还是RESTful的Web API设计都应该考虑幂等性
+ */
 @Controller
 public class TestRestController extends BaseController{
 	

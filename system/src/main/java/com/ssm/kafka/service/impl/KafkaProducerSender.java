@@ -13,13 +13,14 @@ import org.springframework.util.concurrent.ListenableFuture;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssm.kafka.KafkaMesConstant;
+import com.ssm.kafka.KafkaMsgConstant;
 import com.ssm.kafka.service.KafkaProducerServer;
 
 /**
  * kafkaProducer模板
  *     使用此模板发送消息
  */
+@SuppressWarnings("rawtypes")
 @Component
 public class KafkaProducerSender implements KafkaProducerServer{
 
@@ -78,7 +79,6 @@ public class KafkaProducerSender implements KafkaProducerServer{
      * @param res
      * @return
      */
-    @SuppressWarnings("rawtypes")
     private Map<String,Object> checkProRecord(ListenableFuture<SendResult<String, String>> res){
         Map<String,Object> m = new HashMap<String,Object>();
         if(res!=null){
@@ -87,31 +87,30 @@ public class KafkaProducerSender implements KafkaProducerServer{
                 /*检查recordMetadata的offset数据，不检查producerRecord*/
                 Long offsetIndex = r.getRecordMetadata().offset();
                 if(offsetIndex!=null && offsetIndex>=0){
-                    m.put("code", KafkaMesConstant.SUCCESS_CODE);
-                    m.put("message", KafkaMesConstant.SUCCESS_MES);
+                    m.put("code", KafkaMsgConstant.SUCCESS_CODE);
+                    m.put("message", KafkaMsgConstant.SUCCESS_MES);
                     return m;
                 }else{
-                    m.put("code", KafkaMesConstant.KAFKA_NO_OFFSET_CODE);
-                    m.put("message", KafkaMesConstant.KAFKA_NO_OFFSET_MES);
+                    m.put("code", KafkaMsgConstant.KAFKA_NO_OFFSET_CODE);
+                    m.put("message", KafkaMsgConstant.KAFKA_NO_OFFSET_MES);
                     return m;
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                m.put("code", KafkaMesConstant.KAFKA_SEND_ERROR_CODE);
-                m.put("message", KafkaMesConstant.KAFKA_SEND_ERROR_MES);
+                m.put("code", KafkaMsgConstant.KAFKA_SEND_ERROR_CODE);
+                m.put("message", KafkaMsgConstant.KAFKA_SEND_ERROR_MES);
                 return m;
             } catch (ExecutionException e) {
                 e.printStackTrace();
-                m.put("code", KafkaMesConstant.KAFKA_SEND_ERROR_CODE);
-                m.put("message", KafkaMesConstant.KAFKA_SEND_ERROR_MES);
+                m.put("code", KafkaMsgConstant.KAFKA_SEND_ERROR_CODE);
+                m.put("message", KafkaMsgConstant.KAFKA_SEND_ERROR_MES);
                 return m;
             }
         }else{
-            m.put("code", KafkaMesConstant.KAFKA_NO_RESULT_CODE);
-            m.put("message", KafkaMesConstant.KAFKA_NO_RESULT_MES);
+            m.put("code", KafkaMsgConstant.KAFKA_NO_RESULT_CODE);
+            m.put("message", KafkaMsgConstant.KAFKA_NO_RESULT_MES);
             return m;
         }
     }
-    
 
 }
