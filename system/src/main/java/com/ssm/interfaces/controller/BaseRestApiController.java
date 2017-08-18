@@ -22,15 +22,23 @@ import com.ssm.core.request.IRequest;
 import com.ssm.core.request.impl.RequestHelper;
 import com.ssm.sys.dto.Code;
 import com.ssm.sys.dto.CodeValue;
-import com.ssm.util.FndUtil;
 /**
  *
  * @name BaseRestController
  * @description 处理RestAPI的基础控制类
- * @version
+ * @description 处理RestAPI的基础控制类(*和{} 表示允许所有)
+ * 
+ * <br>
+ * <b>List of allowed origins, e.g. {@code "http://192.168.10.25:8081/system"}.
+ * <p>These values are placed in the {@code Access-Control-Allow-Origin}
+ * header of both the pre-flight response and the actual response.
+ * {@code "*"} means that all origins are allowed.
+ * <p>If undefined, all origins are allowed.
+ * </b>
  */
 @RestController
-@CrossOrigin(origins = FndUtil.WG_ALLOW_ORIGIN)
+@CrossOrigin
+//@CrossOrigin(origins = FndUtil.WG_ALLOW_ORIGIN)
 public class BaseRestApiController {
 
 	@Autowired
@@ -101,10 +109,10 @@ public class BaseRestApiController {
 	 *            消息语言
 	 * @return 消息内容
 	 */
-	/*protected String getMessage(String messageCode, String lang) {
-		Cache<String> cache = cacheManager.getCache(REDIS_PROMPT);
-		return cache.getValue(messageCode + "." + lang);
-	}*/
+	protected String getMessage(String messageCode, String lang) {
+		Cache<?> cache = cacheManager.getCache(REDIS_PROMPT);
+		return (String) cache.getValue(messageCode + "." + lang);
+	}
 
 	/**
 	 * 创建请求对象
@@ -304,8 +312,8 @@ public class BaseRestApiController {
 	 * @param lang
 	 * @return
 	 */
-	/*protected String getNoOperateAuthMsg(String lang){
+	protected String getNoOperateAuthMsg(String lang){
 		return this.getMessage(OPERATE_NO_AUTH_MSG, lang);
-	}*/
+	}
 
 }

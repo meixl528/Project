@@ -7,7 +7,7 @@
 <body>
 	<div style="padding:10px;height:350px">
 		姓名:<input id="name" type="text" name="name">
-		<button id="button" type="button">restApi测试</button>
+		<button id="restApi" type="button">调用shop的restApi测试</button>
 		<br><br>
 		
 		interface:soap
@@ -50,15 +50,15 @@
 <script>
 
 	//测试  restApi
-	$("#button").click(function(){
+	$("#restApi").click(function(){
 		var data = JSON.stringify({"restApiName" :"meixl","restApiPass" :"meixl"});
 		$.ajax({
-			url:"http://localhost:8081/system/restapi/test?restApiName=meixl&restApiPass=meixl",
-			//url:"http://localhost:8081/system/restapi/test",
+			//url:"http://localhost:8081/system/restapi/test?restApiName=meixl&restApiPass=meixl",
+			url:"http://localhost:8080/shop/restapi/shop?restApiName=meixl&restApiPass=meixl",
 			//contentType:'application/json',
-			data:{restContent : $("#name").text()},
+			data:{restContent : $("#name").val()},
 			type:"Post",
-			dataType:"text",  
+			dataType:"json",  
 	        async:false,  
 	        cache:false, 
 			success:function(data){
