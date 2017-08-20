@@ -8,3 +8,8 @@ Zookeeper: http://www.apache.org/dyn/closer.cgi/zookeeper/
 Kafka    : http://kafka.apache.org/downloads.html
 
 
+bin\windows\kafka-server-start.bat config\server.properties
+
+
+https://connect.qq.com/manage.html
+
