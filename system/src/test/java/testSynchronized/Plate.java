@@ -108,4 +108,11 @@ public class Plate {
         System.out.println("测试结束");
     }
     
+    public String syn(String aa){
+    	synchronized (eggs) {
+			
+		}
+		return aa;
+    }
+    
 }
