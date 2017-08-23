@@ -122,7 +122,7 @@ public class FunctionController extends BaseController{
     @ResponseBody
     public ResponseData submit(@RequestBody final List<Function> functions,final HttpServletRequest request) {
         IRequest requestContext = createRequestContext(request);
-        return new ResponseData(functionService.submitFunction(requestContext, functions));
+        return new ResponseData(functionService.batchUpdate(requestContext, functions));
     }
     
     /**
@@ -134,7 +134,7 @@ public class FunctionController extends BaseController{
     public ResponseData remove(@RequestBody final List<Function> functions, final BindingResult result,
             final HttpServletRequest request) {
         IRequest requestContext = createRequestContext(request);
-        functionService.deleteFunction(requestContext, functions);
+        functionService.batchDelete(requestContext, functions);
         return new ResponseData();
     }
     

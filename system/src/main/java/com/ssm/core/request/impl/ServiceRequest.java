@@ -34,6 +34,7 @@ public class ServiceRequest implements IRequest {
 
     private Long accountId = -1L;
     private Long roleId = -1L;
+    private Long[] roleIds = {};
     private Long companyId = -1L;
     private String locale;
     @JsonIgnore
@@ -107,4 +108,14 @@ public class ServiceRequest implements IRequest {
     public Set<String> getAttributeNames() {
         return attributeMap.keySet();
     }
+
+	@Override
+	public Long[] getAllRoleId() {
+		return this.roleIds;
+	}
+
+	@Override
+	public void setAllRoleId(Long[] roleIds) {
+		this.roleIds = roleIds;
+	}
 }

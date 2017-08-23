@@ -9,9 +9,11 @@ import com.ssm.mybatis.common.Mapper;
 
 public interface FunctionResourceMapper extends Mapper<FunctionResource>{
 	
-	void deleteByResource(Resource resource);
+	int deleteByResource(Resource resource);
 
-	int deleteFunctionResource(@Param(value = "functionId") Long functionId,
+    int deleteByFunctionId(Long functionId);
+
+    int deleteFunctionResource(@Param(value = "functionId") Long functionId,
             @Param(value = "resourceId") Long resourceId);
 
 }

@@ -3,6 +3,7 @@
  */
 package com.ssm.adaptor.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -353,6 +354,11 @@ public class DefaultLoginAdaptor implements ILoginAdaptor{
                 	mv.setViewName(UrlConfig.VIEW_LOGIN);
                 	return mv;
                 }
+                List<Long> ids = new ArrayList<>();
+                for (RoleExt roleExt : roles) {
+                	ids.add(roleExt.getRoleId());
+				}
+                session.setAttribute(IRequest.FIELD_ALL_ROLE_ID, ids.toArray(new Long[ids.size()]));
                 if(roles.size()==1){
                 	session.setAttribute(Role.FIELD_ROLE_ID, roles.get(0).getRoleId());
                 	mv.setViewName(UrlConfig.REDIRECT +UrlConfig.ROLE_SELECT_ED);

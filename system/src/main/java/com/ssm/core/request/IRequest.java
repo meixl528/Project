@@ -120,4 +120,8 @@ public interface IRequest extends Serializable {
      *            角色 id
      */
     void setRoleId(Long roleId);
+
+	Long[] getAllRoleId();
+	
+	void setAllRoleId(Long[] roleIds);
 }

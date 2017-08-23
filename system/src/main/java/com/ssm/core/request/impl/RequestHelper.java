@@ -97,6 +97,7 @@ public final class RequestHelper {
         if (session != null) {
             requestContext.setUserId((Long) session.getAttribute(IRequest.FIELD_USER_ID));
             requestContext.setRoleId((Long) session.getAttribute(Role.FIELD_ROLE_ID));
+            requestContext.setAllRoleId((Long[]) session.getAttribute(IRequest.FIELD_ALL_ROLE_ID));
             Locale locale = RequestContextUtils.getLocale(httpServletRequest);
             if (locale != null) {
                 requestContext.setLocale(locale.toString());

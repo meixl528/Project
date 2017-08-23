@@ -5,7 +5,7 @@
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ssm.function.mapper.ResourceMapper" >
-  <resultMap id="BaseResultMap" type="com.ssm.function.dto.Resource">
+  <resultMap id="BaseResultMap" type="com.ssm.function.dto.Resource" extends="com.ssm.mapper.BaseMapper.BaseResultMap">
     <id column="RESOURCE_ID" property="resourceId" jdbcType="DECIMAL" />
     <result column="URL" property="url" jdbcType="VARCHAR" />
     <result column="TYPE" property="type" jdbcType="VARCHAR" />
