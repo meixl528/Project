@@ -25,7 +25,6 @@ import com.ssm.sys.dto.CodeValue;
 /**
  *
  * @name BaseRestController
- * @description 处理RestAPI的基础控制类
  * @description 处理RestAPI的基础控制类(*和{} 表示允许所有)
  * 
  * <br>

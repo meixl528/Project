@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssm.core.request.IRequest;
+import com.ssm.interfaces.components.Token;
 import com.ssm.interfaces.dto.InterfaceResponce;
 import com.ssm.interfaces.service.IRestService;
 import com.ssm.sys.controller.BaseController;
@@ -45,6 +46,10 @@ public class TestRestController extends BaseController{
 		
 		if(StringUtils.isEmpty(interfaceUrl)){
 			interfaceUrl = "http://localhost:8081/system/ws/helloWord2/rest/json";
+			
+			//interfaceUrl = URL.Test_Rest_Controller_URL.getUrl();
+			//name = URL.Test_Rest_Controller_URL.getName();
+			//code = URL.Test_Rest_Controller_URL.getCode();
 		}
 		
 		Map<String,Object> map = new HashMap<>();
@@ -52,8 +57,8 @@ public class TestRestController extends BaseController{
 		map.put("phone", "测试2");
 		
 		String jsonDatas = objectMapper.writeValueAsString(map);
-		String loginName = "meixl";
-		String loginPass = "meixl";
+		String loginName = "meixl";   loginName = Token.name;
+		String loginPass = "meixl";   loginPass = Token.pass;
 		
 		InterfaceResponce<?> resp = restService.doProgress(iRequest, interfaceUrl, jsonDatas, loginName, loginPass);
 		

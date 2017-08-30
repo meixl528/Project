@@ -519,6 +519,12 @@
 			<artifactId>qq</artifactId>
 			<version>1.0</version>
 		</dependency>
+		
+		<dependency>
+		    <groupId>com.google.collections</groupId>
+		    <artifactId>google-collections</artifactId>
+		    <version>1.0</version>
+		</dependency>
 	</dependencies>
 
 	<!-- maven install,加上后maven编译1.8版本,不会出现报1.5的错误 -->
