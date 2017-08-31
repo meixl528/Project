@@ -1,0 +1,3 @@
+
+执行 bin 下 activemq.bat
+访问地址 http://localhost:8161/
